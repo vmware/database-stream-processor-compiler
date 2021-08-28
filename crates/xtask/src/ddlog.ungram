@@ -1,0 +1,10 @@
+FuncDef = 'function' name:Ident args:FuncArgs (':' Type)? FuncBody
+
+Type = Ident
+
+Ident = 'ident'
+
+FuncArgs = '(' FuncArg (',' FuncArg)* ','? ')'
+FuncArg = Ident ':' Type
+FuncBody = '{' Stmt* '}'
+Stmt = Ident

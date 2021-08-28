@@ -1,0 +1,24 @@
+[package]
+name = "ddlog-syntax"
+version = "0.1.0"
+edition = "2018"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+logos = "0.12.0"
+cstree = "0.6.1"
+ariadne = "0.1.2"
+tracing = "0.1.26"
+triomphe = "0.1.3"
+
+    [dependencies.xxhash-rust]
+    version = "0.8.2"
+    features = ["xxh3", "const_xxh3"]
+
+    [dependencies.lasso]
+    version = "0.5.1"
+    features = ["multi-threaded", "inline-more"]
+
+[dev-dependencies]
+once_cell = "1.8.0"
+expect-test = "1.0.1"
