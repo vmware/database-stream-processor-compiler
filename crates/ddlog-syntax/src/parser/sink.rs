@@ -1,4 +1,9 @@
-use crate::{lexer::Token, parser::event::Event, GreenNodeBuilder, NodeCache, SyntaxKind};
+use crate::{
+    lexer::Token,
+    parser::event::Event,
+    GreenNodeBuilder, NodeCache,
+    SyntaxKind::{self, TOMBSTONE},
+};
 use cstree::GreenNode;
 use std::mem;
 
@@ -46,7 +51,7 @@ impl<'src, 'cache, 'interner> Sink<'src, 'cache, 'interner> {
                         preceded_by = match mem::replace(&mut self.events[idx], Event::tombstone())
                         {
                             Event::Enter { kind, preceded_by } => {
-                                if kind != T![tombstone] {
+                                if kind != TOMBSTONE {
                                     preceded_nodes.push(kind);
                                 }
 

@@ -1,5 +1,7 @@
 #[macro_use]
 mod syntax_kind;
+#[macro_use]
+mod token_set;
 pub mod hasher;
 mod interner;
 mod lexer;
@@ -11,7 +13,8 @@ pub use interner::Interner;
 pub use lexer::Token;
 pub use span::Span;
 pub use syntax::DifferentialDatalog;
-pub use syntax_kind::{constants, SyntaxKind};
+pub use syntax_kind::SyntaxKind;
+pub use token_set::TokenSet;
 
 use crate::{
     lexer::Lexer,
@@ -37,6 +40,19 @@ pub fn parse(
     (SyntaxNode::new_root(root), errors)
 }
 
+pub fn parse_expr(
+    file: FileId,
+    source: &str,
+    cache: &mut NodeCache<'_>,
+) -> (SyntaxNode, Vec<Report<Span>>) {
+    let tokens: Vec<_> = Lexer::new(source, file).collect();
+    let (events, errors) =
+        Parser::new(&tokens, Span::single(source.len() as u32, file)).parse_expr();
+    let root = Sink::new(source, tokens, events, cache).finish();
+
+    (SyntaxNode::new_root(root), errors)
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
 pub struct FileId(Spur);
@@ -44,5 +60,9 @@ pub struct FileId(Spur);
 impl FileId {
     pub const fn new(path: Spur) -> Self {
         Self(path)
+    }
+
+    pub const fn file_name(self) -> Spur {
+        self.0
     }
 }

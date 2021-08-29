@@ -15,7 +15,7 @@ fn check(input: &str, expected: Expect) {
     let mut cache = NodeCache::with_interner(&mut cache_interner);
     let file = FileId::new(INTERNER.get_or_intern_static("tests/test_file.dl"));
 
-    let (root, errors) = crate::parse(file, input, &mut cache);
+    let (root, errors) = crate::parse_expr(file, input, &mut cache);
 
     let mut parsed = root.debug(&*INTERNER, true);
     parsed.pop();
@@ -26,5 +26,5 @@ fn check(input: &str, expected: Expect) {
 
 #[test]
 fn empty_file() {
-    check("", expect![[r#"Root@0..0"#]]);
+    check("", expect![[r#"ROOT@0..0"#]]);
 }

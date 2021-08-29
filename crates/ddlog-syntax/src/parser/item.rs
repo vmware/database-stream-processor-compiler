@@ -1,14 +1,26 @@
 use crate::{
-    constants::{FUNC_ARGS, FUNC_BODY, FUNC_DECL, FUNC_NAME},
     parser::{CompletedMarker, Marker, Parser},
+    SyntaxKind::{FUNC_ARGS, FUNC_DEF, FUNC_NAME, ITEM},
+    TokenSet,
 };
+use ariadne::{Label, Report, ReportKind};
 
 // TODO: Error recovery
 // TODO: Attributes
 
+const ITEM_RECOVERY_SET: TokenSet = token_set! {
+    T!['}'],
+    T![function],
+    // T![extern],
+    // T![typedef],
+    // T![input],
+    // T![output],
+    // T![relation],
+};
+
 impl Parser<'_, '_> {
     pub(crate) fn items(&mut self) {
-        while !self.at(T![eof]) {
+        while !self.at_end() {
             self.item();
         }
     }
@@ -20,15 +32,30 @@ impl Parser<'_, '_> {
             // TODO: `extern`, `typedef`, `input`, `output`,
             //       `relation`, `apply`, etc.
             T![function] => {
-                self.function_def(marker);
+                self.function_def();
             }
 
             // TODO: Errors
-            _ => marker.abandon(self),
+            _ => {
+                let error = Report::build(
+                    ReportKind::Error,
+                    self.file,
+                    self.current_span().start() as usize,
+                )
+                .with_message("expected a top-level item")
+                .with_label(Label::new(self.current_span()).with_message("instead got this"))
+                .finish();
+
+                self.error(error);
+            }
         }
+
+        marker.complete(self, ITEM);
     }
 
-    fn function_def(&mut self, marker: Marker) -> CompletedMarker {
+    fn function_def(&mut self) -> CompletedMarker {
+        let marker = self.start();
+
         self.expect(T![function]);
         self.identifier(FUNC_NAME);
 
@@ -40,15 +67,11 @@ impl Parser<'_, '_> {
 
         if self.at(T![:]) {
             // return type
+            self.expect(T![:]);
         }
 
-        let body = self.start();
-        self.expect(T!['{']);
-        // Function body
-        self.expr();
-        self.expect(T!['}']);
-        body.complete(self, FUNC_BODY);
+        self.block(ITEM_RECOVERY_SET);
 
-        marker.complete(self, FUNC_DECL)
+        marker.complete(self, FUNC_DEF)
     }
 }

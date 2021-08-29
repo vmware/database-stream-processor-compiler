@@ -1,19 +1,17 @@
+use crate::utils;
 use anyhow::{Context, Result};
+use heck::ShoutySnakeCase;
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
-use std::{
-    fs::{self},
-    path::Path,
-};
-use ungrammar::{Grammar, Token, TokenData};
-
-use crate::utils;
+use std::{fs, path::Path};
+use ungrammar::Grammar;
 
 const GRAMMAR: &str = include_str!("ddlog.ungram");
 const TARGET_PATH: &str = concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/../ddlog-syntax/src/parser/generated.rs",
+    "/../ddlog-syntax/src/syntax_kind/generated.rs",
 );
+const EXTRA_TOKENS: &[&str] = &["comment", "whitespace", "eof", "tombstone"];
 
 fn grammar() -> Result<Grammar> {
     GRAMMAR.parse().context("failed to parse ddlog grammar")
@@ -23,8 +21,13 @@ pub fn codegen() -> Result<()> {
     let grammar = grammar()?;
 
     // Sort the tokens so that their ordering is consistent across runs
-    let mut tokens: Vec<_> = grammar.tokens().collect();
-    tokens.sort();
+    let mut tokens: Vec<_> = grammar
+        .iter()
+        .map(|node| &*grammar[node].name)
+        .chain(grammar.tokens().map(|token| &*grammar[token].name))
+        .chain(EXTRA_TOKENS.iter().copied())
+        .collect();
+    tokens.sort_unstable();
 
     if tokens.len() + 1 > u16::MAX as usize {
         anyhow::bail!("created more than {} SyntaxKind variants", u16::MAX);
@@ -32,9 +35,8 @@ pub fn codegen() -> Result<()> {
 
     let variants = tokens.iter().enumerate().map(|(idx, &token)| {
         let idx = idx as u16;
-        let data = &grammar[token];
-        let variant = token_variant(data);
-        let attr = token_attr(data);
+        let variant = token_variant(token);
+        let attr = token_attr(token);
 
         quote! {
             #attr
@@ -43,10 +45,10 @@ pub fn codegen() -> Result<()> {
     });
     let error_idx = tokens.len() as u16;
 
-    let debug_impl = generate_debug(&grammar, &tokens);
-    let display_impl = generate_display(&grammar, &tokens);
+    let debug_impl = generate_debug(&tokens);
+    let display_impl = generate_display(&tokens);
     let trait_impls = trait_implementations();
-    let token_macro = token_macro(&grammar, &tokens);
+    let token_macro = token_macro(&tokens);
 
     let mut code = quote! {
         #[derive(logos::Logos)]
@@ -64,6 +66,14 @@ pub fn codegen() -> Result<()> {
             //       the highest discriminant
             #[error]
             ERROR = #error_idx,
+        }
+
+        impl SyntaxKind {
+            #[doc(hidden)]
+            #[inline]
+            pub const fn highest() -> Self {
+                Self::ERROR
+            }
         }
 
         #debug_impl
@@ -96,25 +106,26 @@ pub fn codegen() -> Result<()> {
 
 const FUNKY_CHARS: &[&str] = &["(", ")", "{", "}", "[", "]"];
 
-fn token_macro(grammar: &Grammar, tokens: &[Token]) -> TokenStream {
+fn token_macro(tokens: &[&str]) -> TokenStream {
     let arms = tokens.iter().filter_map(|&token| {
-        let data = &grammar[token];
-
-        let ident = if KEYWORDS.contains(&&*data.name) {
-            let ident = format_ident!("{}", data.name);
+        let ident = if KEYWORDS.contains(&token) {
+            let ident = format_ident!("{}", token);
             quote! { #ident }
-        } else if FUNKY_CHARS.contains(&&*data.name) {
-            assert_eq!(data.name.chars().count(), 1);
-            let char = data.name.chars().next().unwrap();
+        } else if FUNKY_CHARS.contains(&token) {
+            assert_eq!(token.chars().count(), 1);
+            let char = token.chars().next().unwrap();
 
             quote! { #char }
-        } else if NAMED_TOKENS.iter().any(|&(token, _)| token == data.name) {
-            data.name.parse().unwrap()
+        } else if NAMED_TOKENS
+            .iter()
+            .any(|&(named_token, _)| named_token == token)
+        {
+            token.parse().unwrap()
         } else {
             return None;
         };
 
-        let variant = token_variant(data);
+        let variant = token_variant(token);
         Some(quote! {
             (#ident) => { $crate::SyntaxKind::#variant };
         })
@@ -128,11 +139,8 @@ fn token_macro(grammar: &Grammar, tokens: &[Token]) -> TokenStream {
     }
 }
 
-fn generate_display(grammar: &Grammar, tokens: &[Token]) -> TokenStream {
-    let arms = tokens.iter().map(|&token| {
-        let data = &grammar[token];
-        token_display(data)
-    });
+fn generate_display(tokens: &[&str]) -> TokenStream {
+    let arms = tokens.iter().map(|&token| token_display(token));
 
     quote! {
         impl ::core::fmt::Display for SyntaxKind {
@@ -146,11 +154,8 @@ fn generate_display(grammar: &Grammar, tokens: &[Token]) -> TokenStream {
     }
 }
 
-fn generate_debug(grammar: &Grammar, tokens: &[Token]) -> TokenStream {
-    let arms = tokens.iter().map(|&token| {
-        let data = &grammar[token];
-        token_debug(data)
-    });
+fn generate_debug(tokens: &[&str]) -> TokenStream {
+    let arms = tokens.iter().map(|&token| token_debug(token));
 
     quote! {
         impl ::core::fmt::Debug for SyntaxKind {
@@ -273,78 +278,111 @@ fn trait_implementations() -> TokenStream {
 }
 
 const NAMED_TOKENS: &[(&str, &str)] = &[
-    ("(", "L_PAREN"),
-    (")", "R_PAREN"),
-    ("{", "L_CURLY"),
-    ("}", "R_CURLY"),
-    ("[", "L_BRACK"),
-    ("]", "R_BRACK"),
+    ("=", "EQ"),
+    ("!", "BANG"),
+    ("|", "PIPE"),
+    ("+", "PLUS"),
+    ("*", "STAR"),
+    ("!=", "NEQ"),
+    ("<<", "SHL"),
+    (">>", "SHR"),
+    ("^", "CARET"),
     (",", "COMMA"),
     (":", "COLON"),
-    ("!", "BANG"),
-    ("+", "PLUS"),
     ("-", "MINUS"),
-    ("*", "STAR"),
     ("/", "SLASH"),
-    ("=", "EQ"),
-    ("!=", "NEQ"),
     ("==", "EQEQ"),
+    ("<", "L_ANGLE"),
+    (">", "R_ANGLE"),
+    ("[", "L_BRACK"),
+    ("]", "R_BRACK"),
+    ("{", "L_CURLY"),
+    ("}", "R_CURLY"),
+    ("(", "L_PAREN"),
+    (")", "R_PAREN"),
+    ("%", "PERCENT"),
+    ("&", "AMPERSAND"),
+    (";", "SEMICOLON"),
+    ("<=", "L_ANGLE_EQ"),
+    (">=", "R_ANGLE_EQ"),
+    ("=>", "RIGHT_ROCKET"),
 ];
 
 const KEYWORDS: &[&str] = &[
     "function", "var", "match", "input", "output", "relation", "typedef", "for", "while", "loop",
-    "apply", "extern",
+    "apply", "extern", "and", "or", "if", "else", "return", "break",
 ];
 
-const TOKEN_LOGOS: &[(&str, &str)] = &[("ident", "regex(\"[A-Za-z_][A-Za-z0-9_]*\")")];
+const TOKEN_LOGOS: &[(&str, &[&str])] = &[
+    ("ident", &["regex(\"[A-Za-z_][A-Za-z0-9_]*\")"]),
+    ("whitespace", &["regex(\"[\\n\\t\\r ]+\")"]),
+    ("comment", &["regex(\"//.*\")", "regex(\"///.*\")"]),
+    ("bool", &["token(\"true\")", "token(\"false\")"]),
+    (
+        "number",
+        &[
+            "regex(\"[0-9][0-9_]*\")",
+            "regex(\"0b[0-1][0-1_]*\")",
+            "regex(\"0x[0-9a-fA-F][0-9a-fA-F_]*\")",
+        ],
+    ),
+];
 
-fn token_variant_string(data: &TokenData) -> String {
-    if let Some(&(_, name)) = NAMED_TOKENS.iter().find(|&&(token, _)| token == data.name) {
+fn token_variant_string(data: &str) -> String {
+    if let Some(&(_, name)) = NAMED_TOKENS.iter().find(|&&(token, _)| token == data) {
         name.to_owned()
-    } else if KEYWORDS.contains(&&*data.name) {
-        data.name.to_uppercase()
-    } else if let Some(&(token, _)) = TOKEN_LOGOS.iter().find(|&&(token, _)| token == data.name) {
-        token.to_uppercase()
+    } else if KEYWORDS.contains(&data) {
+        data.to_shouty_snake_case()
+    } else if let Some(&(token, _)) = TOKEN_LOGOS.iter().find(|&&(token, _)| token == data) {
+        token.to_shouty_snake_case()
     } else {
-        data.name.to_uppercase()
+        data.to_shouty_snake_case()
     }
 }
 
-fn token_variant(data: &TokenData) -> Ident {
-    format_ident!("{}", token_variant_string(data))
+fn token_variant(token: &str) -> Ident {
+    format_ident!("{}", token_variant_string(token))
 }
 
-fn token_attr(data: &TokenData) -> TokenStream {
-    if let Some(&(token, _)) = NAMED_TOKENS.iter().find(|&&(token, _)| token == data.name) {
+fn token_attr(token: &str) -> TokenStream {
+    if let Some(&(token, _)) = NAMED_TOKENS
+        .iter()
+        .find(|&&(named_token, _)| named_token == token)
+    {
         quote! { #[token(#token)] }
-    } else if KEYWORDS.contains(&&*data.name) {
-        let keyword = &data.name;
-        quote! { #[token(#keyword)] }
-    } else if let Some(&(_, logos)) = TOKEN_LOGOS.iter().find(|&&(token, _)| token == data.name) {
-        let logos: TokenStream = logos.parse().unwrap();
-        quote! { #[#logos] }
+    } else if KEYWORDS.contains(&token) {
+        quote! { #[token(#token)] }
+    } else if let Some(&(_, logos)) = TOKEN_LOGOS
+        .iter()
+        .find(|&&(logos_token, _)| logos_token == token)
+    {
+        let attrs = logos.iter().map(|&attr| {
+            let attr: TokenStream = attr.parse().unwrap();
+            quote! { #[#attr] }
+        });
+
+        quote! { #(#attrs)* }
     } else {
         TokenStream::new()
     }
 }
 
-fn token_debug(data: &TokenData) -> TokenStream {
-    let variant = token_variant(data);
-    let debug = token_variant_string(data);
+fn token_debug(token: &str) -> TokenStream {
+    let variant = token_variant(token);
+    let debug = token_variant_string(token);
 
     quote! {
         Self::#variant => ::core::fmt::Formatter::write_str(f, #debug),
     }
 }
 
-fn token_display(data: &TokenData) -> TokenStream {
-    let display = if KEYWORDS.contains(&&*data.name) {
-        let keyword = &data.name;
+fn token_display(data: &str) -> TokenStream {
+    let display = if KEYWORDS.contains(&data) {
         quote! {
-            ::core::fmt::Formatter::write_str(f, #keyword)
+            ::core::fmt::Formatter::write_str(f, #data)
         }
     } else {
-        let name = data.name.to_uppercase();
+        let name = data.to_shouty_snake_case();
 
         if name.chars().count() == 1 {
             let name = name.chars().next().unwrap();

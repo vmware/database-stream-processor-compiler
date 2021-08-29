@@ -1,6 +1,5 @@
 mod event;
 mod expr;
-// mod generated;
 mod item;
 pub(crate) mod sink;
 pub(crate) mod source;
@@ -8,17 +7,21 @@ mod tests;
 
 use crate::{
     parser::{event::Event, source::Source},
-    FileId, Span, SyntaxKind, Token,
+    FileId, Span,
+    SyntaxKind::{self, EOF, ERROR, ROOT, TOMBSTONE},
+    Token, TokenSet,
 };
 use ariadne::{Label, Report, ReportKind};
 use std::{num::NonZeroUsize, thread};
 
+// FIXME: Add recursion checks
 pub(crate) struct Parser<'src, 'token> {
     // TODO: Factor into `TokenSource` abstraction
     source: Source<'src, 'token>,
     events: Vec<Event>,
     errors: Vec<Report<Span>>,
     file: FileId,
+    recovery_set: TokenSet,
 }
 
 impl<'src, 'token> Parser<'src, 'token> {
@@ -28,13 +31,22 @@ impl<'src, 'token> Parser<'src, 'token> {
             events: Vec::with_capacity(1024),
             errors: Vec::new(),
             file: end_of_file.file(),
+            recovery_set: TokenSet::empty(),
         }
     }
 
     pub(crate) fn parse(mut self) -> (Vec<Event>, Vec<Report<Span>>) {
+        self.root();
+
+        (self.events, self.errors)
+    }
+
+    pub(crate) fn parse_expr(mut self) -> (Vec<Event>, Vec<Report<Span>>) {
         let marker = self.start();
-        self.items();
-        marker.complete(&mut self, T![root]);
+        while !self.at_end() {
+            self.expr();
+        }
+        marker.complete(&mut self, ROOT);
 
         (self.events, self.errors)
     }
@@ -42,6 +54,13 @@ impl<'src, 'token> Parser<'src, 'token> {
 
 /// Utility functions
 impl<'src, 'token> Parser<'src, 'token> {
+    fn root(&mut self) -> CompletedMarker {
+        let marker = self.start();
+        self.items();
+
+        marker.complete(self, ROOT)
+    }
+
     #[track_caller]
     fn bump(&mut self) {
         let token = self
@@ -78,7 +97,17 @@ impl<'src, 'token> Parser<'src, 'token> {
     }
 
     fn error(&mut self, error: Report<Span>) {
+        if !self.at_set(self.recovery_set) && !self.at_end() {
+            let marker = self.start();
+            self.bump();
+            marker.complete(self, ERROR);
+        }
+
         self.errors.push(error);
+    }
+
+    fn at_end(&mut self) -> bool {
+        self.peek() == EOF
     }
 
     /// Get the current token kind of the parser
@@ -104,6 +133,10 @@ impl<'src, 'token> Parser<'src, 'token> {
     /// Check if the parser is currently at a specific token
     fn at(&self, kind: SyntaxKind) -> bool {
         self.nth_at(0, kind)
+    }
+
+    fn at_set(&mut self, set: TokenSet) -> bool {
+        set.contains(self.peek())
     }
 
     /// Check if a token lookahead is something, `n` must be smaller or equal to `4`
@@ -135,16 +168,13 @@ impl<'src, 'token> Parser<'src, 'token> {
         if self.eat(kind) {
             true
         } else {
-            let error = if self.current() == T![eof] {
+            let error = if self.current() == EOF {
                 Report::build(
                     ReportKind::Error,
                     self.file,
                     self.current_span().start() as usize,
                 )
-                .with_message(format!(
-                    "expected `{}` but instead the file ends",
-                    kind.to_string(),
-                ))
+                .with_message(format!("expected `{}` but instead the file ends", kind,))
                 .with_label(Label::new(self.current_span()).with_message("the file ends here"))
                 .finish()
             } else {
@@ -155,7 +185,7 @@ impl<'src, 'token> Parser<'src, 'token> {
                 )
                 .with_message(format!(
                     "expected `{}` but instead found `{}`",
-                    kind.to_string(),
+                    kind,
                     self.current_text()
                 ))
                 .with_label(Label::new(self.current_span()).with_message("unexpected"))
@@ -225,7 +255,7 @@ impl Marker {
                 kind,
                 preceded_by: None,
             } => {
-                *kind = SyntaxKind::Tombstone;
+                *kind = TOMBSTONE;
             }
 
             _ => unreachable!(),

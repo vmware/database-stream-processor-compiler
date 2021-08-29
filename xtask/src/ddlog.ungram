@@ -1,0 +1,72 @@
+Root = Item
+
+Item = FuncDef
+
+FuncDef = 'function' name:FuncName args:FuncArgs (':' Type)? Block
+FuncName = 'ident'
+FuncArgs = '(' FuncArg (',' FuncArg)* ','? ')'
+FuncArg = Pat ':' Type
+
+Type = 'ident'
+
+Block = '{' (Stmt ';'*)* '}'
+Stmt =
+    Expr ';'
+    | VarDecl
+    | IfStmt
+
+VarDecl = 'var' Pat '=' Expr ';'
+
+IfStmt = IfBlock ('else' IfBlock)* ElseBlock
+IfBlock = 'if' Expr Block
+ElseBlock = ('else' Block)?
+
+Pat = 'ident' | TuplePat
+TuplePat = '(' Pat (',' Pat)* ','? ')'
+
+Expr =
+    Literal
+    | VarRef
+    | Assign
+    | ParenExpr
+    | BinExpr
+    | IfStmt
+    | RetExpr
+    | UnaryExpr
+    | Block
+
+VarRef = 'ident'
+
+Assign = Pat '=' Expr
+
+ParenExpr = '(' Expr ')'
+
+// TODO: Floats
+Literal = 'bool' | 'number'
+
+RetExpr = 'return' Expr
+
+UnaryExpr = UnaryOp Expr
+UnaryOp = '!' | '-'
+
+BinExpr = Expr BinOp Expr
+BinOp =
+    '+'
+    | '-'
+    | '*'
+    | '/'
+    | '%'
+    | '=>'
+    | '|'
+    | '^'
+    | '&'
+    | '<<'
+    | '>>'
+    | 'and'
+    | 'or'
+    | '=='
+    | '!='
+    | '>'
+    | '>='
+    | '<'
+    | '<='

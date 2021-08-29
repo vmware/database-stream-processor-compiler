@@ -18,7 +18,7 @@ impl Event {
     #[inline]
     pub const fn tombstone() -> Self {
         Self::Enter {
-            kind: T![tombstone],
+            kind: SyntaxKind::TOMBSTONE,
             preceded_by: None,
         }
     }
@@ -28,7 +28,7 @@ impl Event {
         matches!(
             self,
             Self::Enter {
-                kind: T![tombstone],
+                kind: SyntaxKind::TOMBSTONE,
                 preceded_by: None,
             },
         )

@@ -62,6 +62,17 @@ impl Interner {
     pub fn try_get_or_intern_static(&self, val: &'static str) -> LassoResult<Spur> {
         self.0.try_get_or_intern_static(val)
     }
+
+    #[inline]
+    #[track_caller]
+    pub fn resolve(&self, key: Spur) -> &str {
+        self.0.resolve(&key)
+    }
+
+    #[inline]
+    pub fn try_resolve(&self, key: Spur) -> Option<&str> {
+        self.0.try_resolve(&key)
+    }
 }
 
 impl Default for Interner {

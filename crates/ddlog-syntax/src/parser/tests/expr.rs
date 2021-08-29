@@ -5,9 +5,9 @@ fn decimal_number() {
     check(
         "123",
         expect![[r#"
-            Root@0..3
-              Literal@0..3
-                Number@0..3 "123""#]],
+            ROOT@0..3
+              LITERAL@0..3
+                NUMBER@0..3 "123""#]],
     );
 }
 
@@ -16,9 +16,9 @@ fn hex_number() {
     check(
         "0xFFFF",
         expect![[r#"
-            Root@0..6
-              Literal@0..6
-                Number@0..6 "0xFFFF""#]],
+            ROOT@0..6
+              LITERAL@0..6
+                NUMBER@0..6 "0xFFFF""#]],
     );
 }
 
@@ -27,9 +27,9 @@ fn binary_number() {
     check(
         "0b010101",
         expect![[r#"
-            Root@0..8
-              Literal@0..8
-                Number@0..8 "0b010101""#]],
+            ROOT@0..8
+              LITERAL@0..8
+                NUMBER@0..8 "0b010101""#]],
     );
 }
 
@@ -38,9 +38,9 @@ fn ident() {
     check(
         "counter",
         expect![[r#"
-            Root@0..7
-              VarRef@0..7
-                Ident@0..7 "counter""#]],
+            ROOT@0..7
+              VAR_REF@0..7
+                IDENT@0..7 "counter""#]],
     );
 }
 
@@ -49,13 +49,14 @@ fn simple_binary_expression() {
     check(
         "1+2",
         expect![[r#"
-            Root@0..3
-              BinaryExpr@0..3
-                Literal@0..1
-                  Number@0..1 "1"
-                Plus@1..2 "+"
-                Literal@2..3
-                  Number@2..3 "2""#]],
+            ROOT@0..3
+              BIN_EXPR@0..3
+                LITERAL@0..1
+                  NUMBER@0..1 "1"
+                BIN_OP@1..2
+                  PLUS@1..2 "+"
+                LITERAL@2..3
+                  NUMBER@2..3 "2""#]],
     );
 }
 
@@ -64,21 +65,24 @@ fn left_associative_binary_expression() {
     check(
         "1+2+3+4",
         expect![[r#"
-            Root@0..7
-              BinaryExpr@0..7
-                BinaryExpr@0..5
-                  BinaryExpr@0..3
-                    Literal@0..1
-                      Number@0..1 "1"
-                    Plus@1..2 "+"
-                    Literal@2..3
-                      Number@2..3 "2"
-                  Plus@3..4 "+"
-                  Literal@4..5
-                    Number@4..5 "3"
-                Plus@5..6 "+"
-                Literal@6..7
-                  Number@6..7 "4""#]],
+            ROOT@0..7
+              BIN_EXPR@0..7
+                LITERAL@0..1
+                  NUMBER@0..1 "1"
+                BIN_OP@1..2
+                  PLUS@1..2 "+"
+                BIN_EXPR@2..7
+                  LITERAL@2..3
+                    NUMBER@2..3 "2"
+                  BIN_OP@3..4
+                    PLUS@3..4 "+"
+                  BIN_EXPR@4..7
+                    LITERAL@4..5
+                      NUMBER@4..5 "3"
+                    BIN_OP@5..6
+                      PLUS@5..6 "+"
+                    LITERAL@6..7
+                      NUMBER@6..7 "4""#]],
     );
 }
 
@@ -87,21 +91,24 @@ fn binary_expression_with_mixed_binding_power() {
     check(
         "1+2*3-4",
         expect![[r#"
-            Root@0..7
-              BinaryExpr@0..7
-                BinaryExpr@0..5
-                  Literal@0..1
-                    Number@0..1 "1"
-                  Plus@1..2 "+"
-                  BinaryExpr@2..5
-                    Literal@2..3
-                      Number@2..3 "2"
-                    Star@3..4 "*"
-                    Literal@4..5
-                      Number@4..5 "3"
-                Minus@5..6 "-"
-                Literal@6..7
-                  Number@6..7 "4""#]],
+            ROOT@0..7
+              BIN_EXPR@0..7
+                BIN_EXPR@0..5
+                  LITERAL@0..1
+                    NUMBER@0..1 "1"
+                  BIN_OP@1..2
+                    PLUS@1..2 "+"
+                  BIN_EXPR@2..5
+                    LITERAL@2..3
+                      NUMBER@2..3 "2"
+                    BIN_OP@3..4
+                      STAR@3..4 "*"
+                    LITERAL@4..5
+                      NUMBER@4..5 "3"
+                BIN_OP@5..6
+                  MINUS@5..6 "-"
+                LITERAL@6..7
+                  NUMBER@6..7 "4""#]],
     );
 }
 
@@ -110,11 +117,12 @@ fn negation() {
     check(
         "-10",
         expect![[r#"
-            Root@0..3
-              PrefixExpr@0..3
-                Minus@0..1 "-"
-                Literal@1..3
-                  Number@1..3 "10""#]],
+            ROOT@0..3
+              UNARY_EXPR@0..3
+                UNARY_OP@0..1
+                  MINUS@0..1 "-"
+                LITERAL@1..3
+                  NUMBER@1..3 "10""#]],
     );
 }
 
@@ -123,15 +131,17 @@ fn negation_has_higher_binding_power_than_infix() {
     check(
         "-20+20",
         expect![[r#"
-            Root@0..6
-              BinaryExpr@0..6
-                PrefixExpr@0..3
-                  Minus@0..1 "-"
-                  Literal@1..3
-                    Number@1..3 "20"
-                Plus@3..4 "+"
-                Literal@4..6
-                  Number@4..6 "20""#]],
+            ROOT@0..6
+              UNARY_EXPR@0..6
+                UNARY_OP@0..1
+                  MINUS@0..1 "-"
+                BIN_EXPR@1..6
+                  LITERAL@1..3
+                    NUMBER@1..3 "20"
+                  BIN_OP@3..4
+                    PLUS@3..4 "+"
+                  LITERAL@4..6
+                    NUMBER@4..6 "20""#]],
     );
 }
 
@@ -140,27 +150,27 @@ fn nested_parentheses() {
     check(
         "((((((10))))))",
         expect![[r#"
-            Root@0..14
-              ParenExpr@0..14
-                LParen@0..1 "("
-                ParenExpr@1..13
-                  LParen@1..2 "("
-                  ParenExpr@2..12
-                    LParen@2..3 "("
-                    ParenExpr@3..11
-                      LParen@3..4 "("
-                      ParenExpr@4..10
-                        LParen@4..5 "("
-                        ParenExpr@5..9
-                          LParen@5..6 "("
-                          Literal@6..8
-                            Number@6..8 "10"
-                          RParen@8..9 ")"
-                        RParen@9..10 ")"
-                      RParen@10..11 ")"
-                    RParen@11..12 ")"
-                  RParen@12..13 ")"
-                RParen@13..14 ")""#]],
+            ROOT@0..14
+              PAREN_EXPR@0..14
+                L_PAREN@0..1 "("
+                PAREN_EXPR@1..13
+                  L_PAREN@1..2 "("
+                  PAREN_EXPR@2..12
+                    L_PAREN@2..3 "("
+                    PAREN_EXPR@3..11
+                      L_PAREN@3..4 "("
+                      PAREN_EXPR@4..10
+                        L_PAREN@4..5 "("
+                        PAREN_EXPR@5..9
+                          L_PAREN@5..6 "("
+                          LITERAL@6..8
+                            NUMBER@6..8 "10"
+                          R_PAREN@8..9 ")"
+                        R_PAREN@9..10 ")"
+                      R_PAREN@10..11 ")"
+                    R_PAREN@11..12 ")"
+                  R_PAREN@12..13 ")"
+                R_PAREN@13..14 ")""#]],
     );
 }
 
@@ -169,19 +179,21 @@ fn parentheses_affect_precedence() {
     check(
         "5*(2+1)",
         expect![[r#"
-            Root@0..7
-              BinaryExpr@0..7
-                Literal@0..1
-                  Number@0..1 "5"
-                Star@1..2 "*"
-                ParenExpr@2..7
-                  LParen@2..3 "("
-                  BinaryExpr@3..6
-                    Literal@3..4
-                      Number@3..4 "2"
-                    Plus@4..5 "+"
-                    Literal@5..6
-                      Number@5..6 "1"
-                  RParen@6..7 ")""#]],
+            ROOT@0..7
+              BIN_EXPR@0..7
+                LITERAL@0..1
+                  NUMBER@0..1 "5"
+                BIN_OP@1..2
+                  STAR@1..2 "*"
+                PAREN_EXPR@2..7
+                  L_PAREN@2..3 "("
+                  BIN_EXPR@3..6
+                    LITERAL@3..4
+                      NUMBER@3..4 "2"
+                    BIN_OP@4..5
+                      PLUS@4..5 "+"
+                    LITERAL@5..6
+                      NUMBER@5..6 "1"
+                  R_PAREN@6..7 ")""#]],
     );
 }

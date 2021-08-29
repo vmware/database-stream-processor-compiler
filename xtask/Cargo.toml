@@ -5,7 +5,9 @@ edition = "2018"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
+heck = "0.3.3"
 quote = "1.0.9"
 anyhow = "1.0.43"
+gumdrop = "0.8.0"
 ungrammar = "1.14.4"
 proc-macro2 = "1.0.28"
