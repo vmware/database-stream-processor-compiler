@@ -3,6 +3,16 @@ use lasso::{Capacity, LassoResult, Spur, ThreadedRodeo};
 use std::{mem::size_of, num::NonZeroUsize};
 use triomphe::Arc;
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[repr(transparent)]
+pub struct IStr(Spur);
+
+impl IStr {
+    pub(crate) const fn new(spur: Spur) -> Self {
+        Self(spur)
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct Interner(Arc<ThreadedRodeo<Spur, ConsistentHasher>>);
@@ -43,35 +53,45 @@ impl Interner {
 
     #[inline]
     #[track_caller]
-    pub fn get_or_intern(&self, val: &str) -> Spur {
-        self.0.get_or_intern(val)
+    pub fn get_or_intern(&self, val: &str) -> IStr {
+        IStr::new(self.0.get_or_intern(val))
     }
 
     #[inline]
-    pub fn try_get_or_intern(&self, val: &str) -> LassoResult<Spur> {
-        self.0.try_get_or_intern(val)
-    }
-
-    #[inline]
-    #[track_caller]
-    pub fn get_or_intern_static(&self, val: &'static str) -> Spur {
-        self.0.get_or_intern_static(val)
-    }
-
-    #[inline]
-    pub fn try_get_or_intern_static(&self, val: &'static str) -> LassoResult<Spur> {
-        self.0.try_get_or_intern_static(val)
+    pub fn try_get_or_intern(&self, val: &str) -> LassoResult<IStr> {
+        self.0.try_get_or_intern(val).map(IStr::new)
     }
 
     #[inline]
     #[track_caller]
-    pub fn resolve(&self, key: Spur) -> &str {
-        self.0.resolve(&key)
+    pub fn get_or_intern_static(&self, val: &'static str) -> IStr {
+        IStr::new(self.0.get_or_intern_static(val))
     }
 
     #[inline]
-    pub fn try_resolve(&self, key: Spur) -> Option<&str> {
-        self.0.try_resolve(&key)
+    pub fn try_get_or_intern_static(&self, val: &'static str) -> LassoResult<IStr> {
+        self.0.try_get_or_intern_static(val).map(IStr::new)
+    }
+
+    #[inline]
+    pub fn get(&self, val: &str) -> Option<IStr> {
+        self.0.get(val).map(IStr::new)
+    }
+
+    #[inline]
+    pub fn contains(&self, val: &str) -> bool {
+        self.0.contains(val)
+    }
+
+    #[inline]
+    #[track_caller]
+    pub fn resolve(&self, key: IStr) -> &str {
+        self.0.resolve(&key.0)
+    }
+
+    #[inline]
+    pub fn try_resolve(&self, key: IStr) -> Option<&str> {
+        self.0.try_resolve(&key.0)
     }
 }
 
@@ -82,6 +102,7 @@ impl Default for Interner {
     }
 }
 
+#[doc(hidden)]
 impl lasso::Interner<Spur> for Interner {
     #[inline]
     #[track_caller]
@@ -106,6 +127,7 @@ impl lasso::Interner<Spur> for Interner {
     }
 }
 
+#[doc(hidden)]
 impl lasso::Reader<Spur> for Interner {
     #[inline]
     fn get(&self, val: &str) -> Option<Spur> {
@@ -118,6 +140,7 @@ impl lasso::Reader<Spur> for Interner {
     }
 }
 
+#[doc(hidden)]
 impl lasso::Resolver<Spur> for Interner {
     #[inline]
     #[track_caller]

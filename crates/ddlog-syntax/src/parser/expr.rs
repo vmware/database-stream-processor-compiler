@@ -1,12 +1,18 @@
 use crate::{
     parser::{CompletedMarker, Parser},
     SyntaxKind::{
-        self, BIN_EXPR, BIN_OP, BLOCK, EOF, IDENT, LITERAL, NUMBER, PAREN_EXPR, UNARY_EXPR,
+        self, BIN_EXPR, BIN_OP, BLOCK, BOOL, EOF, IDENT, LITERAL, NUMBER, PAREN_EXPR, UNARY_EXPR,
         UNARY_OP, VAR_REF,
     },
     TokenSet,
 };
-use ariadne::{Label, Report, ReportKind};
+use ddlog_diagnostics::{Diagnostic, Label};
+
+pub(super) const EXPR_RECOVERY_SET: TokenSet = token_set! {
+    T![')'],
+    T!['}'],
+    T![;],
+};
 
 impl Parser<'_, '_> {
     #[must_use]
@@ -22,25 +28,25 @@ impl Parser<'_, '_> {
     #[must_use]
     fn expr_inner(&mut self, mut current_precedence: u8) -> Option<CompletedMarker> {
         let mut lhs = match self.peek() {
-            // Identifiers are atomic
-            IDENT => {
+            // Identifiers
+            ident @ IDENT => {
                 let marker = self.start();
-                self.bump();
+                self.expect(ident);
 
                 marker.complete(self, VAR_REF)
             }
 
-            // Numbers are atomic
-            NUMBER => {
+            // Literals
+            literal @ (NUMBER | BOOL) => {
                 let marker = self.start();
-                self.bump();
+                self.expect(literal);
 
                 marker.complete(self, LITERAL)
             }
 
             // Negation
-            operand @ (T![-] | T![!]) => {
-                let precedence = match unary_precedence(operand) {
+            operator @ (T![-] | T![!]) => {
+                let precedence = match unary_precedence(operator) {
                     Some(operand) => operand,
                     None => unreachable!(),
                 };
@@ -49,29 +55,38 @@ impl Parser<'_, '_> {
 
                 // Eat the operator’s token.
                 let operand = self.start();
-                self.bump();
+                self.expect(operator);
                 operand.complete(self, UNARY_OP);
 
-                self.expr_inner(precedence);
-                marker.complete(self, UNARY_EXPR)
+                let expr_invalid = self.expr_inner(precedence).is_none();
+
+                let complete = marker.complete(self, UNARY_EXPR);
+                if expr_invalid {
+                    return None;
+                }
+
+                complete
             }
 
             // Parentheses
             T!['('] => {
                 let marker = self.start();
 
-                // Eat the `(`
-                self.bump();
-                self.expr();
+                self.expect(T!['(']);
+                let expr_invalid = self.expr().is_none();
+                self.expect(T![')']);
 
-                // TODO: Error handling
-                assert_eq!(self.peek(), T![')']);
-                self.bump();
+                let complete = marker.complete(self, PAREN_EXPR);
+                if expr_invalid {
+                    return None;
+                }
 
-                marker.complete(self, PAREN_EXPR)
+                complete
             }
 
-            // TODO: Error handling
+            // Blocks
+            T!['{'] => self.block(token_set! { T!['}'] })?,
+
             _ => return None,
         };
 
@@ -80,7 +95,23 @@ impl Parser<'_, '_> {
             let precedence = match infix_precedence(self.peek()) {
                 Some(operand) => operand,
                 // TODO: Error handling
-                None => return None,
+                None => {
+                    // let error = Diagnostic::error()
+                    //     .with_message("expected an infix expression")
+                    //     .with_label(Label::primary(self.current_span()).with_message(format!(
+                    //         "expected an infix operator, got '{}'",
+                    //         self.current_text(),
+                    //     )));
+                    //
+                    // let current_set = self.recovery_set;
+                    // self.recovery_set = current_set.union(EXPR_RECOVERY_SET);
+                    // self.error(error);
+                    // self.recovery_set = current_set;
+
+                    // Return a precedence level of zero as a dummy
+                    // infix operand
+                    break;
+                }
             };
 
             if precedence < current_precedence {
@@ -94,8 +125,12 @@ impl Parser<'_, '_> {
             operand.complete(self, BIN_OP);
 
             let marker = lhs.precede(self);
-            self.expr_inner(current_precedence);
+            let rhs_invalid = self.expr_inner(current_precedence).is_none();
             lhs = marker.complete(self, BIN_EXPR);
+
+            if rhs_invalid {
+                break;
+            }
         }
 
         Some(lhs)
@@ -108,14 +143,11 @@ impl Parser<'_, '_> {
             IDENT => self.bump(),
 
             _ => {
-                let error = Report::build(
-                    ReportKind::Error,
-                    self.file,
-                    self.current_span().start() as usize,
-                )
-                .with_message("Expected an identifier")
-                .with_label(Label::new(self.current_span()).with_message("Expected an identifier"))
-                .finish();
+                let error = Diagnostic::error()
+                    .with_message("expected an identifier")
+                    .with_label(
+                        Label::primary(self.current_span()).with_message("expected an identifier"),
+                    );
                 self.error(error);
 
                 marker.abandon(self);
@@ -134,15 +166,23 @@ impl Parser<'_, '_> {
         self.expect(T!['{']);
 
         // FIXME: Statements, not expressions
-        while !self.at(T!['}']) {
-            self.expr();
+        let mut did_error = false;
+        while !self.at(T!['}']) && !self.at_end() {
+            if self.expr().is_none() {
+                did_error = true;
+            }
         }
 
         self.expect(T!['}']);
         let marker = block.complete(self, BLOCK);
 
         self.recovery_set = previous;
-        Some(marker)
+
+        if did_error {
+            None
+        } else {
+            Some(marker)
+        }
     }
 }
 

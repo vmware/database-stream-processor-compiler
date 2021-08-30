@@ -31,6 +31,10 @@ impl TokenSet {
         self.0
     }
 
+    pub const fn add(self, kind: SyntaxKind) -> Self {
+        Self(self.raw() | mask(kind))
+    }
+
     /// Combine two token sets together
     pub const fn union(self, other: Self) -> Self {
         Self(self.raw() | other.raw())

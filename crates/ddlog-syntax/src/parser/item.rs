@@ -1,9 +1,9 @@
 use crate::{
-    parser::{CompletedMarker, Marker, Parser},
+    parser::{CompletedMarker, Parser},
     SyntaxKind::{FUNC_ARGS, FUNC_DEF, FUNC_NAME, ITEM},
     TokenSet,
 };
-use ariadne::{Label, Report, ReportKind};
+use ddlog_diagnostics::{Diagnostic, Label};
 
 // TODO: Error recovery
 // TODO: Attributes
@@ -13,9 +13,9 @@ const ITEM_RECOVERY_SET: TokenSet = token_set! {
     T![function],
     // T![extern],
     // T![typedef],
-    // T![input],
-    // T![output],
-    // T![relation],
+    T![input],
+    T![output],
+    T![relation],
 };
 
 impl Parser<'_, '_> {
@@ -25,7 +25,8 @@ impl Parser<'_, '_> {
         }
     }
 
-    fn item(&mut self) {
+    #[must_use]
+    fn item(&mut self) -> Option<CompletedMarker> {
         let marker = self.start();
 
         match self.peek() {
@@ -37,27 +38,32 @@ impl Parser<'_, '_> {
 
             // TODO: Errors
             _ => {
-                let error = Report::build(
-                    ReportKind::Error,
-                    self.file,
-                    self.current_span().start() as usize,
-                )
-                .with_message("expected a top-level item")
-                .with_label(Label::new(self.current_span()).with_message("instead got this"))
-                .finish();
+                let error = Diagnostic::error()
+                    .with_message("expected a top-level item")
+                    .with_label(
+                        Label::primary(self.current_span())
+                            .with_message("expected a top-level item"),
+                    );
 
                 self.error(error);
+
+                marker.abandon(self);
+                return None;
             }
         }
 
-        marker.complete(self, ITEM);
+        Some(marker.complete(self, ITEM))
     }
 
     fn function_def(&mut self) -> CompletedMarker {
         let marker = self.start();
 
         self.expect(T![function]);
+
+        let current_set = self.recovery_set;
+        self.recovery_set = current_set.add(T!['(']);
         self.identifier(FUNC_NAME);
+        self.recovery_set = current_set;
 
         let args = self.start();
         self.expect(T!['(']);

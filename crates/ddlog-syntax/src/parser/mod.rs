@@ -6,12 +6,12 @@ pub(crate) mod source;
 mod tests;
 
 use crate::{
-    parser::{event::Event, source::Source},
-    FileId, Span,
+    parser::{event::Event, expr::EXPR_RECOVERY_SET, source::Source},
+    Span,
     SyntaxKind::{self, EOF, ERROR, ROOT, TOMBSTONE},
     Token, TokenSet,
 };
-use ariadne::{Label, Report, ReportKind};
+use ddlog_diagnostics::{Diagnostic, Label};
 use std::{num::NonZeroUsize, thread};
 
 // FIXME: Add recursion checks
@@ -19,8 +19,8 @@ pub(crate) struct Parser<'src, 'token> {
     // TODO: Factor into `TokenSource` abstraction
     source: Source<'src, 'token>,
     events: Vec<Event>,
-    errors: Vec<Report<Span>>,
-    file: FileId,
+    // TODO: Create an error sink
+    errors: Vec<Diagnostic>,
     recovery_set: TokenSet,
 }
 
@@ -30,24 +30,35 @@ impl<'src, 'token> Parser<'src, 'token> {
             source: Source::new(tokens, end_of_file),
             events: Vec::with_capacity(1024),
             errors: Vec::new(),
-            file: end_of_file.file(),
             recovery_set: TokenSet::empty(),
         }
     }
 
-    pub(crate) fn parse(mut self) -> (Vec<Event>, Vec<Report<Span>>) {
+    pub(crate) fn parse(mut self) -> (Vec<Event>, Vec<Diagnostic>) {
         self.root();
 
         (self.events, self.errors)
     }
 
-    pub(crate) fn parse_expr(mut self) -> (Vec<Event>, Vec<Report<Span>>) {
+    pub(crate) fn parse_expr(mut self) -> (Vec<Event>, Vec<Diagnostic>) {
         let marker = self.start();
         while !self.at_end() {
-            self.expr();
-        }
-        marker.complete(&mut self, ROOT);
+            if self.expr().is_none() {
+                let error = Diagnostic::error()
+                    .with_message("expected an expression")
+                    .with_label(Label::primary(self.current_span()).with_message(format!(
+                        "expected an ident, literal, '-', '!', '(' or '{{', got '{}'",
+                        self.current_text(),
+                    )));
 
+                let current_set = self.recovery_set;
+                self.recovery_set = current_set.union(EXPR_RECOVERY_SET);
+                self.error(error);
+                self.recovery_set = current_set;
+            }
+        }
+
+        marker.complete(&mut self, ROOT);
         (self.events, self.errors)
     }
 }
@@ -96,7 +107,7 @@ impl<'src, 'token> Parser<'src, 'token> {
         self.events.push(event);
     }
 
-    fn error(&mut self, error: Report<Span>) {
+    fn error(&mut self, error: Diagnostic) {
         if !self.at_set(self.recovery_set) && !self.at_end() {
             let marker = self.start();
             self.bump();
@@ -111,27 +122,27 @@ impl<'src, 'token> Parser<'src, 'token> {
     }
 
     /// Get the current token kind of the parser
-    fn current(&self) -> SyntaxKind {
+    fn current(&mut self) -> SyntaxKind {
         self.nth(0)
     }
 
     /// Get the current token of the parser
-    fn current_token(&self) -> Token {
+    fn current_token(&mut self) -> Token<'src> {
         self.nth_token(0)
     }
 
     /// Get the current span of the parser
-    fn current_span(&self) -> Span {
-        self.nth_token(0).span()
+    fn current_span(&mut self) -> Span {
+        self.current_token().span()
     }
 
     /// Get the current text of the parser
-    fn current_text(&self) -> &'src str {
-        self.nth_token(0).text()
+    fn current_text(&mut self) -> &'src str {
+        self.current_token().text()
     }
 
     /// Check if the parser is currently at a specific token
-    fn at(&self, kind: SyntaxKind) -> bool {
+    fn at(&mut self, kind: SyntaxKind) -> bool {
         self.nth_at(0, kind)
     }
 
@@ -140,16 +151,16 @@ impl<'src, 'token> Parser<'src, 'token> {
     }
 
     /// Check if a token lookahead is something, `n` must be smaller or equal to `4`
-    fn nth_at(&self, n: usize, kind: SyntaxKind) -> bool {
+    fn nth_at(&mut self, n: usize, kind: SyntaxKind) -> bool {
         self.source.peek_nth(n).kind() == kind
     }
 
     /// Look ahead at a token and get its kind, **The max lookahead is 4**.  
-    fn nth(&self, n: usize) -> SyntaxKind {
+    fn nth(&mut self, n: usize) -> SyntaxKind {
         self.source.peek_nth(n).kind()
     }
 
-    fn nth_token(&self, n: usize) -> Token<'src> {
+    fn nth_token(&mut self, n: usize) -> Token<'src> {
         self.source.peek_nth(n)
     }
 
@@ -169,27 +180,21 @@ impl<'src, 'token> Parser<'src, 'token> {
             true
         } else {
             let error = if self.current() == EOF {
-                Report::build(
-                    ReportKind::Error,
-                    self.file,
-                    self.current_span().start() as usize,
-                )
-                .with_message(format!("expected `{}` but instead the file ends", kind,))
-                .with_label(Label::new(self.current_span()).with_message("the file ends here"))
-                .finish()
+                Diagnostic::error()
+                    .with_message(format!("expected '{}' but instead the file ends", kind))
+                    .with_label(
+                        Label::primary(self.current_span()).with_message("the file ends here"),
+                    )
             } else {
-                Report::build(
-                    ReportKind::Error,
-                    self.file,
-                    self.current_span().start() as usize,
-                )
-                .with_message(format!(
-                    "expected `{}` but instead found `{}`",
-                    kind,
-                    self.current_text()
-                ))
-                .with_label(Label::new(self.current_span()).with_message("unexpected"))
-                .finish()
+                Diagnostic::error()
+                    .with_message(format!(
+                        "expected '{}' but instead found '{:?}'",
+                        kind,
+                        self.current_text(),
+                    ))
+                    .with_label(
+                        Label::primary(self.current_span()).with_message("unexpected token"),
+                    )
             };
             self.error(error);
 

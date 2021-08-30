@@ -1,10 +1,15 @@
 Root = Item
 
-Item = FuncDef
+Item = FuncDef | RelationDef
+
+RelationDef = ('input' | 'output')? 'relation' RelName RelCols
+RelName = 'ident'
+RelCols = '(' (RelCol (',' FuncArg)* ','?)? ')'
+RelCol = Pat ':' Type
 
 FuncDef = 'function' name:FuncName args:FuncArgs (':' Type)? Block
 FuncName = 'ident'
-FuncArgs = '(' FuncArg (',' FuncArg)* ','? ')'
+FuncArgs = '(' (FuncArg (',' FuncArg)* ','?)? ')'
 FuncArg = Pat ':' Type
 
 Type = 'ident'

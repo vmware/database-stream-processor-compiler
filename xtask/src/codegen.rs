@@ -9,7 +9,7 @@ use ungrammar::Grammar;
 const GRAMMAR: &str = include_str!("ddlog.ungram");
 const TARGET_PATH: &str = concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/../ddlog-syntax/src/syntax_kind/generated.rs",
+    "/../crates/ddlog-syntax/src/syntax_kind/generated.rs",
 );
 const EXTRA_TOKENS: &[&str] = &["comment", "whitespace", "eof", "tombstone"];
 
@@ -381,18 +381,28 @@ fn token_display(data: &str) -> TokenStream {
         quote! {
             ::core::fmt::Formatter::write_str(f, #data)
         }
-    } else {
-        let name = data.to_shouty_snake_case();
+    } else if NAMED_TOKENS
+        .iter()
+        .any(|&(named_token, _)| named_token == data)
+    {
+        if data.chars().count() == 1 {
+            let name = data
+                .chars()
+                .next()
+                .expect("there's exactly one char in the string");
 
-        if name.chars().count() == 1 {
-            let name = name.chars().next().unwrap();
             quote! {
                 <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, #name)
             }
         } else {
             quote! {
-                ::core::fmt::Formatter::write_str(f, #name)
+                ::core::fmt::Formatter::write_str(f, #data)
             }
+        }
+    } else {
+        let name = data.to_shouty_snake_case();
+        quote! {
+            ::core::fmt::Formatter::write_str(f, #name)
         }
     };
 

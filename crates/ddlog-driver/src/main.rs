@@ -1,8 +1,27 @@
-use ddlog_syntax::{FileId, Interner, NodeCache};
-use std::{
-    collections::HashMap,
-    io::{self, Write},
-};
+/*
+use ddlog_lsp::{Backend, Session};
+use ddlog_syntax::Interner;
+use lspower::{LspService, Server};
+use tokio::io;
+use triomphe::Arc;
+
+#[tokio::main]
+async fn main() {
+    let (stdin, stdout) = (io::stdin(), io::stdout());
+
+    let session = Arc::new(Session::new(Interner::new()));
+    let (service, messages) = LspService::new(|client| Backend::new(client, session));
+
+    Server::new(stdin, stdout)
+        .interleave(messages)
+        .serve(service)
+        .await;
+}
+*/
+
+use ddlog_diagnostics::{FileCache, FileId, Interner};
+use ddlog_syntax::NodeCache;
+use std::io::{self, Write};
 
 const EXPR_HEADER: &str = ":expr ";
 const ITEM_HEADER: &str = ":item ";
@@ -18,14 +37,15 @@ COMMANDS:
 ";
 
 fn main() -> io::Result<()> {
-    let stdin = io::stdin();
-    let mut stdout = io::stdout();
-
+    let (stdin, mut stdout) = (io::stdin(), io::stdout());
     let mut input = String::new();
 
     let interner = Interner::new();
+
     let mut cache_interner = interner.clone();
     let mut cache = NodeCache::with_interner(&mut cache_interner);
+
+    let mut file_cache = FileCache::new(interner.clone());
     let file = FileId::new(interner.get_or_intern_static("repl/input.dl"));
 
     loop {
@@ -34,21 +54,21 @@ fn main() -> io::Result<()> {
 
         stdin.read_line(&mut input)?;
 
-        let trimmed = input.trim();
-        if trimmed == ":exit" {
+        input = input.trim().to_owned();
+        if input == ":exit" {
             println!("exiting...");
             break;
-        } else if trimmed == ":help" {
+        } else if input == ":help" {
             println!("{}", HELP.trim());
             input.clear();
             continue;
         }
 
-        let (root, errors) = if trimmed.starts_with(EXPR_HEADER) {
+        let (root, errors) = if input.starts_with(EXPR_HEADER) {
             input.replace_range(..EXPR_HEADER.len(), "");
             ddlog_syntax::parse_expr(file, &input, &mut cache)
         } else {
-            if trimmed.starts_with(ITEM_HEADER) {
+            if input.starts_with(ITEM_HEADER) {
                 input.replace_range(..ITEM_HEADER.len(), "");
             }
 
@@ -57,28 +77,15 @@ fn main() -> io::Result<()> {
 
         println!("{}", root.debug(&interner, true));
         if !errors.is_empty() {
-            struct FileCache(ariadne::Source, Interner);
+            file_cache.add_str(file, &input);
 
-            impl ariadne::Cache<FileId> for FileCache {
-                fn fetch(
-                    &mut self,
-                    _id: &FileId,
-                ) -> Result<&ariadne::Source, Box<dyn std::fmt::Debug + '_>> {
-                    Ok(&self.0)
-                }
-
-                fn display<'a>(&self, &id: &'a FileId) -> Option<Box<dyn std::fmt::Display + 'a>> {
-                    Some(Box::new(self.1.resolve(id.file_name()).to_owned()))
-                }
-            }
-
-            let mut file_cache = FileCache(ariadne::Source::from(input.clone()), interner.clone());
             for error in errors {
-                error.eprint(&mut file_cache).unwrap();
+                error.emit_to(&mut file_cache, &mut stdout).unwrap();
             }
         }
 
         input.clear();
+        file_cache.clear();
     }
 
     Ok(())

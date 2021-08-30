@@ -33,21 +33,17 @@ impl<'src, 'token> Source<'src, 'token> {
         self.peek_kind_raw().unwrap_or(EOF)
     }
 
-    pub(super) fn peek_nth(&self, n: usize) -> Token<'src> {
+    pub(super) fn peek_nth(&mut self, n: usize) -> Token<'src> {
         debug_assert!(n <= 4);
-
-        let mut idx = self.cursor + n;
-        while self.tokens.get(idx).map(Token::kind) == Some(WHITESPACE) {
-            idx += 1;
-        }
+        self.eat_whitespace();
 
         self.tokens
-            .get(idx)
+            .get(self.cursor + n)
             .copied()
             .unwrap_or_else(|| Token::new(EOF, self.end_of_file, ""))
     }
 
-    fn peek_kind_raw(&self) -> Option<SyntaxKind> {
+    fn peek_kind_raw(&mut self) -> Option<SyntaxKind> {
         self.tokens.get(self.cursor).map(Token::kind)
     }
 
