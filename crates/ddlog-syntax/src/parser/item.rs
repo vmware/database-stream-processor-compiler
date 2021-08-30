@@ -8,7 +8,7 @@ use ddlog_diagnostics::{Diagnostic, Label};
 // TODO: Error recovery
 // TODO: Attributes
 
-const ITEM_RECOVERY_SET: TokenSet = token_set! {
+const ITEM_RECOVERY: TokenSet = token_set! {
     T!['}'],
     T![function],
     // T![extern],
@@ -20,12 +20,16 @@ const ITEM_RECOVERY_SET: TokenSet = token_set! {
 
 impl Parser<'_, '_> {
     pub(crate) fn items(&mut self) {
+        let current_set = self.recovery_set;
+        self.recovery_set = current_set.union(ITEM_RECOVERY);
+
         while !self.at_end() {
             self.item();
         }
+
+        self.recovery_set = current_set;
     }
 
-    #[must_use]
     fn item(&mut self) -> Option<CompletedMarker> {
         let marker = self.start();
 
@@ -38,14 +42,16 @@ impl Parser<'_, '_> {
 
             // TODO: Errors
             _ => {
+                let error_start = self.current_span();
+                let error_end = self.error_eat_until(ITEM_RECOVERY);
+                let error_span = error_start.merge(error_end);
+
                 let error = Diagnostic::error()
                     .with_message("expected a top-level item")
                     .with_label(
-                        Label::primary(self.current_span())
-                            .with_message("expected a top-level item"),
+                        Label::primary(error_span).with_message("expected a top-level item"),
                     );
-
-                self.error(error);
+                self.push_error(error);
 
                 marker.abandon(self);
                 return None;
@@ -55,7 +61,7 @@ impl Parser<'_, '_> {
         Some(marker.complete(self, ITEM))
     }
 
-    fn function_def(&mut self) -> CompletedMarker {
+    fn function_def(&mut self) -> Option<CompletedMarker> {
         let marker = self.start();
 
         self.expect(T![function]);
@@ -66,8 +72,14 @@ impl Parser<'_, '_> {
         self.recovery_set = current_set;
 
         let args = self.start();
-        self.expect(T!['(']);
-        // Params
+        if !self.expect(T!['(']) {
+            args.abandon(self);
+            marker.complete(self, FUNC_DEF);
+
+            return None;
+        }
+
+        // TODO: Params
         self.expect(T![')']);
         args.complete(self, FUNC_ARGS);
 
@@ -76,8 +88,8 @@ impl Parser<'_, '_> {
             self.expect(T![:]);
         }
 
-        self.block(ITEM_RECOVERY_SET);
+        self.block(ITEM_RECOVERY);
 
-        marker.complete(self, FUNC_DEF)
+        Some(marker.complete(self, FUNC_DEF))
     }
 }

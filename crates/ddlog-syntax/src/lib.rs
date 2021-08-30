@@ -27,13 +27,8 @@ pub fn parse(
     source: &str,
     cache: &mut NodeCache<'_>,
 ) -> (SyntaxNode, Vec<Diagnostic>) {
-    let span = Span::new(
-        source.len().saturating_sub(1) as u32,
-        source.len() as u32,
-        file,
-    );
-
     let tokens: Vec<_> = Lexer::new(source, file).collect();
+    let span = Span::single(source.len() as u32, file);
     let (events, errors) = Parser::new(&tokens, span).parse();
     let root = Sink::new(source, tokens, events, cache).finish();
 
@@ -45,13 +40,8 @@ pub fn parse_expr(
     source: &str,
     cache: &mut NodeCache<'_>,
 ) -> (SyntaxNode, Vec<Diagnostic>) {
-    let span = Span::new(
-        source.len().saturating_sub(1) as u32,
-        source.len() as u32,
-        file,
-    );
-
     let tokens: Vec<_> = Lexer::new(source, file).collect();
+    let span = Span::single(source.len() as u32, file);
     let (events, errors) = Parser::new(&tokens, span).parse_expr();
     let root = Sink::new(source, tokens, events, cache).finish();
 

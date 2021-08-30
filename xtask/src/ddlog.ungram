@@ -47,7 +47,8 @@ Assign = Pat '=' Expr
 ParenExpr = '(' Expr ')'
 
 // TODO: Floats
-Literal = 'bool' | 'number'
+Literal = Bool | 'number'
+Bool = 'true' | 'false'
 
 RetExpr = 'return' Expr
 

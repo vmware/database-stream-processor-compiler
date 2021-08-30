@@ -28,6 +28,10 @@ impl<'src, 'token> Source<'src, 'token> {
         Some(token)
     }
 
+    pub(super) const fn end_of_file(&self) -> Span {
+        self.end_of_file
+    }
+
     pub(super) fn peek_kind(&mut self) -> SyntaxKind {
         self.eat_whitespace();
         self.peek_kind_raw().unwrap_or(EOF)

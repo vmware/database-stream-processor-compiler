@@ -310,7 +310,7 @@ const NAMED_TOKENS: &[(&str, &str)] = &[
 
 const KEYWORDS: &[&str] = &[
     "function", "var", "match", "input", "output", "relation", "typedef", "for", "while", "loop",
-    "apply", "extern", "and", "or", "if", "else", "return", "break",
+    "apply", "extern", "and", "or", "if", "else", "return", "break", "true", "false",
 ];
 
 const TOKEN_LOGOS: &[(&str, &[&str])] = &[

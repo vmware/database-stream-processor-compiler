@@ -1,12 +1,19 @@
 use crate::{
     parser::{CompletedMarker, Parser},
     SyntaxKind::{
-        self, BIN_EXPR, BIN_OP, BLOCK, BOOL, EOF, IDENT, LITERAL, NUMBER, PAREN_EXPR, UNARY_EXPR,
+        self, BIN_EXPR, BIN_OP, BLOCK, EOF, IDENT, LITERAL, NUMBER, PAREN_EXPR, UNARY_EXPR,
         UNARY_OP, VAR_REF,
     },
     TokenSet,
 };
 use ddlog_diagnostics::{Diagnostic, Label};
+
+const LITERAL_TOKENS: TokenSet = token_set! {
+    T![true],
+    T![false],
+    NUMBER,
+    // TODO: Floats, strings
+};
 
 pub(super) const EXPR_RECOVERY_SET: TokenSet = token_set! {
     T![')'],
@@ -28,47 +35,12 @@ impl Parser<'_, '_> {
     #[must_use]
     fn expr_inner(&mut self, mut current_precedence: u8) -> Option<CompletedMarker> {
         let mut lhs = match self.peek() {
-            // Identifiers
-            ident @ IDENT => {
-                let marker = self.start();
-                self.expect(ident);
+            IDENT => self.identifier(VAR_REF).unwrap(),
 
-                marker.complete(self, VAR_REF)
-            }
+            NUMBER | T![true] | T![false] => self.literal().unwrap(),
 
-            // Literals
-            literal @ (NUMBER | BOOL) => {
-                let marker = self.start();
-                self.expect(literal);
+            operator @ (T![-] | T![!]) => self.unary_expr(operator)?,
 
-                marker.complete(self, LITERAL)
-            }
-
-            // Negation
-            operator @ (T![-] | T![!]) => {
-                let precedence = match unary_precedence(operator) {
-                    Some(operand) => operand,
-                    None => unreachable!(),
-                };
-
-                let marker = self.start();
-
-                // Eat the operator’s token.
-                let operand = self.start();
-                self.expect(operator);
-                operand.complete(self, UNARY_OP);
-
-                let expr_invalid = self.expr_inner(precedence).is_none();
-
-                let complete = marker.complete(self, UNARY_EXPR);
-                if expr_invalid {
-                    return None;
-                }
-
-                complete
-            }
-
-            // Parentheses
             T!['('] => {
                 let marker = self.start();
 
@@ -84,7 +56,6 @@ impl Parser<'_, '_> {
                 complete
             }
 
-            // Blocks
             T!['{'] => self.block(token_set! { T!['}'] })?,
 
             _ => return None,
@@ -136,6 +107,39 @@ impl Parser<'_, '_> {
         Some(lhs)
     }
 
+    fn unary_expr(&mut self, operator: SyntaxKind) -> Option<CompletedMarker> {
+        let precedence = match unary_precedence(operator) {
+            Some(operand) => operand,
+            None => unreachable!(),
+        };
+
+        let marker = self.start();
+
+        // Eat the operator’s token.
+        let operand = self.start();
+        self.expect(operator);
+        operand.complete(self, UNARY_OP);
+
+        let expr_invalid = self.expr_inner(precedence).is_none();
+
+        let complete = marker.complete(self, UNARY_EXPR);
+        if expr_invalid {
+            return None;
+        }
+
+        Some(complete)
+    }
+
+    pub(super) fn literal(&mut self) -> Option<CompletedMarker> {
+        if !self.at_set(LITERAL_TOKENS) {
+            return None;
+        }
+
+        let literal = self.start();
+        self.bump();
+        Some(literal.complete(self, LITERAL))
+    }
+
     // TODO: Move to utils
     pub(super) fn identifier(&mut self, wrapper: SyntaxKind) -> Option<CompletedMarker> {
         let marker = self.start();
@@ -163,12 +167,17 @@ impl Parser<'_, '_> {
         self.recovery_set = previous.union(recovery_set);
 
         let block = self.start();
-        self.expect(T!['{']);
+        if !self.expect(T!['{']) {
+            block.abandon(self);
+            return None;
+        }
 
         // FIXME: Statements, not expressions
         let mut did_error = false;
         while !self.at(T!['}']) && !self.at_end() {
             if self.expr().is_none() {
+                // Bump so we don't loop forever
+                self.bump();
                 did_error = true;
             }
         }

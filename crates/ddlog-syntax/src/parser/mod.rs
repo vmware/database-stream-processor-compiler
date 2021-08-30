@@ -73,23 +73,29 @@ impl<'src, 'token> Parser<'src, 'token> {
     }
 
     #[track_caller]
+    fn bump_span(&mut self) -> Span {
+        if let Some(token) = self.source.next() {
+            tracing::debug!(
+                token = ?token.kind(),
+                text = token.text(),
+                span = ?token.span(),
+                "bumped parser",
+            );
+
+            self.push_event(Event::Token {
+                kind: token.kind(),
+                span: token.span(),
+            });
+
+            token.span()
+        } else {
+            self.source.end_of_file()
+        }
+    }
+
+    #[track_caller]
     fn bump(&mut self) {
-        let token = self
-            .source
-            .next()
-            .expect("bumped while at the end of input");
-
-        tracing::debug!(
-            token = ?token.kind(),
-            text = token.text(),
-            span = ?token.span(),
-            "bumped parser",
-        );
-
-        self.push_event(Event::Token {
-            kind: token.kind(),
-            span: token.span(),
-        });
+        self.bump_span();
     }
 
     fn peek(&mut self) -> SyntaxKind {
@@ -114,7 +120,22 @@ impl<'src, 'token> Parser<'src, 'token> {
             marker.complete(self, ERROR);
         }
 
+        self.push_error(error);
+    }
+
+    fn push_error(&mut self, error: Diagnostic) {
         self.errors.push(error);
+    }
+
+    fn error_eat_until(&mut self, set: TokenSet) -> Span {
+        let marker = self.start();
+        if !self.at_set(self.recovery_set) && !self.at_end() {
+            self.bump();
+        }
+        let span = self.eat_until_set(set);
+        marker.complete(self, ERROR);
+
+        span
     }
 
     fn at_end(&mut self) -> bool {
@@ -148,6 +169,15 @@ impl<'src, 'token> Parser<'src, 'token> {
 
     fn at_set(&mut self, set: TokenSet) -> bool {
         set.contains(self.peek())
+    }
+
+    fn eat_until_set(&mut self, set: TokenSet) -> Span {
+        let mut last_span = self.current_span();
+        while !self.at_set(set) && !self.at_end() {
+            last_span = self.bump_span();
+        }
+
+        last_span
     }
 
     /// Check if a token lookahead is something, `n` must be smaller or equal to `4`

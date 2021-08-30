@@ -1,5 +1,5 @@
 use crate::{FileCache, Span};
-use ariadne::{Report, ReportBuilder, ReportKind};
+use ariadne::{CharSet, Config, Report, ReportBuilder, ReportKind};
 use std::{
     borrow::Cow,
     io::{self, Write},
@@ -104,7 +104,10 @@ impl Diagnostic {
             self.level.report_kind(),
             primary_span.file(),
             primary_span.start() as usize,
-        );
+        )
+        // TODO: Shift this to a render-sided concern and add the ability to choose
+        //       between ascii, extended ascii and compact errors
+        .with_config(Config::default().with_char_set(CharSet::ExtendedAscii));
 
         if let Some(message) = self.message {
             diagnostic = diagnostic.with_message(message);

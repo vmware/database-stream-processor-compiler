@@ -44,6 +44,20 @@ impl Span {
     }
 
     #[inline]
+    pub fn merge(self, other: Self) -> Self {
+        assert_eq!(
+            self.file, other.file,
+            "cannot merge spans from different files"
+        );
+
+        Self::new(
+            self.start.min(other.start),
+            self.end.max(other.end),
+            self.file,
+        )
+    }
+
+    #[inline]
     pub fn from_range(range: Range<usize>, file: FileId) -> Self {
         debug_assert_eq!(
             u32::try_from(range.start),
