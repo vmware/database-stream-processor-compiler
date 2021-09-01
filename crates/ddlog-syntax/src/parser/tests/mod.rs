@@ -18,11 +18,10 @@ static INTERNER: Lazy<Interner> = Lazy::new(Interner::new);
 
 #[track_caller]
 fn check(input: &str, expected: Expect) {
-    let mut cache_interner = INTERNER.clone();
-    let mut cache = NodeCache::with_interner(&mut cache_interner);
+    let cache = NodeCache::from_interner(INTERNER.clone());
     let file = FileId::new(INTERNER.get_or_intern_static("tests/test_file.dl"));
 
-    let parsed = crate::parse_expr(file, input, &mut cache);
+    let (parsed, _cache) = crate::parse_expr(file, input, cache);
     let tree = parsed.debug_tree();
 
     assert!(parsed.errors().is_empty());
@@ -38,7 +37,12 @@ fn test_data_dir() -> PathBuf {
     project_root().join("ddlog-syntax/tests")
 }
 
-fn try_parse(file: FileId, text: &str, kind: TestKind, cache: &mut NodeCache) -> Parsed {
+fn try_parse(
+    file: FileId,
+    text: &str,
+    kind: TestKind,
+    cache: NodeCache<'static>,
+) -> (Parsed, NodeCache<'static>) {
     let result = panic::catch_unwind(AssertUnwindSafe(|| match kind {
         TestKind::Item => crate::parse(file, text, cache),
         TestKind::Stmt => todo!("implement statement tests"),
@@ -59,8 +63,7 @@ fn try_parse(file: FileId, text: &str, kind: TestKind, cache: &mut NodeCache) ->
 
 #[test]
 fn parser_tests() {
-    let mut cache_interner = INTERNER.clone();
-    let mut cache = NodeCache::with_interner(&mut cache_interner);
+    let mut cache = Some(NodeCache::from_interner(INTERNER.clone()));
     let mut file_cache = FileCache::new(INTERNER.clone());
     let diagnostic_config = DiagnosticConfig::new().with_color(false);
 
@@ -81,7 +84,8 @@ fn parser_tests() {
             );
             file_cache.add_str(file, text);
 
-            let parsed = try_parse(file, text, kind, &mut cache);
+            let (parsed, ret_cache) = try_parse(file, text, kind, cache.take().unwrap());
+            cache = Some(ret_cache);
 
             assert_errors_are_absent(
                 parsed.errors(),
@@ -112,7 +116,8 @@ fn parser_tests() {
             );
             file_cache.add_str(file, text);
 
-            let parsed = try_parse(file, text, kind, &mut cache);
+            let (parsed, ret_cache) = try_parse(file, text, kind, cache.take().unwrap());
+            cache = Some(ret_cache);
 
             assert_errors_are_present(parsed.errors(), path);
 

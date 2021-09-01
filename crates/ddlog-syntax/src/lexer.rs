@@ -1,6 +1,7 @@
 use crate::{FileId, Span, SyntaxKind};
 use logos::Logos;
 
+// FIXME: Allow the lexer to work directly with ropes instead of strings
 pub(crate) struct Lexer<'a> {
     inner: logos::Lexer<'a, SyntaxKind>,
     file: FileId,

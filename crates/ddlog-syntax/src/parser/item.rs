@@ -134,6 +134,8 @@ impl Parser<'_, '_> {
         Some(relation.complete(self, RELATION_DEF))
     }
 
+    // test indiscriminantly_modify
+    // - input input input input input output extern output input relation Foo()
     fn eat_modifiers(&mut self) {
         while self.at_set(MODIFIERS) {
             self.bump();

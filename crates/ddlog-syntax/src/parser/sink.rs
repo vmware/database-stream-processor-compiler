@@ -7,23 +7,23 @@ use crate::{
 use cstree::GreenNode;
 use std::mem;
 
-pub struct Sink<'src, 'cache, 'interner> {
-    builder: GreenNodeBuilder<'cache, 'interner>,
+pub struct Sink<'src, 'interner> {
+    builder: GreenNodeBuilder<'interner, 'interner>,
     tokens: Vec<Token<'src>>,
     cursor: usize,
     events: Vec<Event>,
     source: &'src str,
 }
 
-impl<'src, 'cache, 'interner> Sink<'src, 'cache, 'interner> {
+impl<'src, 'interner> Sink<'src, 'interner> {
     pub fn new(
         source: &'src str,
         tokens: Vec<Token<'src>>,
         events: Vec<Event>,
-        cache: &'cache mut NodeCache<'interner>,
+        cache: NodeCache<'interner>,
     ) -> Self {
         Self {
-            builder: GreenNodeBuilder::with_cache(cache),
+            builder: GreenNodeBuilder::from_cache(cache),
             tokens,
             cursor: 0,
             events,
@@ -36,7 +36,7 @@ impl<'src, 'cache, 'interner> Sink<'src, 'cache, 'interner> {
         self.builder.token(kind.into(), text);
     }
 
-    pub(crate) fn finish(mut self) -> GreenNode {
+    pub(crate) fn finish(mut self) -> (GreenNode, Option<NodeCache<'interner>>) {
         let mut preceded_nodes = Vec::new();
         for idx in 0..self.events.len() {
             match mem::take(&mut self.events[idx]) {
@@ -89,10 +89,7 @@ impl<'src, 'cache, 'interner> Sink<'src, 'cache, 'interner> {
             }
         }
 
-        let (node, interner) = self.builder.finish();
-        debug_assert!(interner.is_none());
-
-        node
+        self.builder.finish()
     }
 
     fn eat_trivia(&mut self) {

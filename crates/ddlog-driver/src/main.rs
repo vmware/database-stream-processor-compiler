@@ -1,6 +1,6 @@
-/*
+// /*
+use ddlog_diagnostics::Interner;
 use ddlog_lsp::{Backend, Session};
-use ddlog_syntax::Interner;
 use lspower::{LspService, Server};
 use tokio::io;
 use triomphe::Arc;
@@ -17,8 +17,8 @@ async fn main() {
         .serve(service)
         .await;
 }
-*/
-
+// */
+/*
 use ddlog_diagnostics::{DiagnosticConfig, FileCache, FileId, Interner};
 use ddlog_syntax::NodeCache;
 use std::io::{self, Write};
@@ -44,7 +44,7 @@ fn main() -> io::Result<()> {
     let diagnostic_config = DiagnosticConfig::new();
 
     let mut cache_interner = interner.clone();
-    let mut cache = NodeCache::with_interner(&mut cache_interner);
+    let mut cache = Some(NodeCache::with_interner(&mut cache_interner));
 
     let mut file_cache = FileCache::new(interner.clone());
     let file = FileId::new(interner.get_or_intern_static("repl/input.dl"));
@@ -65,16 +65,18 @@ fn main() -> io::Result<()> {
             continue;
         }
 
-        let parsed = if input.starts_with(EXPR_HEADER) {
+        let parse_cache = cache.take().unwrap();
+        let (parsed, parse_cache) = if input.starts_with(EXPR_HEADER) {
             input.replace_range(..EXPR_HEADER.len(), "");
-            ddlog_syntax::parse_expr(file, &input, &mut cache)
+            ddlog_syntax::parse_expr(file, &input, parse_cache)
         } else {
             if input.starts_with(ITEM_HEADER) {
                 input.replace_range(..ITEM_HEADER.len(), "");
             }
 
-            ddlog_syntax::parse(file, &input, &mut cache)
+            ddlog_syntax::parse(file, &input, parse_cache)
         };
+        cache = Some(parse_cache);
 
         println!("{}", parsed.debug_tree());
         if parsed.has_errors() {
@@ -93,3 +95,4 @@ fn main() -> io::Result<()> {
 
     Ok(())
 }
+*/

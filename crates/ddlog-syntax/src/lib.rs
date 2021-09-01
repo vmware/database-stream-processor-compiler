@@ -2,6 +2,7 @@
 mod syntax_kind;
 #[macro_use]
 mod token_set;
+mod ast;
 mod lexer;
 mod parser;
 mod syntax;
@@ -21,25 +22,41 @@ pub type SyntaxNode = cstree::SyntaxNode<DifferentialDatalog>;
 pub type GreenNodeBuilder<'cache, 'interner> =
     cstree::GreenNodeBuilder<'cache, 'interner, Interner>;
 pub type NodeCache<'interner> = cstree::NodeCache<'interner, Interner>;
+pub type SyntaxText<'node, 'interner> =
+    cstree::SyntaxText<'node, 'interner, Interner, DifferentialDatalog>;
 
 #[inline]
-pub fn parse(file: FileId, source: &str, cache: &mut NodeCache<'_>) -> Parsed {
+pub fn parse<'interner>(
+    file: FileId,
+    source: &str,
+    cache: NodeCache<'interner>,
+) -> (Parsed, NodeCache<'interner>) {
+    let interner = cache.interner().clone();
     let tokens: Vec<_> = Lexer::new(source, file).collect();
     let span = Span::single(source.len() as u32, file);
-    let (events, errors) = Parser::new(&tokens, span).parse();
-    let root = Sink::new(source, tokens, events, cache).finish();
 
-    Parsed::new(SyntaxNode::new_root(root), cache.interner().clone(), errors)
+    let (events, errors) = Parser::new(&tokens, span).parse();
+    let (root, node_cache) = Sink::new(source, tokens, events, cache).finish();
+
+    let parsed = Parsed::new(SyntaxNode::new_root(root), interner, errors);
+    (parsed, node_cache.unwrap())
 }
 
 #[inline]
-pub fn parse_expr(file: FileId, source: &str, cache: &mut NodeCache<'_>) -> Parsed {
+pub fn parse_expr<'interner>(
+    file: FileId,
+    source: &str,
+    cache: NodeCache<'interner>,
+) -> (Parsed, NodeCache<'interner>) {
+    let interner = cache.interner().clone();
     let tokens: Vec<_> = Lexer::new(source, file).collect();
     let span = Span::single(source.len() as u32, file);
-    let (events, errors) = Parser::new(&tokens, span).parse_expr();
-    let root = Sink::new(source, tokens, events, cache).finish();
 
-    Parsed::new(SyntaxNode::new_root(root), cache.interner().clone(), errors)
+    let (events, errors) = Parser::new(&tokens, span).parse_expr();
+    let (root, node_cache) = Sink::new(source, tokens, events, cache).finish();
+
+    let parsed = Parsed::new(SyntaxNode::new_root(root), interner, errors);
+    (parsed, node_cache.unwrap())
 }
 
 #[derive(Debug)]

@@ -1,0 +1,31 @@
+ROOT@0..85
+  COMMENT@0..12 "// kind:item"
+  WHITESPACE@12..13 "\n"
+  ITEM@13..85
+    RELATION_DEF@13..84
+      REL_MODS@13..69
+        INPUT@13..18 "input"
+        WHITESPACE@18..19 " "
+        INPUT@19..24 "input"
+        WHITESPACE@24..25 " "
+        INPUT@25..30 "input"
+        WHITESPACE@30..31 " "
+        INPUT@31..36 "input"
+        WHITESPACE@36..37 " "
+        INPUT@37..42 "input"
+        WHITESPACE@42..43 " "
+        OUTPUT@43..49 "output"
+        WHITESPACE@49..50 " "
+        EXTERN@50..56 "extern"
+        WHITESPACE@56..57 " "
+        OUTPUT@57..63 "output"
+        WHITESPACE@63..64 " "
+        INPUT@64..69 "input"
+      WHITESPACE@69..70 " "
+      RELATION@70..78 "relation"
+      WHITESPACE@78..79 " "
+      REL_NAME@79..82
+        IDENT@79..82 "Foo"
+      L_PAREN@82..83 "("
+      R_PAREN@83..84 ")"
+    WHITESPACE@84..85 "\n"

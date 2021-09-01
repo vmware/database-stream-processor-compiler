@@ -6,6 +6,9 @@ license = "MIT OR Apache-2.0"
 
 [dependencies]
 ropey = "1.3.1"
+# FIXME: Completely decouple cstree from everything but ddlog-syntax
+cstree = "0.7.0"
+anyhow = "1.0.43"
 dashmap = "4.0.2"
 lspower = "1.1.0"
 triomphe = "0.1.3"

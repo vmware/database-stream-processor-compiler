@@ -137,6 +137,8 @@ dependencies = [
 name = "ddlog-lsp"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "cstree",
  "dashmap",
  "ddlog-diagnostics",
  "ddlog-syntax",
