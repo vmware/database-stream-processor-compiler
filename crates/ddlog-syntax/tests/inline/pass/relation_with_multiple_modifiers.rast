@@ -1,0 +1,17 @@
+ROOT@0..41
+  COMMENT@0..12 "// kind:item"
+  WHITESPACE@12..13 "\n"
+  ITEM@13..41
+    RELATION_DEF@13..40
+      REL_MODS@13..25
+        INPUT@13..18 "input"
+        WHITESPACE@18..19 " "
+        OUTPUT@19..25 "output"
+      WHITESPACE@25..26 " "
+      RELATION@26..34 "relation"
+      WHITESPACE@34..35 " "
+      REL_NAME@35..38
+        IDENT@35..38 "Foo"
+      L_PAREN@38..39 "("
+      R_PAREN@39..40 ")"
+    WHITESPACE@40..41 "\n"

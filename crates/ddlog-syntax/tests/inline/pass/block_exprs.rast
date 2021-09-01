@@ -5,8 +5,8 @@ ROOT@0..41
     BIN_EXPR@13..41
       BLOCK@13..19
         L_CURLY@13..14 "{"
-        EXPR@14..18
-          WHITESPACE@14..15 " "
+        WHITESPACE@14..15 " "
+        EXPR@15..18
           LITERAL@15..17
             NUMBER@15..17 "10"
           WHITESPACE@17..18 " "
@@ -20,8 +20,8 @@ ROOT@0..41
         EXPR@23..39
           BLOCK@23..39
             L_CURLY@23..24 "{"
-            EXPR@24..38
-              WHITESPACE@24..25 " "
+            WHITESPACE@24..25 " "
+            EXPR@25..38
               BIN_EXPR@25..38
                 LITERAL@25..26
                   NUMBER@25..26 "5"
@@ -34,8 +34,8 @@ ROOT@0..41
                   EXPR@30..36
                     BLOCK@30..36
                       L_CURLY@30..31 "{"
-                      EXPR@31..35
-                        WHITESPACE@31..32 " "
+                      WHITESPACE@31..32 " "
+                      EXPR@32..35
                         LITERAL@32..34
                           NUMBER@32..34 "99"
                         WHITESPACE@34..35 " "

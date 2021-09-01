@@ -4,8 +4,8 @@ ROOT@0..31
   ITEM@13..31
     FUNC_DEF@13..31
       FUNCTION@13..21 "function"
-      FUNC_NAME@21..25
-        WHITESPACE@21..22 " "
+      WHITESPACE@21..22 " "
+      FUNC_NAME@22..25
         IDENT@22..25 "foo"
       FUNC_ARGS@25..27
         L_PAREN@25..26 "("

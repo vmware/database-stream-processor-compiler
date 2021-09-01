@@ -101,7 +101,7 @@ pub fn project_root() -> PathBuf {
     Path::new(&manifest)
         .ancestors()
         .nth(1)
-        .unwrap()
+        .expect("failed to get ancestor of project root")
         .to_path_buf()
 }
 
@@ -121,6 +121,9 @@ pub mod fs2 {
             .display()
             .to_string();
         normalize_path_slashes(&mut pretty_path);
+        if pretty_path.starts_with("../") {
+            pretty_path.replace_range(.."../".len(), "");
+        }
 
         pretty_path
     }
@@ -131,7 +134,7 @@ pub mod fs2 {
         P: AsRef<Path>,
     {
         let path = path.as_ref();
-        fs::read_to_string(path).with_context(|| format!("failed to read '{}'", display_path(path)))
+        fs::read_to_string(path).with_context(|| format!("failed to read '{}'", path.display()))
     }
 
     /// Writes to a file
@@ -142,7 +145,7 @@ pub mod fs2 {
     {
         let path = path.as_ref();
         fs::write(path, contents)
-            .with_context(|| format!("failed to write to '{}'", display_path(path)))
+            .with_context(|| format!("failed to write to '{}'", path.display()))
     }
 
     /// Creates a directory and all required parent directories
@@ -152,7 +155,7 @@ pub mod fs2 {
     {
         let path = path.as_ref();
         fs::create_dir_all(path)
-            .with_context(|| format!("failed to create dir '{}'", display_path(path)))
+            .with_context(|| format!("failed to create dir '{}'", path.display()))
     }
 
     /// A helper to update file on disk if it has changed
@@ -180,12 +183,11 @@ pub mod fs2 {
             match mode {
                 // If the file needs an update and we're in write mode, write to it
                 CodegenMode::Run => {
-                    eprintln!("updating '{}'", display_path(path));
-
                     // Make sure that the full path to the file exists
                     let parent_dir = path.parent().expect("files should have a parent path");
                     create_dir_all(parent_dir)?;
 
+                    eprintln!("updating '{}'", display_path(&path));
                     write(path, contents)?;
                 }
 

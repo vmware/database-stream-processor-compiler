@@ -1,42 +1,6 @@
 use super::{check, expect};
 
 #[test]
-fn decimal_number() {
-    check(
-        "123",
-        expect![[r#"
-            ROOT@0..3
-              EXPR@0..3
-                LITERAL@0..3
-                  NUMBER@0..3 "123""#]],
-    );
-}
-
-#[test]
-fn hex_number() {
-    check(
-        "0xFFFF",
-        expect![[r#"
-            ROOT@0..6
-              EXPR@0..6
-                LITERAL@0..6
-                  NUMBER@0..6 "0xFFFF""#]],
-    );
-}
-
-#[test]
-fn binary_number() {
-    check(
-        "0b010101",
-        expect![[r#"
-            ROOT@0..8
-              EXPR@0..8
-                LITERAL@0..8
-                  NUMBER@0..8 "0b010101""#]],
-    );
-}
-
-#[test]
 fn ident() {
     check(
         "counter",

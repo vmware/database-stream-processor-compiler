@@ -13,6 +13,11 @@ fn grammar() -> Result<Grammar> {
 }
 
 pub fn syntax_kind(mode: CodegenMode) -> Result<()> {
+    match mode {
+        CodegenMode::Run => eprintln!("running code generation..."),
+        CodegenMode::Check => eprintln!("checking generated code..."),
+    }
+
     let grammar = grammar()?;
     let target_path = project_root().join("../crates/ddlog-syntax/src/syntax_kind/generated.rs");
 
@@ -81,6 +86,10 @@ pub fn syntax_kind(mode: CodegenMode) -> Result<()> {
 
     fs2::update(target_path, &code, mode)?;
 
+    match mode {
+        CodegenMode::Run => eprintln!("finished running code generation"),
+        CodegenMode::Check => eprintln!("finished checking generated code"),
+    }
     Ok(())
 }
 

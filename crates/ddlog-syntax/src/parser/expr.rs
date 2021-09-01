@@ -84,10 +84,9 @@ impl Parser<'_, '_> {
     }
 
     // test(expr) parenthesised
-    // (((((((((2 + (((((5))))))))))))))
-
+    // - (((((((((2 + (((((5))))))))))))))
     // test_err(expr) unclosed_paren
-    // (((100))
+    // - (((100))
     fn parentheses(&mut self) -> Option<CompletedMarker> {
         let marker = self.start();
 
@@ -108,10 +107,9 @@ impl Parser<'_, '_> {
     }
 
     // test(expr) negation
-    // --(-100)
-
+    // - --(-100)
     // test(expr) boolean_not
-    // !!(!true)
+    // - !!(!true)
     fn unary_expr(&mut self, operator: SyntaxKind) -> Option<CompletedMarker> {
         let precedence = match unary_precedence(operator) {
             Some(operand) => operand,
@@ -135,14 +133,16 @@ impl Parser<'_, '_> {
         Some(complete)
     }
 
-    // test(expr) integers
-    // 123
-
+    // test(expr) decimal_number
+    // - 123
+    // test(expr) hex_number
+    // - 0xFFFF
+    // test(expr) binary_number
+    // - 0b010101
     // test(expr) bool_true
-    // true
-
+    // - true
     // test(expr) bool_false
-    // false
+    // - false
     pub(super) fn literal(&mut self) -> Option<CompletedMarker> {
         if !self.at_set(LITERAL_TOKENS) {
             return None;
@@ -155,10 +155,9 @@ impl Parser<'_, '_> {
 
     // TODO: Move to utils
     // test(expr) var_refs
-    // foo1245__
-
+    // - foo1245__
     // test(expr) underline_var
-    // _
+    // - _
     pub(super) fn identifier(&mut self, wrapper: SyntaxKind) -> Option<CompletedMarker> {
         let marker = self.start();
         match self.current() {
@@ -181,10 +180,9 @@ impl Parser<'_, '_> {
     }
 
     // test(expr) block_exprs
-    // { 10 } - {{ 5 + ({ 99 }) }}
-
+    // - { 10 } - {{ 5 + ({ 99 }) }}
     // test_err(expr) unclosed_block
-    // {{ 10 }
+    // - {{ 10 }
     pub(super) fn block(&mut self, recovery_set: TokenSet) -> Option<CompletedMarker> {
         let previous = self.recovery_set;
         self.recovery_set = previous.union(recovery_set);

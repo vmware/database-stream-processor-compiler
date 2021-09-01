@@ -72,7 +72,7 @@ impl Parser<'_, '_> {
     }
 
     // test function_definitions
-    // function foo() {}
+    // - function foo() {}
     fn function_def(&mut self) -> Option<CompletedMarker> {
         let marker = self.start();
 
@@ -105,12 +105,14 @@ impl Parser<'_, '_> {
         Some(marker.complete(self, FUNC_DEF))
     }
 
-    fn eat_modifiers(&mut self) {
-        while self.at_set(MODIFIERS) {
-            self.bump();
-        }
-    }
-
+    // test basic_relation
+    // - relation Something()
+    // test relation_with_multiple_modifiers
+    // - input output relation Foo()
+    // test lowercase_relation
+    // - relation foo()
+    // test_err unclosed_relation_args
+    // - relation Foo(
     fn relation_def(&mut self) -> Option<CompletedMarker> {
         let relation = self.start();
 
@@ -130,5 +132,11 @@ impl Parser<'_, '_> {
         self.expect(T![')']);
 
         Some(relation.complete(self, RELATION_DEF))
+    }
+
+    fn eat_modifiers(&mut self) {
+        while self.at_set(MODIFIERS) {
+            self.bump();
+        }
     }
 }

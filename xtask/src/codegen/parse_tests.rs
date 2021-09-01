@@ -16,10 +16,20 @@ use std::{
 use walkdir::WalkDir;
 
 pub fn parse_tests(mode: CodegenMode) -> Result<()> {
+    match mode {
+        CodegenMode::Run => eprintln!("running test generation..."),
+        CodegenMode::Check => eprintln!("checking generated tests..."),
+    }
+
     let parser_dir = project_root().join("crates/ddlog-syntax/src/parser");
     let tests = tests_from_dir(&parser_dir)?;
     install_tests(&tests.pass, "crates/ddlog-syntax/tests/inline/pass", mode)?;
     install_tests(&tests.fail, "crates/ddlog-syntax/tests/inline/fail", mode)?;
+
+    match mode {
+        CodegenMode::Run => eprintln!("finished running tests generation"),
+        CodegenMode::Check => eprintln!("finished checking generated tests"),
+    }
 
     Ok(())
 }
@@ -54,22 +64,27 @@ fn install_tests(tests: &HashMap<String, Test>, test_dir: &str, mode: CodegenMod
 fn extract_comment_blocks(
     text: &str,
     allow_blocks_with_empty_lines: bool,
-) -> Vec<(usize, Vec<String>)> {
+) -> Vec<(usize, Vec<&str>)> {
     let mut res = Vec::new();
 
-    let prefix = "// ";
-    let lines = text.lines().map(str::trim_start);
+    let prefix = "// - ";
 
     let mut block = (0, vec![]);
-    for (line_num, line) in lines.enumerate() {
+    for (line_num, line) in text.lines().map(str::trim_start).enumerate() {
         if line == "//" && allow_blocks_with_empty_lines {
-            block.1.push(String::new());
+            block.1.push("");
             continue;
         }
 
-        let is_comment = line.starts_with(prefix);
-        if is_comment {
-            block.1.push(line[prefix.len()..].to_string());
+        let (is_header, is_comment) = (line.starts_with("// test"), line.starts_with(prefix));
+        if is_header {
+            if !block.1.is_empty() {
+                res.push(mem::take(&mut block));
+            }
+
+            block.1.push(&line["// ".len()..]);
+        } else if is_comment {
+            block.1.push(&line[prefix.len()..]);
         } else {
             if !block.1.is_empty() {
                 res.push(mem::take(&mut block));

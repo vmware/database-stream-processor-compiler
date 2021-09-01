@@ -2,7 +2,7 @@ use crate::{
     lexer::Token,
     parser::event::Event,
     GreenNodeBuilder, NodeCache,
-    SyntaxKind::{self, TOMBSTONE},
+    SyntaxKind::{self, ROOT, TOMBSTONE},
 };
 use cstree::GreenNode;
 use std::mem;
@@ -45,6 +45,10 @@ impl<'src, 'cache, 'interner> Sink<'src, 'cache, 'interner> {
 
                 Event::Enter { kind, preceded_by } => {
                     preceded_nodes.push(kind);
+
+                    if kind != ROOT {
+                        self.eat_trivia();
+                    }
 
                     let (mut idx, mut preceded_by) = (idx, preceded_by);
                     while let Some(rel_diff) = preceded_by {
