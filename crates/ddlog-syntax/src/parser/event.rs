@@ -34,3 +34,10 @@ impl Event {
         )
     }
 }
+
+impl Default for Event {
+    #[inline]
+    fn default() -> Self {
+        Self::tombstone()
+    }
+}

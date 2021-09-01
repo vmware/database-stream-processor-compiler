@@ -1,24 +1,20 @@
-use crate::utils;
+use crate::utils::{fs2, project_root, CodegenMode};
 use anyhow::{Context, Result};
 use heck::ShoutySnakeCase;
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
-use std::{fs, path::Path};
 use ungrammar::Grammar;
 
 const GRAMMAR: &str = include_str!("ddlog.ungram");
-const TARGET_PATH: &str = concat!(
-    env!("CARGO_MANIFEST_DIR"),
-    "/../crates/ddlog-syntax/src/syntax_kind/generated.rs",
-);
 const EXTRA_TOKENS: &[&str] = &["comment", "whitespace", "eof", "tombstone"];
 
 fn grammar() -> Result<Grammar> {
     GRAMMAR.parse().context("failed to parse ddlog grammar")
 }
 
-pub fn codegen() -> Result<()> {
+pub fn syntax_kind(mode: CodegenMode) -> Result<()> {
     let grammar = grammar()?;
+    let target_path = project_root().join("../crates/ddlog-syntax/src/syntax_kind/generated.rs");
 
     // Sort the tokens so that their ordering is consistent across runs
     let mut tokens: Vec<_> = grammar
@@ -50,7 +46,7 @@ pub fn codegen() -> Result<()> {
     let trait_impls = trait_implementations();
     let token_macro = token_macro(&tokens);
 
-    let mut code = quote! {
+    let code = quote! {
         #[derive(logos::Logos)]
         #[allow(
             non_camel_case_types,
@@ -82,24 +78,8 @@ pub fn codegen() -> Result<()> {
         #token_macro
     }
     .to_string();
-    utils::normalize(&mut code);
 
-    let target_path = Path::new(TARGET_PATH);
-
-    // The current value of the codegen'd file, we don't want to mess with it if we have
-    // no changes since that'll trigger rustc's recompilation machinery
-    let mut current = if !target_path.exists() {
-        String::new()
-    } else {
-        fs::read_to_string(&target_path)
-            .with_context(|| format!("failed to read current value of {}", target_path.display()))?
-    };
-    utils::normalize(&mut current);
-
-    if code != current {
-        fs::write(&target_path, code)
-            .with_context(|| format!("failed to write new code to {}", target_path.display()))?;
-    }
+    fs2::update(target_path, &code, mode)?;
 
     Ok(())
 }

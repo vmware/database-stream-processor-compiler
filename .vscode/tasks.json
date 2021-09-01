@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "codegen",
+            "type": "process",
+            "command": "cargo",
+            "args": [
+                "xtask",
+                "codegen"
+            ],
+            "problemMatcher": [
+                "$rustc"
+            ]
+        }
+    ]
+}

@@ -5,7 +5,7 @@ mod hasher;
 mod interner;
 mod span;
 
-pub use diagnostic::{Diagnostic, Label};
+pub use diagnostic::{CharSet, Diagnostic, DiagnosticConfig, Label};
 pub use file_cache::FileCache;
 pub use file_id::FileId;
 pub use hasher::ConsistentHasher;

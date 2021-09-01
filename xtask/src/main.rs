@@ -1,3 +1,4 @@
+use crate::utils::CodegenMode;
 use anyhow::Result;
 use gumdrop::Options;
 
@@ -8,8 +9,19 @@ fn main() -> Result<()> {
     let options = XTaskOptions::parse_args_default_or_exit();
 
     match options {
-        XTaskOptions::Help(_) => println!("{}", XTaskOptions::usage()),
-        XTaskOptions::Codegen(_) => codegen::codegen()?,
+        XTaskOptions::Help(XTaskHelp { command }) => {
+            if let Some(command) = command {
+                if let Some(usage) = XTaskOptions::command_usage(&command) {
+                    println!("{}", usage);
+                } else {
+                    println!("could not find a command named '{}'", command);
+                }
+            } else {
+                println!("{}", XTaskOptions::usage());
+            }
+        }
+
+        XTaskOptions::Codegen(XTaskCodegen { mode }) => codegen::codegen(mode)?,
     }
 
     Ok(())
@@ -19,12 +31,25 @@ fn main() -> Result<()> {
 enum XTaskOptions {
     #[options(help = "show help for a command")]
     Help(XTaskHelp),
-    #[options(help = "run codegen")]
+
+    #[options(help = "syntax and parser test code generation")]
     Codegen(XTaskCodegen),
 }
 
 #[derive(Debug, Clone, Options)]
-struct XTaskHelp {}
+struct XTaskHelp {
+    #[options(
+        free,
+        help = "the command to get help for (if no command is given, help for the whole app will be displayed)"
+    )]
+    command: Option<String>,
+}
 
 #[derive(Debug, Clone, Options)]
-struct XTaskCodegen {}
+struct XTaskCodegen {
+    #[options(
+        free,
+        help = "(default: run) the mode to run codegen in, either 'run' or 'check'"
+    )]
+    pub mode: CodegenMode,
+}

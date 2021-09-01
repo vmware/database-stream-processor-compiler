@@ -2,12 +2,14 @@ Root = Item
 
 Item = FuncDef | RelationDef
 
-RelationDef = ('input' | 'output')? 'relation' RelName RelCols
+RelationDef = RelMods 'relation' RelName RelCols
+RelMods = ('input' | 'output')?
 RelName = 'ident'
 RelCols = '(' (RelCol (',' FuncArg)* ','?)? ')'
 RelCol = Pat ':' Type
 
-FuncDef = 'function' name:FuncName args:FuncArgs (':' Type)? Block
+FuncDef = FuncMods 'function' name:FuncName args:FuncArgs (':' Type)? Block
+FuncMods = 'extern'
 FuncName = 'ident'
 FuncArgs = '(' (FuncArg (',' FuncArg)* ','?)? ')'
 FuncArg = Pat ':' Type
@@ -47,7 +49,7 @@ Assign = Pat '=' Expr
 ParenExpr = '(' Expr ')'
 
 // TODO: Floats
-Literal = Bool | 'number'
+Literal = Bool | 'number' | 'string'
 Bool = 'true' | 'false'
 
 RetExpr = 'return' Expr

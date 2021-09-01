@@ -1,6 +1,6 @@
 use crate::{
     Span,
-    SyntaxKind::{self, EOF, WHITESPACE},
+    SyntaxKind::{self, EOF},
     Token,
 };
 
@@ -20,7 +20,7 @@ impl<'src, 'token> Source<'src, 'token> {
     }
 
     pub fn next(&mut self) -> Option<Token<'src>> {
-        self.eat_whitespace();
+        self.eat_trivia();
 
         let token = *self.tokens.get(self.cursor)?;
         self.cursor += 1;
@@ -33,13 +33,13 @@ impl<'src, 'token> Source<'src, 'token> {
     }
 
     pub(super) fn peek_kind(&mut self) -> SyntaxKind {
-        self.eat_whitespace();
+        self.eat_trivia();
         self.peek_kind_raw().unwrap_or(EOF)
     }
 
     pub(super) fn peek_nth(&mut self, n: usize) -> Token<'src> {
         debug_assert!(n <= 4);
-        self.eat_whitespace();
+        self.eat_trivia();
 
         self.tokens
             .get(self.cursor + n)
@@ -51,8 +51,12 @@ impl<'src, 'token> Source<'src, 'token> {
         self.tokens.get(self.cursor).map(Token::kind)
     }
 
-    fn eat_whitespace(&mut self) {
-        while self.peek_kind_raw() == Some(WHITESPACE) {
+    fn eat_trivia(&mut self) {
+        while let Some(token) = self.tokens.get(self.cursor) {
+            if !token.kind().is_trivia() {
+                break;
+            }
+
             self.cursor += 1;
         }
     }

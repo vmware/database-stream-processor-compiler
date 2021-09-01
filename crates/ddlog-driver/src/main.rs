@@ -19,7 +19,7 @@ async fn main() {
 }
 */
 
-use ddlog_diagnostics::{FileCache, FileId, Interner};
+use ddlog_diagnostics::{DiagnosticConfig, FileCache, FileId, Interner};
 use ddlog_syntax::NodeCache;
 use std::io::{self, Write};
 
@@ -41,6 +41,7 @@ fn main() -> io::Result<()> {
     let mut input = String::new();
 
     let interner = Interner::new();
+    let diagnostic_config = DiagnosticConfig::new();
 
     let mut cache_interner = interner.clone();
     let mut cache = NodeCache::with_interner(&mut cache_interner);
@@ -64,7 +65,7 @@ fn main() -> io::Result<()> {
             continue;
         }
 
-        let (root, errors) = if input.starts_with(EXPR_HEADER) {
+        let parsed = if input.starts_with(EXPR_HEADER) {
             input.replace_range(..EXPR_HEADER.len(), "");
             ddlog_syntax::parse_expr(file, &input, &mut cache)
         } else {
@@ -75,12 +76,14 @@ fn main() -> io::Result<()> {
             ddlog_syntax::parse(file, &input, &mut cache)
         };
 
-        println!("{}", root.debug(&interner, true));
-        if !errors.is_empty() {
+        println!("{}", parsed.debug_tree());
+        if parsed.has_errors() {
             file_cache.add_str(file, &input);
 
-            for error in errors {
-                error.emit_to(&mut file_cache, &mut stdout).unwrap();
+            for error in parsed.into_errors() {
+                error
+                    .emit_to(&diagnostic_config, &mut file_cache, &mut stdout)
+                    .unwrap();
             }
         }
 

@@ -1,6 +1,6 @@
 use crate::{
     parser::{CompletedMarker, Parser},
-    SyntaxKind::{FUNC_ARGS, FUNC_DEF, FUNC_NAME, ITEM},
+    SyntaxKind::{FUNC_ARGS, FUNC_DEF, FUNC_NAME, ITEM, RELATION_DEF, REL_MODS, REL_NAME},
     TokenSet,
 };
 use ddlog_diagnostics::{Diagnostic, Label};
@@ -11,11 +11,17 @@ use ddlog_diagnostics::{Diagnostic, Label};
 const ITEM_RECOVERY: TokenSet = token_set! {
     T!['}'],
     T![function],
-    // T![extern],
+    T![extern],
     // T![typedef],
     T![input],
     T![output],
     T![relation],
+};
+
+const MODIFIERS: TokenSet = token_set! {
+    T![input],
+    T![output],
+    T![extern],
 };
 
 impl Parser<'_, '_> {
@@ -40,6 +46,10 @@ impl Parser<'_, '_> {
                 self.function_def();
             }
 
+            T![input] | T![output] | T![relation] => {
+                self.relation_def();
+            }
+
             // TODO: Errors
             _ => {
                 let error_start = self.current_span();
@@ -61,6 +71,8 @@ impl Parser<'_, '_> {
         Some(marker.complete(self, ITEM))
     }
 
+    // test function_definitions
+    // function foo() {}
     fn function_def(&mut self) -> Option<CompletedMarker> {
         let marker = self.start();
 
@@ -91,5 +103,32 @@ impl Parser<'_, '_> {
         self.block(ITEM_RECOVERY);
 
         Some(marker.complete(self, FUNC_DEF))
+    }
+
+    fn eat_modifiers(&mut self) {
+        while self.at_set(MODIFIERS) {
+            self.bump();
+        }
+    }
+
+    fn relation_def(&mut self) -> Option<CompletedMarker> {
+        let relation = self.start();
+
+        // We eat any modifiers given to us, even though they aren't
+        // all completely valid. For instance, this accepts `input extern input relation`
+        // even though that's 100% invalid, that's something that will be
+        // caught during validation
+        let modifiers = self.start();
+        self.eat_modifiers();
+        modifiers.complete(self, REL_MODS);
+
+        self.expect(T![relation]);
+        self.identifier(REL_NAME);
+
+        self.expect(T!['(']);
+        // TODO: Relation args
+        self.expect(T![')']);
+
+        Some(relation.complete(self, RELATION_DEF))
     }
 }

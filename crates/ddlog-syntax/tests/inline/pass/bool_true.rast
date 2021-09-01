@@ -1,0 +1,7 @@
+ROOT@0..18
+  COMMENT@0..12 "// kind:expr"
+  WHITESPACE@12..13 "\n"
+  EXPR@13..18
+    LITERAL@13..17
+      TRUE@13..17 "true"
+    WHITESPACE@17..18 "\n"

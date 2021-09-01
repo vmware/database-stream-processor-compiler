@@ -1,7 +1,7 @@
 use crate::{
     parser::{CompletedMarker, Parser},
     SyntaxKind::{
-        self, BIN_EXPR, BIN_OP, BLOCK, EOF, IDENT, LITERAL, NUMBER, PAREN_EXPR, UNARY_EXPR,
+        self, BIN_EXPR, BIN_OP, BLOCK, EXPR, IDENT, LITERAL, NUMBER, PAREN_EXPR, UNARY_EXPR,
         UNARY_OP, VAR_REF,
     },
     TokenSet,
@@ -24,7 +24,12 @@ pub(super) const EXPR_RECOVERY_SET: TokenSet = token_set! {
 impl Parser<'_, '_> {
     #[must_use]
     pub(super) fn expr(&mut self) -> Option<CompletedMarker> {
-        self.expr_inner(0)
+        let expr = self.start();
+        // TODO: Should we abandon the marker if `.expr_inner()` fails?
+        let inner = self.expr_inner(0);
+        let marker = expr.complete(self, EXPR);
+
+        inner.map(|_| marker)
     }
 
     /// The innards of [`Parser::expr()`], does all of the actual work
@@ -32,8 +37,8 @@ impl Parser<'_, '_> {
     /// Utilizes [pratt parsing](https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html)
     /// to parse operator precedence
     // FIXME: Make this iterative instead of recursive
-    #[must_use]
     fn expr_inner(&mut self, mut current_precedence: u8) -> Option<CompletedMarker> {
+        let _frame = self.stack_frame();
         let mut lhs = match self.peek() {
             IDENT => self.identifier(VAR_REF).unwrap(),
 
@@ -41,48 +46,19 @@ impl Parser<'_, '_> {
 
             operator @ (T![-] | T![!]) => self.unary_expr(operator)?,
 
-            T!['('] => {
-                let marker = self.start();
+            T!['('] => self.parentheses()?,
 
-                self.expect(T!['(']);
-                let expr_invalid = self.expr().is_none();
-                self.expect(T![')']);
-
-                let complete = marker.complete(self, PAREN_EXPR);
-                if expr_invalid {
-                    return None;
-                }
-
-                complete
-            }
-
-            T!['{'] => self.block(token_set! { T!['}'] })?,
+            T!['{'] => self.block(TokenSet::empty())?,
 
             _ => return None,
         };
 
         // Infix operators
-        while !self.at(EOF) {
+        while !self.at_end() {
             let precedence = match infix_precedence(self.peek()) {
                 Some(operand) => operand,
                 // TODO: Error handling
-                None => {
-                    // let error = Diagnostic::error()
-                    //     .with_message("expected an infix expression")
-                    //     .with_label(Label::primary(self.current_span()).with_message(format!(
-                    //         "expected an infix operator, got '{}'",
-                    //         self.current_text(),
-                    //     )));
-                    //
-                    // let current_set = self.recovery_set;
-                    // self.recovery_set = current_set.union(EXPR_RECOVERY_SET);
-                    // self.error(error);
-                    // self.recovery_set = current_set;
-
-                    // Return a precedence level of zero as a dummy
-                    // infix operand
-                    break;
-                }
+                None => break,
             };
 
             if precedence < current_precedence {
@@ -107,6 +83,35 @@ impl Parser<'_, '_> {
         Some(lhs)
     }
 
+    // test(expr) parenthesised
+    // (((((((((2 + (((((5))))))))))))))
+
+    // test_err(expr) unclosed_paren
+    // (((100))
+    fn parentheses(&mut self) -> Option<CompletedMarker> {
+        let marker = self.start();
+
+        if !self.expect(T!['(']) {
+            marker.abandon(self);
+            return None;
+        }
+
+        let expr_invalid = self.expr().is_none();
+        self.expect(T![')']);
+
+        let complete = marker.complete(self, PAREN_EXPR);
+        if expr_invalid {
+            return None;
+        }
+
+        Some(complete)
+    }
+
+    // test(expr) negation
+    // --(-100)
+
+    // test(expr) boolean_not
+    // !!(!true)
     fn unary_expr(&mut self, operator: SyntaxKind) -> Option<CompletedMarker> {
         let precedence = match unary_precedence(operator) {
             Some(operand) => operand,
@@ -130,6 +135,14 @@ impl Parser<'_, '_> {
         Some(complete)
     }
 
+    // test(expr) integers
+    // 123
+
+    // test(expr) bool_true
+    // true
+
+    // test(expr) bool_false
+    // false
     pub(super) fn literal(&mut self) -> Option<CompletedMarker> {
         if !self.at_set(LITERAL_TOKENS) {
             return None;
@@ -141,6 +154,11 @@ impl Parser<'_, '_> {
     }
 
     // TODO: Move to utils
+    // test(expr) var_refs
+    // foo1245__
+
+    // test(expr) underline_var
+    // _
     pub(super) fn identifier(&mut self, wrapper: SyntaxKind) -> Option<CompletedMarker> {
         let marker = self.start();
         match self.current() {
@@ -162,6 +180,11 @@ impl Parser<'_, '_> {
         Some(marker.complete(self, wrapper))
     }
 
+    // test(expr) block_exprs
+    // { 10 } - {{ 5 + ({ 99 }) }}
+
+    // test_err(expr) unclosed_block
+    // {{ 10 }
     pub(super) fn block(&mut self, recovery_set: TokenSet) -> Option<CompletedMarker> {
         let previous = self.recovery_set;
         self.recovery_set = previous.union(recovery_set);
@@ -169,6 +192,7 @@ impl Parser<'_, '_> {
         let block = self.start();
         if !self.expect(T!['{']) {
             block.abandon(self);
+            dbg!();
             return None;
         }
 
@@ -177,8 +201,11 @@ impl Parser<'_, '_> {
         while !self.at(T!['}']) && !self.at_end() {
             if self.expr().is_none() {
                 // Bump so we don't loop forever
-                self.bump();
+                self.error_eat_until(EXPR_RECOVERY_SET);
                 did_error = true;
+                dbg!();
+
+                break;
             }
         }
 

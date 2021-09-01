@@ -12,7 +12,7 @@ use crate::{
     Token, TokenSet,
 };
 use ddlog_diagnostics::{Diagnostic, Label};
-use std::{num::NonZeroUsize, thread};
+use std::{cell::Cell, fmt::Debug, num::NonZeroUsize, rc::Rc, thread};
 
 // FIXME: Add recursion checks
 pub(crate) struct Parser<'src, 'token> {
@@ -22,6 +22,8 @@ pub(crate) struct Parser<'src, 'token> {
     // TODO: Create an error sink
     errors: Vec<Diagnostic>,
     recovery_set: TokenSet,
+    // This is for tracking if the parser is infinitely recursing
+    steps: Rc<Cell<u32>>,
 }
 
 impl<'src, 'token> Parser<'src, 'token> {
@@ -31,6 +33,7 @@ impl<'src, 'token> Parser<'src, 'token> {
             events: Vec::with_capacity(1024),
             errors: Vec::new(),
             recovery_set: TokenSet::empty(),
+            steps: Rc::new(Cell::new(0)),
         }
     }
 
@@ -41,7 +44,8 @@ impl<'src, 'token> Parser<'src, 'token> {
     }
 
     pub(crate) fn parse_expr(mut self) -> (Vec<Event>, Vec<Diagnostic>) {
-        let marker = self.start();
+        let root = self.start();
+
         while !self.at_end() {
             if self.expr().is_none() {
                 let error = Diagnostic::error()
@@ -51,14 +55,13 @@ impl<'src, 'token> Parser<'src, 'token> {
                         self.current_text(),
                     )));
 
-                let current_set = self.recovery_set;
-                self.recovery_set = current_set.union(EXPR_RECOVERY_SET);
-                self.error(error);
-                self.recovery_set = current_set;
+                self.error_eat_until(EXPR_RECOVERY_SET);
+                self.push_error(error);
+                break;
             }
         }
 
-        marker.complete(&mut self, ROOT);
+        root.complete(&mut self, ROOT);
         (self.events, self.errors)
     }
 }
@@ -70,6 +73,10 @@ impl<'src, 'token> Parser<'src, 'token> {
         self.items();
 
         marker.complete(self, ROOT)
+    }
+
+    fn stack_frame(&self) -> StackFrame {
+        StackFrame::new(self.steps.clone())
     }
 
     #[track_caller]
@@ -129,9 +136,6 @@ impl<'src, 'token> Parser<'src, 'token> {
 
     fn error_eat_until(&mut self, set: TokenSet) -> Span {
         let marker = self.start();
-        if !self.at_set(self.recovery_set) && !self.at_end() {
-            self.bump();
-        }
         let span = self.eat_until_set(set);
         marker.complete(self, ERROR);
 
@@ -273,12 +277,12 @@ impl Marker {
         }
     }
 
-    /// Deletes the entered node and any children since.
-    pub(crate) fn discard(mut self, parser: &mut Parser<'_, '_>) {
-        self.completed = true;
-
-        drop(parser.events.drain(self.position..));
-    }
+    // /// Deletes the entered node and any children since.
+    // pub(crate) fn discard(mut self, parser: &mut Parser<'_, '_>) {
+    //     self.completed = true;
+    //
+    //     drop(parser.events.drain(self.position..));
+    // }
 
     /// Deletes the node, but retains its children.
     /// The children will move to the node's parent.
@@ -295,10 +299,11 @@ impl Marker {
 
             _ => unreachable!(),
         }
+        debug_assert_eq!(parser.events[self.position], Event::tombstone());
 
         if self.position == parser.events.len() - 1 {
-            // if we don't need to reorder the vec for this,
-            // actually remove the placeholder event
+            // If we don't need to reorder the vec for this,
+            // just remove the placeholder event
             parser.events.pop();
         }
     }
@@ -338,5 +343,36 @@ impl CompletedMarker {
         }
 
         marker
+    }
+}
+
+struct StackFrame {
+    steps: Rc<Cell<u32>>,
+}
+
+impl StackFrame {
+    fn new(steps: Rc<Cell<u32>>) -> Self {
+        let num_steps = steps.get();
+        steps.set(num_steps + 1);
+
+        Self { steps }
+    }
+}
+
+impl Drop for StackFrame {
+    fn drop(&mut self) {
+        #[cold]
+        #[track_caller]
+        #[inline(never)]
+        fn step_overflow() -> ! {
+            panic!("the parser seems to be recursing forever")
+        }
+
+        let steps = self.steps.get();
+        self.steps.set(steps - 1);
+
+        if !thread::panicking() && steps >= 1_000_000 {
+            step_overflow()
+        }
     }
 }

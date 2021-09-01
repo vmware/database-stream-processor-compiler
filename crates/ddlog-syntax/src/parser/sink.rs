@@ -31,25 +31,26 @@ impl<'src, 'cache, 'interner> Sink<'src, 'cache, 'interner> {
         }
     }
 
-    pub fn finish(mut self) -> GreenNode {
-        let mut preceded_nodes = Vec::new();
+    fn token(&mut self, kind: SyntaxKind, text: &str) {
+        self.cursor += 1;
+        self.builder.token(kind.into(), text);
+    }
 
+    pub(crate) fn finish(mut self) -> GreenNode {
+        let mut preceded_nodes = Vec::new();
         for idx in 0..self.events.len() {
-            match mem::replace(&mut self.events[idx], Event::tombstone()) {
+            match mem::take(&mut self.events[idx]) {
                 // Ignore tombstone events
                 event @ Event::Enter { .. } if event.is_tombstone() => {}
 
                 Event::Enter { kind, preceded_by } => {
-                    self.eat_trivia();
-
                     preceded_nodes.push(kind);
 
                     let (mut idx, mut preceded_by) = (idx, preceded_by);
                     while let Some(rel_diff) = preceded_by {
                         idx += rel_diff.get();
 
-                        preceded_by = match mem::replace(&mut self.events[idx], Event::tombstone())
-                        {
+                        preceded_by = match mem::take(&mut self.events[idx]) {
                             Event::Enter { kind, preceded_by } => {
                                 if kind != TOMBSTONE {
                                     preceded_nodes.push(kind);
@@ -65,6 +66,11 @@ impl<'src, 'cache, 'interner> Sink<'src, 'cache, 'interner> {
                     for kind in preceded_nodes.drain(..).rev() {
                         self.builder.start_node(kind.into());
                     }
+
+                    // Note: We eat trivia *after* entering all the required nodes
+                    //       since otherwise this'll make us eat whitespace before
+                    //       we can open up the root node, which is bad
+                    self.eat_trivia();
                 }
 
                 Event::Exit => {
@@ -72,7 +78,10 @@ impl<'src, 'cache, 'interner> Sink<'src, 'cache, 'interner> {
                     self.eat_trivia();
                 }
 
-                Event::Token { kind, span } => self.token(kind, &self.source[span]),
+                Event::Token { kind, span } => {
+                    self.eat_trivia();
+                    self.token(kind, &self.source[span]);
+                }
             }
         }
 
@@ -90,10 +99,5 @@ impl<'src, 'cache, 'interner> Sink<'src, 'cache, 'interner> {
 
             self.token(token.kind(), token.text());
         }
-    }
-
-    fn token(&mut self, kind: SyntaxKind, text: &str) {
-        self.builder.token(kind.into(), text);
-        self.cursor += 1;
     }
 }

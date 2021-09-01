@@ -1,5 +1,5 @@
 use crate::{FileCache, Span};
-use ariadne::{CharSet, Config, Report, ReportBuilder, ReportKind};
+use ariadne::{CharSet as OutputCharSet, Config, Report, ReportBuilder, ReportKind};
 use std::{
     borrow::Cow,
     io::{self, Write},
@@ -81,18 +81,23 @@ impl Diagnostic {
 
     #[inline]
     #[track_caller]
-    pub fn emit_to<W>(self, cache: &mut FileCache, writer: W) -> io::Result<()>
+    pub fn emit_to<W>(
+        self,
+        config: &DiagnosticConfig,
+        cache: &mut FileCache,
+        writer: W,
+    ) -> io::Result<()>
     where
         W: Write,
     {
-        let diagnostic = self.into_report();
+        let diagnostic = self.into_report(config);
         diagnostic.write(cache, writer)?;
 
         Ok(())
     }
 
     #[track_caller]
-    fn into_report(self) -> Report<Span> {
+    fn into_report(self, config: &DiagnosticConfig) -> Report<Span> {
         let primary_span = self.message_span.or_else(|| {
             self.labels
                 .iter()
@@ -104,10 +109,15 @@ impl Diagnostic {
             self.level.report_kind(),
             primary_span.file(),
             primary_span.start() as usize,
-        )
-        // TODO: Shift this to a render-sided concern and add the ability to choose
-        //       between ascii, extended ascii and compact errors
-        .with_config(Config::default().with_char_set(CharSet::ExtendedAscii));
+        );
+
+        // Setup the proper config options for the diagnostic
+        diagnostic = diagnostic.with_config(
+            Config::default()
+                .with_color(config.colored)
+                .with_compact(config.compact)
+                .with_char_set(config.charset.into_output()),
+        );
 
         if let Some(message) = self.message {
             diagnostic = diagnostic.with_message(message);
@@ -195,5 +205,67 @@ impl Label {
         label = label.with_priority(if self.is_primary { 1 } else { 0 });
 
         label
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DiagnosticConfig {
+    colored: bool,
+    compact: bool,
+    charset: CharSet,
+}
+
+impl DiagnosticConfig {
+    #[inline]
+    pub const fn new() -> Self {
+        Self {
+            colored: true,
+            compact: false,
+            charset: CharSet::Ascii,
+        }
+    }
+
+    #[inline]
+    pub const fn with_color(self, colored: bool) -> Self {
+        Self { colored, ..self }
+    }
+
+    #[inline]
+    pub const fn with_compact(self, compact: bool) -> Self {
+        Self { compact, ..self }
+    }
+
+    #[inline]
+    pub const fn with_charset(self, charset: CharSet) -> Self {
+        Self { charset, ..self }
+    }
+}
+
+impl Default for DiagnosticConfig {
+    #[inline]
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CharSet {
+    Ascii,
+    Unicode,
+}
+
+impl CharSet {
+    const fn into_output(self) -> OutputCharSet {
+        match self {
+            Self::Ascii => OutputCharSet::Ascii,
+            Self::Unicode => OutputCharSet::Unicode,
+        }
+    }
+}
+
+impl Default for CharSet {
+    #[inline]
+    fn default() -> Self {
+        Self::Ascii
     }
 }

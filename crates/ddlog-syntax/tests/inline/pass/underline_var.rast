@@ -1,0 +1,7 @@
+ROOT@0..15
+  COMMENT@0..12 "// kind:expr"
+  WHITESPACE@12..13 "\n"
+  EXPR@13..15
+    VAR_REF@13..14
+      IDENT@13..14 "_"
+    WHITESPACE@14..15 "\n"
