@@ -8,7 +8,7 @@ mod parser;
 mod syntax;
 
 pub use lexer::Token;
-pub use syntax::DifferentialDatalog;
+pub use syntax::{DifferentialDatalog, SyntaxNodeExt, SyntaxTokenExt};
 pub use syntax_kind::SyntaxKind;
 pub use token_set::TokenSet;
 
@@ -25,6 +25,7 @@ pub type NodeCache<'interner> = cstree::NodeCache<'interner, Interner>;
 pub type SyntaxText<'node, 'interner> =
     cstree::SyntaxText<'node, 'interner, Interner, DifferentialDatalog>;
 pub type SyntaxToken = cstree::syntax::SyntaxToken<DifferentialDatalog>;
+pub type SyntaxElement = cstree::SyntaxElement<DifferentialDatalog>;
 
 #[inline]
 pub fn parse<'interner>(
