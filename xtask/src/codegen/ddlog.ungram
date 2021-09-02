@@ -2,34 +2,35 @@ Root = Item
 
 Item = FuncDef | RelationDef
 
-RelationDef = RelMods 'relation' RelName RelCols
-RelMods = ('input' | 'output')?
+RelationDef = RelMods* 'relation' RelName RelCols
+RelMods = Input | Output | Extern
 RelName = 'ident'
-RelCols = '(' (RelCol (',' FuncArg)* ','?)? ')'
-RelCol = Pat ':' Type
+RelCols = '(' RelCol* ')'
+RelCol = Pat ':' column_ty:Type ','?
 
-FuncDef = FuncMods 'function' name:FuncName args:FuncArgs (':' Type)? Block
+FuncDef = FuncMods 'function' name:FuncName args:FuncArgs (':' return_ty:Type)? Block
 FuncMods = 'extern'
 FuncName = 'ident'
-FuncArgs = '(' (FuncArg (',' FuncArg)* ','?)? ')'
-FuncArg = Pat ':' Type
+FuncArgs = '(' FuncArg* ')'
+FuncArg = Pat ':' arg_ty:Type ','?
 
 Type = 'ident'
 
 Block = '{' (Stmt ';'*)* '}'
 Stmt =
-    Expr ';'
+    ExprStmt
     | VarDecl
     | IfStmt
 
+ExprStmt = Expr ';'
 VarDecl = 'var' Pat '=' Expr ';'
 
-IfStmt = IfBlock ('else' IfBlock)* ElseBlock
-IfBlock = 'if' Expr Block
-ElseBlock = ('else' Block)?
+IfStmt = IfBlock* ElseBlock?
+IfBlock = leading_else:'else' 'if' cond:Expr Block
+ElseBlock = 'else' Block
 
-Pat = 'ident' | TuplePat
-TuplePat = '(' Pat (',' Pat)* ','? ')'
+Pat = VarRef | TuplePat
+TuplePat = '(' (Pat ','?)* ')'
 
 Expr =
     Literal
@@ -49,32 +50,71 @@ Assign = Pat '=' Expr
 ParenExpr = '(' Expr ')'
 
 // TODO: Floats
-Literal = Bool | 'number' | 'string'
-Bool = 'true' | 'false'
+Literal = Bool | Number | String
+Bool = True | False
+Number = 'number'
+String = 'string'
 
 RetExpr = 'return' Expr
 
 UnaryExpr = UnaryOp Expr
-UnaryOp = '!' | '-'
+UnaryOp = Bang | Minus
 
-BinExpr = Expr BinOp Expr
+BinExpr = lhs:Expr op:BinOp rhs:Expr
 BinOp =
-    '+'
-    | '-'
-    | '*'
-    | '/'
-    | '%'
-    | '=>'
-    | '|'
-    | '^'
-    | '&'
-    | '<<'
-    | '>>'
-    | 'and'
-    | 'or'
-    | '=='
-    | '!='
-    | '>'
-    | '>='
-    | '<'
-    | '<='
+    Plus
+    | Minus
+    | Star
+    | Slash 
+    | Percent
+    | RightRocket
+    | Pipe
+    | Caret
+    | Ampersand
+    | Shl
+    | Shr
+    | And
+    | Or
+    | EqEq
+    | Neq
+    | RAngle
+    | RAngleEq
+    | LAngle
+    | LAngleEq
+
+Or = 'or'
+And = 'and'
+True = 'true'
+False = 'false'
+Input = 'input'
+Output = 'output'
+Extern = 'extern'
+
+Eq = '='
+Bang = '!'
+Pipe = '|'
+Plus = '+'
+Star = '*'
+Neq = '!='
+Shl = '<<'
+Shr = '>>'
+Caret = '^'
+Comma = ','
+Colon = ':'
+Minus = '-'
+Slash = '/'
+EqEq = '=='
+LAngle = '<'
+RAngle = '>'
+LBrack = '['
+RBrack = ']'
+LCurly = '{'
+RCurly = '}'
+LParen = '('
+RParen = ')'
+Percent = '%'
+Ampersand = '&'
+Semicolon = ';'
+LAngleEq = '<='
+RAngleEq = '>='
+RightRocket = '=>'

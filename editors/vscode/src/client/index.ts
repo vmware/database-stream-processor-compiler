@@ -11,10 +11,12 @@ export async function launch(
     context: ExtensionContext
 ): Promise<LanguageClient> {
     const run: Executable = {
-        command: "ddlog-lsp",
+        // FIXME: Change exe name & args
+        command: "ddlog-driver",
     };
     const debug: Executable = {
-        command: "ddlog-lsp",
+        // FIXME: Change exe name & args
+        command: "ddlog-driver",
         options: {
             env: {
                 RUST_BACKTRACE: 1,
@@ -30,9 +32,7 @@ export async function launch(
         diagnosticCollectionName: "ddlog-lsp",
         documentSelector: [
             { language: "ddlog", scheme: "file" },
-            { language: "ddlog", scheme: "untitled" },
             { language: "ddlog-command", scheme: "file" },
-            { language: "ddlog-command", scheme: "untitled" },
         ],
         synchronize: {
             fileEvents: [

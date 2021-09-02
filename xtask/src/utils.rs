@@ -158,6 +158,15 @@ pub mod fs2 {
             .with_context(|| format!("failed to create dir '{}'", path.display()))
     }
 
+    /// Removes a file
+    pub fn remove_file<P>(path: P) -> Result<()>
+    where
+        P: AsRef<Path>,
+    {
+        let path = path.as_ref();
+        fs::remove_file(path).with_context(|| format!("failed to remove '{}'", path.display()))
+    }
+
     /// A helper to update file on disk if it has changed
     pub fn update<P>(path: P, contents: &str, mode: CodegenMode) -> Result<()>
     where
@@ -200,4 +209,11 @@ pub mod fs2 {
 
         Ok(())
     }
+}
+
+pub mod ansi {
+    pub const YELLOW: &str = "\x1B[1;33m";
+    // pub const GREEN: &str = "\x1B[1;32m";
+    // pub const RED: &str = "\x1B[1;31m";
+    pub const RESET: &str = "\x1B[0m";
 }

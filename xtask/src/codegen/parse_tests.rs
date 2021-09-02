@@ -3,13 +3,14 @@
 
 use crate::{
     utils::{
-        fs2::{self, update},
+        ansi::{RESET, YELLOW},
+        fs2::{self, display_path, update},
         project_root, CodegenMode,
     },
     Result,
 };
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     fs, iter, mem,
     path::{Path, PathBuf},
 };
@@ -42,20 +43,80 @@ fn install_tests(tests: &HashMap<String, Test>, test_dir: &str, mode: CodegenMod
 
     // ok is never actually read, but it needs to be specified to create a Test in existing_tests
     let existing = existing_tests(&tests_dir, true)?;
-    for test in existing.keys().filter(|&test| !tests.contains_key(test)) {
-        panic!("test is deleted: {}", test);
+    if let Some(test) = existing.keys().find(|&test| !tests.contains_key(test)) {
+        anyhow::bail!("test was deleted: {}", test);
     }
 
     for (name, test) in tests {
         let path = match existing.get(name) {
             Some((path, _)) => path.clone(),
-            None => {
-                let file_name = format!("{}.dl", name);
-                tests_dir.join(file_name)
-            }
+            None => tests_dir.join(format!("{}.dl", name)),
         };
 
         update(&path, &test.code, mode)?;
+    }
+
+    let test_paths: HashSet<_> = tests
+        .values()
+        .flat_map(|test| {
+            iter::once(tests_dir.join(format!("{}.dl", test.name)))
+                .chain(iter::once(tests_dir.join(format!("{}.rast", test.name))))
+        })
+        .chain(iter::once(tests_dir.clone()))
+        .collect();
+
+    // Delete any extra files
+    for entry in WalkDir::new(&tests_dir).into_iter().flatten() {
+        if !test_paths.contains(entry.path()) {
+            match mode {
+                CodegenMode::Run => {
+                    eprintln!("removing '{}'", display_path(entry.path()));
+                    fs2::remove_file(entry.path())?;
+                }
+
+                CodegenMode::Check => {
+                    anyhow::bail!("excess file in test dir: '{}'", display_path(entry.path()));
+                }
+            }
+        }
+    }
+
+    let mut missing_dumps = false;
+    for (name, test) in tests {
+        let dump_file = tests_dir.join(format!("{}.rast", test.name));
+
+        if !dump_file.exists() {
+            eprintln!(
+                "{}warning{}: the dump file associated with test '{}' doesn't exist (dump file: '{}')",
+                YELLOW, RESET,
+                name,
+                display_path(dump_file),
+            );
+
+            missing_dumps = true;
+        }
+    }
+
+    if missing_dumps {
+        eprintln!(
+            "{}warning{}: missing dump files, run `cargo test` with `UPDATE_EXPECT` set to 1",
+            YELLOW, RESET,
+        );
+        eprintln!(
+            "{}warning{}:     shell: `UPDATE_EXPECT=1 cargo test`",
+            YELLOW, RESET,
+        );
+        eprintln!(
+            "{}warning{}:     cmd: `set UPDATE_EXPECT=1 && cargo test && set UPDATE_EXPECT=`",
+            YELLOW, RESET,
+        );
+        eprintln!(
+            "{}warning{}:     powershell: `$env:UPDATE_EXPECT=1; cargo test; Remove-Item Env:\\UPDATE_EXPECT`",
+            YELLOW, RESET,
+        );
+    }
+    if missing_dumps && mode.is_check() {
+        anyhow::bail!("missing dump files");
     }
 
     Ok(())

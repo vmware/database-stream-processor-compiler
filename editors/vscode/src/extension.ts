@@ -16,3 +16,5 @@ export async function deactivate() {
 
     await languageClient.stop();
 }
+
+// TODO: Problem matchers, commands, settings, etc.

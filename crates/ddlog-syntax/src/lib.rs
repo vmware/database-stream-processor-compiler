@@ -2,7 +2,7 @@
 mod syntax_kind;
 #[macro_use]
 mod token_set;
-mod ast;
+pub mod ast;
 mod lexer;
 mod parser;
 mod syntax;
@@ -24,6 +24,7 @@ pub type GreenNodeBuilder<'cache, 'interner> =
 pub type NodeCache<'interner> = cstree::NodeCache<'interner, Interner>;
 pub type SyntaxText<'node, 'interner> =
     cstree::SyntaxText<'node, 'interner, Interner, DifferentialDatalog>;
+pub type SyntaxToken = cstree::syntax::SyntaxToken<DifferentialDatalog>;
 
 #[inline]
 pub fn parse<'interner>(

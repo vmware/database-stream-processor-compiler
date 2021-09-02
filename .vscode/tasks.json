@@ -2,7 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "codegen",
+            "label": "run codegen",
             "type": "process",
             "command": "cargo",
             "args": [
@@ -11,6 +11,63 @@
             ],
             "problemMatcher": [
                 "$rustc"
+            ]
+        },
+        {
+            "label": "build ddlog-driver",
+            "type": "shell",
+            "command": "cargo",
+            "args": [
+                "build",
+                "--bin",
+                "ddlog-driver"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$rustc"
+            ]
+        },
+        {
+            "label": "build extension",
+            "type": "shell",
+            "command": "yarn",
+            "args": [
+                "build"
+            ],
+            "group": "build",
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/editors/vscode"
+            }
+        },
+        {
+            "label": "build vsix",
+            "type": "shell",
+            "command": "yarn",
+            "args": [
+                "vsce",
+                "package",
+                "--yarn"
+            ],
+            "group": "build",
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/editors/vscode"
+            }
+        },
+        {
+            "label": "Build Client + Server",
+            "dependsOn": [
+                "build extension",
+                "build vsix",
+                "run codegen",
+                "build ddlog-driver"
             ]
         }
     ]

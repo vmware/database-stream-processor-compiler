@@ -34,6 +34,7 @@ enum XTaskOptions {
 
     #[options(help = "syntax and parser test code generation")]
     Codegen(XTaskCodegen),
+    // TODO: xtask test --bless
 }
 
 #[derive(Debug, Clone, Options)]

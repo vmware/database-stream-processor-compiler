@@ -8,7 +8,7 @@
         "url": "https://github.com/Kixiron/ddlog.git"
     },
     "displayName": "vscode-ddlog",
-    "publisher": "VMWare",
+    "publisher": "vmware",
     "engines": {
         "vscode": "^1.49.0"
     },
@@ -35,5 +35,12 @@
         "onLanguage:ddlog",
         "workspaceContains:**/*.dl",
         "workspaceContains:**/*.dat"
-    ]
+    ],
+    "contributes": {
+        "configurationDefaults": {
+            "[ddlog]": {
+                "editor.semanticHighlighting.enabled": true
+            }
+        }
+    }
 }
