@@ -30,6 +30,7 @@ pub trait SyntaxNodeExt {
     fn to_node(&self) -> &SyntaxNode;
 
     /// Get all of the tokens of this node, recursively, including whitespace and comments.
+    #[inline]
     fn tokens(&self) -> Vec<&SyntaxToken> {
         self.to_node()
             .descendants_with_tokens()
@@ -38,6 +39,7 @@ pub trait SyntaxNodeExt {
     }
 
     /// Get all the tokens of this node, recursively, not including whitespace and comments.
+    #[inline]
     fn lossy_tokens(&self) -> Vec<&SyntaxToken> {
         self.to_node()
             .descendants_with_tokens()
@@ -46,6 +48,7 @@ pub trait SyntaxNodeExt {
     }
 
     /// Get the first non-whitespace child token.
+    #[inline]
     fn first_lossy_token(&self) -> Option<&SyntaxToken> {
         self.to_node()
             .children_with_tokens()
@@ -54,6 +57,7 @@ pub trait SyntaxNodeExt {
     }
 
     /// Check if the node is a certain AST node and that it can be casted to it.
+    #[inline]
     fn is<T>(&self) -> bool
     where
         T: AstNode,
@@ -65,6 +69,7 @@ pub trait SyntaxNodeExt {
     ///
     /// # Panics
     /// Panics if the underlying node cannot be cast to the AST node
+    #[inline]
     fn to<T>(&self) -> Cow<'_, T>
     where
         T: AstNode + Clone,
@@ -78,6 +83,7 @@ pub trait SyntaxNodeExt {
     }
 
     /// Try to cast this node to a certain AST node
+    #[inline]
     fn try_to<T>(&self) -> Option<Cow<'_, T>>
     where
         T: AstNode + Clone,
@@ -102,6 +108,7 @@ pub trait SyntaxNodeExt {
     ///
     /// assert_ne!(left.text(), right.text());
     /// ```
+    #[inline]
     fn lexical_eq(&self, right: &SyntaxNode, interner: &Interner) -> bool {
         let left = self.lossy_tokens();
         let right = right.lossy_tokens();
@@ -129,6 +136,7 @@ pub trait SyntaxNodeExt {
     ///
     /// assert_eq!(node.text_range(), TextRange::new(0.into(), 11.into()));
     /// ```
+    #[inline]
     fn trimmed_range(&self) -> TextRange {
         let node = self.to_node();
         let tokens = node.lossy_tokens();
@@ -154,6 +162,7 @@ pub trait SyntaxNodeExt {
     ///
     /// assert_eq!(node.trimmed_text(), "foo. bar");
     /// ```
+    #[inline]
     fn trimmed_text<'node, 'intern>(
         &'node self,
         interner: &'intern Interner,
@@ -168,7 +177,8 @@ pub trait SyntaxNodeExt {
     }
 
     /// Check whether this node's kind is contained in a token set.
-    fn in_ts(&self, set: TokenSet) -> bool {
+    #[inline]
+    fn in_set(&self, set: TokenSet) -> bool {
         set.contains(self.to_node().kind())
     }
 
@@ -213,6 +223,7 @@ pub trait SyntaxNodeExt {
     ///             SUBSUBCHILD
     ///     CHILD // Go on to the next child and do the same thing
     /// ```
+    #[inline]
     fn descendants_with<F>(&self, func: &mut F)
     where
         F: FnMut(&SyntaxNode) -> bool,
@@ -226,6 +237,7 @@ pub trait SyntaxNodeExt {
 
     /// Separate all the lossy tokens of this node, then compare each token's text with the corresponding
     /// text in `tokens`.
+    #[inline]
     fn structural_lossy_token_eq(&self, tokens: &[impl AsRef<str>], interner: &Interner) -> bool {
         let node_tokens = self.to_node().lossy_tokens();
         if node_tokens.len() == tokens.len() {
@@ -239,6 +251,7 @@ pub trait SyntaxNodeExt {
     }
 
     /// Whether the node contains any comments.
+    #[inline]
     fn contains_comments(&self) -> bool {
         self.tokens()
             .iter()
@@ -246,11 +259,13 @@ pub trait SyntaxNodeExt {
     }
 
     /// Get the first child with a specific kind.
+    #[inline]
     fn child_with_kind(&self, kind: SyntaxKind) -> Option<&SyntaxNode> {
         self.to_node().children().find(|child| child.kind() == kind)
     }
 
     /// Get the parent of this node, recursing through any grouping expressions
+    #[inline]
     fn expr_parent(&self) -> Option<&SyntaxNode> {
         let parent = self.to_node().parent()?;
         if parent.kind() == SyntaxKind::PAREN_EXPR {
@@ -261,6 +276,7 @@ pub trait SyntaxNodeExt {
     }
 
     /// Get the first child in this node that can be casted to an AST node
+    #[inline]
     fn child_with_ast<T>(&self) -> Option<Cow<'_, T>>
     where
         T: AstNode + Clone,
@@ -269,6 +285,7 @@ pub trait SyntaxNodeExt {
     }
 
     /// Same as [`descendants_with`](Self::descendants_with) but considers tokens too.
+    #[inline]
     fn descendants_with_tokens_with<F>(&self, func: &mut F)
     where
         F: FnMut(&NodeOrToken<&SyntaxNode, &SyntaxToken>) -> bool,
@@ -290,6 +307,7 @@ pub trait SyntaxNodeExt {
     /// Get a specific token in the node which matches a syntax kind.
     ///
     /// This does not consider tokens in descendant nodes
+    #[inline]
     fn token_with_kind(&self, kind: SyntaxKind) -> Option<&SyntaxToken> {
         self.to_node()
             .children_with_tokens()
