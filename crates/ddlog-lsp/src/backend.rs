@@ -9,15 +9,14 @@ use lsp_text::RopeExt;
 use lspower::{
     jsonrpc::Result,
     lsp::{
-        CompletionItem, CompletionParams, CompletionResponse, DidChangeConfigurationParams,
-        DidChangeTextDocumentParams, DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams,
-        DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams,
-        ExecuteCommandParams, InitializeParams, InitializeResult, InitializedParams, MessageType,
-        SemanticTokensDeltaParams, SemanticTokensFullDeltaResult, SemanticTokensFullOptions,
-        SemanticTokensLegend, SemanticTokensOptions, SemanticTokensParams,
-        SemanticTokensRangeParams, SemanticTokensRangeResult, SemanticTokensResult,
-        SemanticTokensServerCapabilities, ServerCapabilities, TextDocumentSyncCapability,
-        TextDocumentSyncKind, TextDocumentSyncOptions, WorkspaceEdit,
+        DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
+        DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
+        DidSaveTextDocumentParams, ExecuteCommandParams, InitializeParams, InitializeResult,
+        InitializedParams, MessageType, SemanticTokensDeltaParams, SemanticTokensFullDeltaResult,
+        SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions,
+        SemanticTokensParams, SemanticTokensRangeParams, SemanticTokensRangeResult,
+        SemanticTokensResult, SemanticTokensServerCapabilities, ServerCapabilities,
+        TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions, WorkspaceEdit,
     },
     Client, LanguageServer,
 };
