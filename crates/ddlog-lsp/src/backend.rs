@@ -13,16 +13,20 @@ use lspower::{
         DidChangeTextDocumentParams, DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams,
         DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams,
         ExecuteCommandParams, InitializeParams, InitializeResult, InitializedParams, MessageType,
-        SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions,
-        SemanticTokensParams, SemanticTokensResult, SemanticTokensServerCapabilities,
-        ServerCapabilities, TextDocumentSyncCapability, TextDocumentSyncKind,
-        TextDocumentSyncOptions, WorkspaceEdit,
+        SemanticTokensDeltaParams, SemanticTokensFullDeltaResult, SemanticTokensFullOptions,
+        SemanticTokensLegend, SemanticTokensOptions, SemanticTokensParams,
+        SemanticTokensRangeParams, SemanticTokensRangeResult, SemanticTokensResult,
+        SemanticTokensServerCapabilities, ServerCapabilities, TextDocumentSyncCapability,
+        TextDocumentSyncKind, TextDocumentSyncOptions, WorkspaceEdit,
     },
     Client, LanguageServer,
 };
 use serde_json::Value;
 use std::fmt::Display;
 use triomphe::Arc;
+
+const DDLOG_LANG: &str = "ddlog.dl";
+const DDLOG_DAT_LANG: &str = "ddlog.dat";
 
 #[derive(Debug)]
 pub struct Backend {
@@ -59,12 +63,14 @@ impl Backend {
 
 #[lspower::async_trait]
 impl LanguageServer for Backend {
-    async fn initialize(&self, _params: InitializeParams) -> Result<InitializeResult> {
+    async fn initialize(&self, params: InitializeParams) -> Result<InitializeResult> {
+        self.info(format!("initializing: {:?}", params)).await;
+
         let capabilities = ServerCapabilities {
             text_document_sync: Some(TextDocumentSyncCapability::Options(
                 TextDocumentSyncOptions {
                     open_close: Some(true),
-                    change: Some(TextDocumentSyncKind::Full),
+                    change: Some(TextDocumentSyncKind::Incremental),
                     ..Default::default()
                 },
             )),
@@ -74,11 +80,12 @@ impl LanguageServer for Backend {
                         token_types: SUPPORTED_TYPES.to_vec(),
                         token_modifiers: SUPPORTED_MODIFIERS.to_vec(),
                     },
+                    range: Some(true),
                     full: Some(SemanticTokensFullOptions::Bool(true)),
-                    ..SemanticTokensOptions::default()
+                    ..Default::default()
                 }),
             ),
-            ..ServerCapabilities::default()
+            ..Default::default()
         };
 
         Ok(InitializeResult {
@@ -87,8 +94,8 @@ impl LanguageServer for Backend {
         })
     }
 
-    async fn initialized(&self, initialized: InitializedParams) {
-        self.info(format!("initialized: {:?}", initialized)).await;
+    async fn initialized(&self, params: InitializedParams) {
+        self.info(format!("initialized: {:?}", params)).await;
     }
 
     async fn shutdown(&self) -> Result<()> {
@@ -134,7 +141,9 @@ impl LanguageServer for Backend {
         ))
         .await;
 
-        if opened.text_document.language_id == "ddlog" {
+        if opened.text_document.language_id == DDLOG_LANG
+            || opened.text_document.language_id == DDLOG_DAT_LANG
+        {
             self.session
                 .create_file(&opened.text_document.uri, opened.text_document.text);
         }
@@ -184,20 +193,48 @@ impl LanguageServer for Backend {
         }
     }
 
-    async fn completion(&self, _: CompletionParams) -> Result<Option<CompletionResponse>> {
-        Ok(Some(CompletionResponse::Array(vec![
-            CompletionItem::new_simple("Hello".to_string(), "Some detail".to_string()),
-            CompletionItem::new_simple("Bye".to_string(), "More detail".to_string()),
-        ])))
-    }
-
     async fn semantic_tokens_full(
         &self,
         params: SemanticTokensParams,
     ) -> Result<Option<SemanticTokensResult>> {
+        let file_name = &params.text_document.uri;
+        self.info(format!("semantic tokens full: {}", file_name))
+            .await;
+
         Ok(Some(SemanticTokensResult::Tokens(
             // FIXME: Error handling
-            providers::semantic_tokens::handle_semantic_tokens_full(&self.session, params).unwrap(),
+            providers::semantic_tokens::handle_semantic_tokens_full(&self.session, file_name)
+                .unwrap(),
+        )))
+    }
+
+    async fn semantic_tokens_full_delta(
+        &self,
+        params: SemanticTokensDeltaParams,
+    ) -> Result<Option<SemanticTokensFullDeltaResult>> {
+        let file_name = &params.text_document.uri;
+        self.info(format!("semantic tokens full delta: {}", file_name))
+            .await;
+
+        Ok(Some(SemanticTokensFullDeltaResult::Tokens(
+            // FIXME: Error handling
+            providers::semantic_tokens::handle_semantic_tokens_full(&self.session, file_name)
+                .unwrap(),
+        )))
+    }
+
+    async fn semantic_tokens_range(
+        &self,
+        params: SemanticTokensRangeParams,
+    ) -> Result<Option<SemanticTokensRangeResult>> {
+        let file_name = &params.text_document.uri;
+        self.info(format!("semantic tokens range: {}", file_name))
+            .await;
+
+        Ok(Some(SemanticTokensRangeResult::Tokens(
+            // FIXME: Error handling
+            providers::semantic_tokens::handle_semantic_tokens_full(&self.session, file_name)
+                .unwrap(),
         )))
     }
 }

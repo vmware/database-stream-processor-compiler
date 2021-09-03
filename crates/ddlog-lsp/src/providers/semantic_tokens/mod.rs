@@ -6,13 +6,10 @@ pub(crate) mod tokens;
 
 use crate::{providers::semantic_tokens::highlighter::SemanticHighlighter, Session};
 use anyhow::Result;
-use lspower::lsp::{SemanticTokens, SemanticTokensParams};
+use lspower::lsp::{SemanticTokens, Url};
 
-pub(crate) fn handle_semantic_tokens_full(
-    session: &Session,
-    params: SemanticTokensParams,
-) -> Result<SemanticTokens> {
-    let file = session.file_id(&params.text_document.uri)?;
+pub(crate) fn handle_semantic_tokens_full(session: &Session, url: &Url) -> Result<SemanticTokens> {
+    let file = session.file_id(url)?;
     let text = session.file_text(file);
 
     // FIXME: Allow the parser & lexer to directly operate off of ropes

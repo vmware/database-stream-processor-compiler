@@ -28,7 +28,7 @@ pub fn parse_tests(mode: CodegenMode) -> Result<()> {
     install_tests(&tests.fail, "crates/ddlog-syntax/tests/inline/fail", mode)?;
 
     match mode {
-        CodegenMode::Run => eprintln!("finished running tests generation"),
+        CodegenMode::Run => eprintln!("finished running test generation"),
         CodegenMode::Check => eprintln!("finished checking generated tests"),
     }
 

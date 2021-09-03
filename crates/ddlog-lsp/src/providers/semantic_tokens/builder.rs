@@ -59,6 +59,7 @@ impl SemanticTokensBuilder {
     }
 }
 
+#[allow(dead_code)]
 pub(crate) fn diff_tokens(old: &[SemanticToken], new: &[SemanticToken]) -> Vec<SemanticTokensEdit> {
     let offset = new
         .iter()

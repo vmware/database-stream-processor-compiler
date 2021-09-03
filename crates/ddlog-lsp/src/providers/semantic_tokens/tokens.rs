@@ -54,6 +54,7 @@ macro_rules! define_semantic_token_types {
 }
 
 define_semantic_token_types![
+    /*
     (ANGLE, "angle"),
     (ARITHMETIC, "arithmetic"),
     (ATTRIBUTE, "attribute"),
@@ -83,6 +84,7 @@ define_semantic_token_types![
     (TYPE_ALIAS, "typeAlias"),
     (UNION, "union"),
     (UNRESOLVED_REFERENCE, "unresolvedReference"),
+    */
 ];
 
 macro_rules! define_semantic_token_modifiers {
@@ -103,6 +105,7 @@ macro_rules! define_semantic_token_modifiers {
 }
 
 define_semantic_token_modifiers![
+    /*
     (CONSTANT, "constant"),
     (CONTROL_FLOW, "controlFlow"),
     (INJECTED, "injected"),
@@ -117,4 +120,5 @@ define_semantic_token_modifiers![
     (CALLABLE, "callable"),
     (INTRA_DOC_LINK, "intraDocLink"),
     (REFERENCE, "reference"),
+    */
 ];

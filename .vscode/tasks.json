@@ -27,6 +27,9 @@
             },
             "problemMatcher": [
                 "$rustc"
+            ],
+            "dependsOn": [
+                "run codegen"
             ]
         },
         {
@@ -59,14 +62,15 @@
             ],
             "options": {
                 "cwd": "${workspaceFolder}/editors/vscode"
-            }
+            },
+            "dependsOn": [
+                "build extension"
+            ]
         },
         {
             "label": "Build Client + Server",
             "dependsOn": [
-                "build extension",
                 "build vsix",
-                "run codegen",
                 "build ddlog-driver"
             ]
         }

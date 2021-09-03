@@ -2,7 +2,7 @@
 
 mod expr;
 
-use crate::{FileId, Interner, NodeCache, Parsed, SyntaxNode};
+use crate::{ast::AstNode, FileId, Interner, NodeCache, Parsed, SyntaxNode};
 use ddlog_diagnostics::{Diagnostic, DiagnosticConfig, FileCache};
 use expect_test::{expect, expect_file, Expect};
 use once_cell::sync::Lazy;
@@ -90,7 +90,7 @@ fn parser_tests() {
             assert_errors_are_absent(
                 parsed.errors(),
                 path,
-                parsed.root(),
+                parsed.root().syntax(),
                 &diagnostic_config,
                 &mut file_cache,
             );

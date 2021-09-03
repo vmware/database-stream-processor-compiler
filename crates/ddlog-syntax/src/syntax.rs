@@ -1,5 +1,5 @@
 use crate::{
-    ast::{nodes, AstNode},
+    ast::{nodes, AstNode, AstToken},
     SyntaxKind, SyntaxNode, SyntaxText, SyntaxToken, TokenSet,
 };
 use cstree::{NodeOrToken, TextRange};
@@ -329,6 +329,47 @@ pub trait SyntaxTokenExt {
     #[inline]
     fn in_set(&self, set: TokenSet) -> bool {
         set.contains(self.to_token().kind())
+    }
+
+    #[inline]
+    fn text_range(&self) -> TextRange {
+        self.to_token().text_range()
+    }
+
+    /// Check if the node is a certain AST token and that it can be casted to it.
+    #[inline]
+    fn is<T>(&self) -> bool
+    where
+        T: AstToken,
+    {
+        T::can_cast_from(self.to_token().kind())
+    }
+
+    /// Cast this token to a certain AST token.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the underlying token cannot be cast to the AST token
+    #[inline]
+    fn to<T>(&self) -> &T
+    where
+        T: AstToken + Clone,
+    {
+        T::cast(self.to_token()).unwrap_or_else(|| {
+            panic!(
+                "Tried to cast token as `{:?}` but was unable to cast",
+                stringify!(T),
+            )
+        })
+    }
+
+    /// Try to cast this node to a certain AST token
+    #[inline]
+    fn try_to<T>(&self) -> Option<&T>
+    where
+        T: AstToken,
+    {
+        T::cast(self.to_token())
     }
 }
 

@@ -18,7 +18,7 @@
         "watch": "tsc -watch -p ."
     },
     "devDependencies": {
-        "@types/node": "^14.11.2",
+        "@types/node": "^16.7.10",
         "@types/vscode": "^1.49.0",
         "@typescript-eslint/eslint-plugin": "^4.3.0",
         "@typescript-eslint/parser": "^4.3.0",
@@ -32,15 +32,55 @@
     "enableProposedApi": true,
     "main": "./out/extension",
     "activationEvents": [
-        "onLanguage:ddlog",
+        "onLanguage:ddlog.dl",
+        "onLanguage:ddlog.dat",
         "workspaceContains:**/*.dl",
         "workspaceContains:**/*.dat"
     ],
     "contributes": {
         "configurationDefaults": {
-            "[ddlog]": {
+            "[ddlog.dl]": {
+                "editor.semanticHighlighting.enabled": true
+            },
+            "[ddlog.dat]": {
                 "editor.semanticHighlighting.enabled": true
             }
-        }
+        },
+        "languages": [
+            {
+                "id": "ddlog.dl",
+                "extensions": [
+                    ".dl"
+                ],
+                "aliases": [
+                    "DDlog",
+                    "ddlog",
+                    "Differential Datalog"
+                ],
+                "configuration": "language-configuration.json"
+            },
+            {
+                "id": "ddlog.dat",
+                "extensions": [
+                    ".dat"
+                ],
+                "aliases": [
+                    "DDlog Command",
+                    "ddlog command",
+                    "Differential Datalog Command"
+                ],
+                "configuration": "language-configuration.json"
+            }
+        ],
+        "semanticTokenScopes": [
+            {
+                "language": "ddlog.dl",
+                "scopes": {}
+            },
+            {
+                "language": "ddlog.dat",
+                "scopes": {}
+            }
+        ]
     }
 }

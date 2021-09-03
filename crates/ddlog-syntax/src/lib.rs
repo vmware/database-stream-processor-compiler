@@ -7,12 +7,15 @@ mod lexer;
 mod parser;
 mod syntax;
 
+use std::mem;
+
 pub use lexer::Token;
 pub use syntax::{DifferentialDatalog, SyntaxNodeExt, SyntaxTokenExt};
 pub use syntax_kind::SyntaxKind;
 pub use token_set::TokenSet;
 
 use crate::{
+    ast::nodes::Root,
     lexer::Lexer,
     parser::{sink::Sink, Parser},
 };
@@ -79,8 +82,10 @@ impl Parsed {
 
     /// Get a reference to the root syntax node
     #[inline]
-    pub const fn root(&self) -> &SyntaxNode {
-        &self.root
+    pub fn root(&self) -> &Root {
+        // Safety: `SyntaxNode` and `Root` have the same layouts,
+        //         `Root` is transparent around `SyntaxNode`
+        unsafe { mem::transmute::<&SyntaxNode, &Root>(&self.root) }
     }
 
     /// Get a reference to the parser's diagnostics

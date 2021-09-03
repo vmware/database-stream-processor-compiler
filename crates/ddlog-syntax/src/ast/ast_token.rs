@@ -1,3 +1,4 @@
+use cstree::TextRange;
 use ddlog_diagnostics::Interner;
 
 use crate::{SyntaxKind, SyntaxToken};
@@ -15,5 +16,10 @@ pub trait AstToken {
     #[inline]
     fn text<'intern>(&self, interner: &'intern Interner) -> &'intern str {
         self.syntax().resolve_text(interner)
+    }
+
+    #[inline]
+    fn text_range(&self) -> TextRange {
+        self.syntax().text_range()
     }
 }

@@ -2,16 +2,33 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "args": [
-                "--extensionDevelopmentPath=${workspaceFolder}"
-            ],
-            "name": "Launch Extension",
-            "outFiles": [
-                "${workspaceFolder}/out/**/*.js"
-            ],
-            "preLaunchTask": "Build Client + Server",
+            "name": "Debug LSP Server",
+            "type": "lldb",
             "request": "launch",
-            "type": "pwa-extensionHost"
+            "program": "${workspaceFolder}/target/debug/ddlog-driver.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build ddlog-driver",
+            "terminal": "external",
         },
+        {
+            "name": "Launch Client",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}/editors/vscode"
+            ],
+            "preLaunchTask": "build vsix",
+        }
     ],
+    "compounds": [
+        {
+            "name": "Client + Server",
+            "configurations": [
+                "Launch Client",
+                "Debug LSP Server"
+            ]
+        }
+    ]
 }
