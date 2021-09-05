@@ -4,6 +4,7 @@ use lspower::lsp::{Range, SemanticToken, SemanticTokenType, SemanticTokens, Sema
 /// Tokens are encoded relative to each other.
 ///
 /// This is a direct port of <https://github.com/microsoft/vscode-languageserver-node/blob/f425af9de46a0187adb78ec8a46b9b2ce80c5412/server/src/sematicTokens.proposed.ts#L45>
+#[derive(Debug)]
 pub(crate) struct SemanticTokensBuilder {
     // TODO: Make this non-optional
     id: Option<String>,
@@ -29,6 +30,7 @@ impl SemanticTokensBuilder {
 
         if !self.data.is_empty() {
             push_line -= self.prev_line;
+
             if push_line == 0 {
                 push_char -= self.prev_char;
             }

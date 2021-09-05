@@ -10,45 +10,43 @@
     "displayName": "vscode-ddlog",
     "publisher": "vmware",
     "engines": {
-        "vscode": "^1.49.0"
+        "vscode": "^1.57.0"
     },
     "scripts": {
         "build": "tsc -p .",
         "lint": "eslint 'src/**/*.{js,ts,tsx}'",
-        "watch": "tsc -watch -p ."
+        "watch": "tsc -watch -p .",
+        "package": "vsce package -o differential-datalog.vsix"
+    },
+    "dependencies": {
+        "vscode-languageclient": "^7.1.0-next.4"
     },
     "devDependencies": {
         "@types/node": "^16.7.10",
-        "@types/vscode": "^1.49.0",
+        "@types/vscode": "^1.57.0",
         "@typescript-eslint/eslint-plugin": "^4.3.0",
         "@typescript-eslint/parser": "^4.3.0",
         "eslint": "^7.10.0",
         "typescript": "^4.0.3",
-        "vsce": "^1.96.1"
-    },
-    "dependencies": {
-        "vscode-languageclient": "^6.1.3"
+        "vsce": "^1.95.1"
     },
     "enableProposedApi": true,
     "main": "./out/extension",
     "activationEvents": [
-        "onLanguage:ddlog.dl",
-        "onLanguage:ddlog.dat",
-        "workspaceContains:**/*.dl",
-        "workspaceContains:**/*.dat"
+        "onLanguage:ddlog"
     ],
     "contributes": {
         "configurationDefaults": {
-            "[ddlog.dl]": {
+            "[ddlog]": {
                 "editor.semanticHighlighting.enabled": true
             },
-            "[ddlog.dat]": {
+            "[ddlog-command]": {
                 "editor.semanticHighlighting.enabled": true
             }
         },
         "languages": [
             {
-                "id": "ddlog.dl",
+                "id": "ddlog",
                 "extensions": [
                     ".dl"
                 ],
@@ -58,27 +56,11 @@
                     "Differential Datalog"
                 ],
                 "configuration": "language-configuration.json"
-            },
-            {
-                "id": "ddlog.dat",
-                "extensions": [
-                    ".dat"
-                ],
-                "aliases": [
-                    "DDlog Command",
-                    "ddlog command",
-                    "Differential Datalog Command"
-                ],
-                "configuration": "language-configuration.json"
             }
         ],
         "semanticTokenScopes": [
             {
-                "language": "ddlog.dl",
-                "scopes": {}
-            },
-            {
-                "language": "ddlog.dat",
+                "language": "ddlog",
                 "scopes": {}
             }
         ]

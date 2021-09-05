@@ -108,7 +108,34 @@ pub fn project_root() -> PathBuf {
 pub mod fs2 {
     use crate::utils::{normalize_line_endings, normalize_path_slashes, project_root, CodegenMode};
     use anyhow::{Context, Result};
-    use std::{fs, path::Path};
+    use std::{
+        env, fs,
+        panic::{self, UnwindSafe},
+        path::Path,
+    };
+
+    pub fn with_working_dir<P, F, T>(path: P, with: F) -> Result<T>
+    where
+        P: AsRef<Path>,
+        F: FnOnce() -> T + UnwindSafe,
+    {
+        let path = path.as_ref();
+
+        let current_dir = env::current_dir().context("the current working directory is invalid")?;
+        env::set_current_dir(path).with_context(|| {
+            format!(
+                "failed to set working directory to '{}'",
+                display_path(path),
+            )
+        })?;
+
+        let result = panic::catch_unwind(with)
+            .map_err(|err| anyhow::format_err!("function panicked with working dir: {:?}", err));
+
+        env::set_current_dir(current_dir).context("failed to reset working directory")?;
+
+        result
+    }
 
     pub fn display_path<P>(path: P) -> String
     where

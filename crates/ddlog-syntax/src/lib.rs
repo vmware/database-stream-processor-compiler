@@ -1,4 +1,6 @@
 #[macro_use]
+mod macros;
+#[macro_use]
 mod syntax_kind;
 #[macro_use]
 mod token_set;
@@ -6,13 +8,14 @@ pub mod ast;
 mod lexer;
 mod parser;
 mod syntax;
-
-use std::mem;
+mod validation;
+mod visitor;
 
 pub use lexer::Token;
 pub use syntax::{DifferentialDatalog, SyntaxNodeExt, SyntaxTokenExt};
 pub use syntax_kind::SyntaxKind;
 pub use token_set::TokenSet;
+pub use visitor::AstVisitor;
 
 use crate::{
     ast::nodes::Root,
@@ -20,6 +23,7 @@ use crate::{
     parser::{sink::Sink, Parser},
 };
 use ddlog_diagnostics::{Diagnostic, FileId, Interner, Span};
+use std::mem;
 
 pub type SyntaxNode = cstree::SyntaxNode<DifferentialDatalog>;
 pub type GreenNodeBuilder<'cache, 'interner> =

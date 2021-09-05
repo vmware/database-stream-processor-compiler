@@ -1,6 +1,6 @@
 import * as client from "./client";
-import { LanguageClient } from "vscode-languageclient";
 import { ExtensionContext } from "vscode";
+import { LanguageClient } from "vscode-languageclient/node";
 
 let languageClient: LanguageClient | undefined;
 
@@ -10,11 +10,11 @@ export async function activate(context: ExtensionContext) {
 }
 
 export async function deactivate() {
-    if (languageClient === undefined || languageClient === null) {
-        return;
+    if (languageClient) {
+        await languageClient.stop();
     }
-
-    await languageClient.stop();
 }
 
 // TODO: Problem matchers, commands, settings, etc.
+// TODO: Bundle the extension https://aka.ms/vscode-bundle-extension
+// TODO: Write a .vscodeignore https://aka.ms/vscode-bundle-extension

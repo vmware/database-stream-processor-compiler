@@ -190,7 +190,6 @@ impl Parser<'_, '_> {
         let block = self.start();
         if !self.expect(T!['{']) {
             block.abandon(self);
-            dbg!();
             return None;
         }
 
@@ -201,9 +200,12 @@ impl Parser<'_, '_> {
                 // Bump so we don't loop forever
                 self.error_eat_until(EXPR_RECOVERY_SET);
                 did_error = true;
-                dbg!();
 
                 break;
+            }
+
+            while self.at(T!['}']) {
+                self.eat(T!['}']);
             }
         }
 

@@ -13,12 +13,16 @@ pub(crate) fn handle_semantic_tokens_full(session: &Session, url: &Url) -> Resul
     let text = session.file_text(file);
 
     // FIXME: Allow the parser & lexer to directly operate off of ropes
+    tracing::trace!("started parsing");
     let (parsed, cache) = ddlog_syntax::parse(file, &text.to_string(), session.node_cache());
     session.give_node_cache(cache);
+    tracing::trace!("finished parsing: {}", parsed.debug_tree());
 
     // TODO: Token caching
     // TODO: Cache syntax trees
-    let semantic_tokens = SemanticHighlighter::highlight(&text, parsed.root());
+    tracing::trace!("started highlighting");
+    let semantic_tokens = SemanticHighlighter::highlight(&text, parsed.root(), session.interner());
+    tracing::trace!("finished highlighting");
 
     Ok(semantic_tokens)
 }

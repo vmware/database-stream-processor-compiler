@@ -244,7 +244,7 @@ pub trait SyntaxNodeExt {
             node_tokens
                 .iter()
                 .zip(tokens.iter())
-                .all(|(l, r)| l.resolve_text(interner) == r.as_ref())
+                .all(|(lhs, rhs)| lhs.resolve_text(interner) == rhs.as_ref())
         } else {
             false
         }

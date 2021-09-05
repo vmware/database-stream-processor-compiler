@@ -24,8 +24,8 @@ use serde_json::Value;
 use std::fmt::Display;
 use triomphe::Arc;
 
-const DDLOG_LANG: &str = "ddlog.dl";
-const DDLOG_DAT_LANG: &str = "ddlog.dat";
+const DDLOG_LANG: &str = "ddlog";
+const DDLOG_DAT_LANG: &str = "ddlog-command";
 
 #[derive(Debug)]
 pub struct Backend {
@@ -79,7 +79,6 @@ impl LanguageServer for Backend {
                         token_types: SUPPORTED_TYPES.to_vec(),
                         token_modifiers: SUPPORTED_MODIFIERS.to_vec(),
                     },
-                    range: Some(true),
                     full: Some(SemanticTokensFullOptions::Bool(true)),
                     ..Default::default()
                 }),

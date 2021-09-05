@@ -50,7 +50,14 @@ const KEYWORDS: &[&str] = &[
 const TOKEN_LOGOS: &[(&str, &[&str])] = &[
     ("ident", &["regex(\"[A-Za-z_][A-Za-z0-9_]*\")"]),
     ("whitespace", &["regex(\"[\\n\\t\\r ]+\")"]),
-    ("comment", &["regex(\"//.*\")", "regex(\"///.*\")"]),
+    (
+        "comment",
+        &[
+            "regex(\"//.*(\r\n|\n)\")",
+            // TODO: Make this a separate doc comment
+            "regex(\"///.*(\r\n|\n)\")",
+        ],
+    ),
     ("bool", &["token(\"true\")", "token(\"false\")"]),
     (
         "number",
@@ -330,7 +337,7 @@ impl<'a> AstGenerator<'a> {
                                                     )
                                                 } else {
                                                     // Safety: The match guard validates the inner syntax kind
-                                                    unsafe { core::hint::unreachable_unchecked() }
+                                                    unsafe { ::core::hint::unreachable_unchecked() }
                                                 }
                                             })
                                         ),

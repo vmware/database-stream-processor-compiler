@@ -1,12 +1,11 @@
-import { ExtensionContext, workspace } from "vscode";
-import {
-    LanguageClient,
-    ServerOptions,
-    Middleware,
-    LanguageClientOptions,
-    StreamInfo,
-} from "vscode-languageclient";
 import * as net from "net";
+import { ExtensionContext, workspace } from "vscode";
+import { LanguageClientOptions, Middleware } from "vscode-languageclient";
+import {
+    ServerOptions,
+    StreamInfo,
+    LanguageClient,
+} from "vscode-languageclient/node";
 
 function createSocketServer(_context: ExtensionContext): ServerOptions {
     // The server is a started as a separate app and listens on port 5007
@@ -31,33 +30,15 @@ function createSocketServer(_context: ExtensionContext): ServerOptions {
 export async function launch(
     context: ExtensionContext
 ): Promise<LanguageClient> {
-    /*
-    const run: Executable = {
-        // FIXME: Change exe name & args
-        command: "ddlog-driver",
-    };
-    const debug: Executable = {
-        // FIXME: Change exe name & args
-        command: "ddlog-driver",
-        options: {
-            env: {
-                RUST_BACKTRACE: 1,
-                // TODO: activate ddlog's logger (probably with a cli argument)
-                // RUST_LOG: "info",
-                ...process.env,
-            },
-        },
-    };
-
-    const serverOptions: ServerOptions = { debug, run };
-    */
     let serverOptions = createSocketServer(context);
 
     const clientOptions: LanguageClientOptions = {
         diagnosticCollectionName: "ddlog-lsp",
         documentSelector: [
-            { language: "ddlog.dl", scheme: "file" },
-            { language: "ddlog.dat", scheme: "file" },
+            { language: "ddlog", scheme: "file" },
+            { language: "ddlog", scheme: "untitled" },
+            { language: "ddlog-command", scheme: "file" },
+            { language: "ddlog-command", scheme: "untitled" },
         ],
         synchronize: {
             fileEvents: [

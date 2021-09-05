@@ -1,2 +1,4 @@
 // kind:expr
-!!(!true)
+function foo() {
+    !!(!true)
+}

@@ -1,7 +1,8 @@
 use lspower::lsp::{SemanticTokenModifier, SemanticTokenType};
 use std::ops::BitOrAssign;
 
-#[derive(Default)]
+// TODO: Better debug impl
+#[derive(Debug, Default)]
 #[repr(transparent)]
 pub(crate) struct ModifierSet(pub(crate) u32);
 
@@ -53,39 +54,7 @@ macro_rules! define_semantic_token_types {
     };
 }
 
-define_semantic_token_types![
-    /*
-    (ANGLE, "angle"),
-    (ARITHMETIC, "arithmetic"),
-    (ATTRIBUTE, "attribute"),
-    (BITWISE, "bitwise"),
-    (BOOLEAN, "boolean"),
-    (BRACE, "brace"),
-    (BRACKET, "bracket"),
-    (BUILTIN_ATTRIBUTE, "builtinAttribute"),
-    (BUILTIN_TYPE, "builtinType"),
-    (CHAR, "character"),
-    (COLON, "colon"),
-    (COMMA, "comma"),
-    (COMPARISON, "comparison"),
-    (CONST_PARAMETER, "constParameter"),
-    (DOT, "dot"),
-    (ESCAPE_SEQUENCE, "escapeSequence"),
-    (FORMAT_SPECIFIER, "formatSpecifier"),
-    (GENERIC, "generic"),
-    (LABEL, "label"),
-    (LIFETIME, "lifetime"),
-    (LOGICAL, "logical"),
-    (OPERATOR, "operator"),
-    (PARENTHESIS, "parenthesis"),
-    (PUNCTUATION, "punctuation"),
-    (SELF_KEYWORD, "selfKeyword"),
-    (SEMICOLON, "semicolon"),
-    (TYPE_ALIAS, "typeAlias"),
-    (UNION, "union"),
-    (UNRESOLVED_REFERENCE, "unresolvedReference"),
-    */
-];
+define_semantic_token_types! {}
 
 macro_rules! define_semantic_token_modifiers {
     ($(($ident:ident, $string:literal)),*$(,)?) => {
@@ -104,21 +73,4 @@ macro_rules! define_semantic_token_modifiers {
     };
 }
 
-define_semantic_token_modifiers![
-    /*
-    (CONSTANT, "constant"),
-    (CONTROL_FLOW, "controlFlow"),
-    (INJECTED, "injected"),
-    (MUTABLE, "mutable"),
-    (CONSUMING, "consuming"),
-    (ASYNC, "async"),
-    (LIBRARY, "library"),
-    (PUBLIC, "public"),
-    (UNSAFE, "unsafe"),
-    (ATTRIBUTE_MODIFIER, "attribute"),
-    (TRAIT_MODIFIER, "trait"),
-    (CALLABLE, "callable"),
-    (INTRA_DOC_LINK, "intraDocLink"),
-    (REFERENCE, "reference"),
-    */
-];
+define_semantic_token_modifiers! {}

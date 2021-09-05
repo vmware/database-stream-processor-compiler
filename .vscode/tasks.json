@@ -35,37 +35,37 @@
         {
             "label": "build extension",
             "type": "shell",
-            "command": "yarn",
+            "command": "npm",
             "args": [
-                "build"
+                "run",
+                "build",
             ],
             "group": "build",
             "problemMatcher": [
-                "$tsc"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}/editors/vscode"
-            }
-        },
-        {
-            "label": "build vsix",
-            "type": "shell",
-            "command": "yarn",
-            "args": [
-                "vsce",
-                "package",
-                "--yarn"
-            ],
-            "group": "build",
-            "problemMatcher": [
-                "$tsc"
+                "$tsc",
             ],
             "options": {
                 "cwd": "${workspaceFolder}/editors/vscode"
             },
+        },
+        {
+            "label": "build vsix",
+            "type": "shell",
+            "command": "npm",
+            "args": [
+                "run",
+                "package",
+            ],
+            "group": "build",
+            "problemMatcher": [
+                "$tsc",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/editors/vscode",
+            },
             "dependsOn": [
-                "build extension"
-            ]
+                "build extension",
+            ],
         },
         {
             "label": "Build Client + Server",
