@@ -68,7 +68,9 @@ pub trait SyntaxNodeExt {
     /// Cast this node to a certain AST node.
     ///
     /// # Panics
+    ///
     /// Panics if the underlying node cannot be cast to the AST node
+    ///
     #[inline]
     fn to<T>(&self) -> Cow<'_, T>
     where
@@ -96,18 +98,18 @@ pub trait SyntaxNodeExt {
     /// This is a more accurate way of comparing nodes because it does not count whitespace.
     /// Text based equality counts `foo. bar` and `foo.bar` as different, while this counts them as the same.
     ///
-    /// # Examples
-    ///
-    /// ```
-    /// use ddlog_syntax::{SyntaxNodeExt, parse_expr};
-    ///
-    /// let left = parse_expr("foo. bar", 0).syntax();
-    /// let right = parse_expr("foo.bar", 0).syntax();
-    ///
-    /// assert!(left.lexical_eq(&right));
-    ///
-    /// assert_ne!(left.text(), right.text());
-    /// ```
+    // # Examples
+    //
+    // ```
+    // use ddlog_syntax::{SyntaxNodeExt, parse_expr};
+    //
+    // let left = parse_expr("foo. bar", 0).syntax();
+    // let right = parse_expr("foo.bar", 0).syntax();
+    //
+    // assert!(left.lexical_eq(&right));
+    //
+    // assert_ne!(left.text(), right.text());
+    // ```
     #[inline]
     fn lexical_eq(&self, right: &SyntaxNode, interner: &Interner) -> bool {
         let left = self.lossy_tokens();
@@ -125,17 +127,17 @@ pub trait SyntaxNodeExt {
 
     /// Get the text range of this node, not including any leading or trailing whitespace.
     ///
-    /// # Examples
-    ///
-    /// ```
-    /// use ddlog_syntax::{SyntaxNodeExt, parse_expr, TextRange};
-    ///
-    /// let node = parse_expr(" foo. bar  ", 0).syntax();
-    ///
-    /// assert_eq!(node.trimmed_range(), TextRange::new(1.into(), 9.into()));
-    ///
-    /// assert_eq!(node.text_range(), TextRange::new(0.into(), 11.into()));
-    /// ```
+    // # Examples
+    //
+    // ```
+    // use ddlog_syntax::{SyntaxNodeExt, parse_expr, TextRange};
+    //
+    // let node = parse_expr(" foo. bar  ", 0).syntax();
+    //
+    // assert_eq!(node.trimmed_range(), TextRange::new(1.into(), 9.into()));
+    //
+    // assert_eq!(node.text_range(), TextRange::new(0.into(), 11.into()));
+    // ```
     #[inline]
     fn trimmed_range(&self) -> TextRange {
         let node = self.to_node();
@@ -154,14 +156,14 @@ pub trait SyntaxNodeExt {
 
     /// Get the text of this node, not including leading or trailing whitespace
     ///
-    /// # Examples
-    /// ```
-    /// use ddlog_syntax::{SyntaxNodeExt, parse_expr, TextRange};
-    ///
-    /// let node = parse_expr(" foo. bar  ", 0).syntax();
-    ///
-    /// assert_eq!(node.trimmed_text(), "foo. bar");
-    /// ```
+    // # Examples
+    // ```
+    // use ddlog_syntax::{SyntaxNodeExt, parse_expr, TextRange};
+    //
+    // let node = parse_expr(" foo. bar  ", 0).syntax();
+    //
+    // assert_eq!(node.trimmed_text(), "foo. bar");
+    // ```
     #[inline]
     fn trimmed_text<'node, 'intern>(
         &'node self,

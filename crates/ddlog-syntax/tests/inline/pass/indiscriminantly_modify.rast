@@ -2,7 +2,7 @@ ROOT@0..85
   COMMENT@0..12 "// kind:item"
   WHITESPACE@12..13 "\n"
   ITEM@13..85
-    RELATION_DEF@13..84
+    RELATION_DEF@13..85
       REL_MODS@13..69
         INPUT@13..18 "input"
         WHITESPACE@18..19 " "
@@ -26,6 +26,7 @@ ROOT@0..85
       WHITESPACE@78..79 " "
       REL_NAME@79..82
         IDENT@79..82 "Foo"
-      L_PAREN@82..83 "("
-      R_PAREN@83..84 ")"
-    WHITESPACE@84..85 "\n"
+      REL_COLS@82..84
+        L_PAREN@82..83 "("
+        R_PAREN@83..84 ")"
+      WHITESPACE@84..85 "\n"

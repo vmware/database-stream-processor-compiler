@@ -2,7 +2,7 @@ ROOT@0..55
   COMMENT@0..26 "// kind:item validate ..."
   WHITESPACE@26..27 "\n"
   ITEM@27..55
-    RELATION_DEF@27..54
+    RELATION_DEF@27..55
       REL_MODS@27..39
         INPUT@27..32 "input"
         WHITESPACE@32..33 " "
@@ -12,9 +12,10 @@ ROOT@0..55
       WHITESPACE@48..49 " "
       REL_NAME@49..52
         IDENT@49..52 "Foo"
-      L_PAREN@52..53 "("
-      R_PAREN@53..54 ")"
-    WHITESPACE@54..55 "\n"
+      REL_COLS@52..54
+        L_PAREN@52..53 "("
+        R_PAREN@53..54 ")"
+      WHITESPACE@54..55 "\n"
 --
 Error: a relation cannot be marked as both 'input' and 'output'
    ,-[inline/fail/relation_with_input_and_output.dl:2:1]

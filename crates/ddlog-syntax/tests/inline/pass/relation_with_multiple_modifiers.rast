@@ -1,8 +1,8 @@
-ROOT@0..41
+ROOT@0..95
   COMMENT@0..12 "// kind:item"
   WHITESPACE@12..13 "\n"
   ITEM@13..41
-    RELATION_DEF@13..40
+    RELATION_DEF@13..41
       REL_MODS@13..25
         INPUT@13..18 "input"
         WHITESPACE@18..19 " "
@@ -12,6 +12,37 @@ ROOT@0..41
       WHITESPACE@34..35 " "
       REL_NAME@35..38
         IDENT@35..38 "Foo"
-      L_PAREN@38..39 "("
-      R_PAREN@39..40 ")"
-    WHITESPACE@40..41 "\n"
+      REL_COLS@38..40
+        L_PAREN@38..39 "("
+        R_PAREN@39..40 ")"
+      WHITESPACE@40..41 "\n"
+  ITEM@41..69
+    RELATION_DEF@41..69
+      REL_MODS@41..53
+        INPUT@41..46 "input"
+        WHITESPACE@46..47 " "
+        OUTPUT@47..53 "output"
+      WHITESPACE@53..54 " "
+      MULTISET@54..62 "multiset"
+      WHITESPACE@62..63 " "
+      REL_NAME@63..66
+        IDENT@63..66 "Foo"
+      REL_COLS@66..68
+        L_PAREN@66..67 "("
+        R_PAREN@67..68 ")"
+      WHITESPACE@68..69 "\n"
+  ITEM@69..95
+    RELATION_DEF@69..95
+      REL_MODS@69..81
+        INPUT@69..74 "input"
+        WHITESPACE@74..75 " "
+        OUTPUT@75..81 "output"
+      WHITESPACE@81..82 " "
+      STREAM@82..88 "stream"
+      WHITESPACE@88..89 " "
+      REL_NAME@89..92
+        IDENT@89..92 "Foo"
+      REL_COLS@92..94
+        L_PAREN@92..93 "("
+        R_PAREN@93..94 ")"
+      WHITESPACE@94..95 "\n"

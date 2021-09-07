@@ -1,0 +1,37 @@
+ROOT@0..47
+  COMMENT@0..12 "// kind:item"
+  WHITESPACE@12..13 "\n"
+  ITEM@13..47
+    RELATION_DEF@13..47
+      REL_MODS@13..13
+      RELATION@13..21 "relation"
+      WHITESPACE@21..22 " "
+      REL_NAME@22..25
+        IDENT@22..25 "Foo"
+      REL_COLS@25..46
+        L_PAREN@25..26 "("
+        REL_COL@26..34
+          IDENT@26..29 "bar"
+          COLON@29..30 ":"
+          WHITESPACE@30..31 " "
+          IDENT@31..34 "Baz"
+        WHITESPACE@34..35 " "
+        REL_COL@35..45
+          IDENT@35..39 "bing"
+          COLON@39..40 ":"
+          WHITESPACE@40..41 " "
+          IDENT@41..45 "Bang"
+        R_PAREN@45..46 ")"
+      WHITESPACE@46..47 "\n"
+--
+Error: expected a comma between relation arguments
+   ,-[inline/fail/relation_arg_without_comma.dl:2:23]
+   |
+ 2 | relation Foo(bar: Baz bing: Bang)
+   :                       ^^|^  
+   :                         `--- expected a comma
+---'
+--
+// kind:item
+relation Foo(bar: Baz bing: Bang)
+

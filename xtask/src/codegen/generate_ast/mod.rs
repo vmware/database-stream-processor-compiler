@@ -9,6 +9,10 @@ use quote::{format_ident, quote, ToTokens};
 use std::{collections::HashSet, path::PathBuf};
 use ungrammar::{Grammar, Rule};
 
+// TODO: Refactor and document this, it should be spread across files
+// TODO: Sort any sort of inputs we get to ensure that we're as
+//       deterministic as possible (maybe use a `Sorted` wrapper type?)
+
 const EXTRA_TOKENS: &[&str] = &["comment", "whitespace", "eof", "tombstone"];
 
 const NAMED_TOKENS: &[(&str, &str)] = &[

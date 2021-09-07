@@ -1,0 +1,30 @@
+ROOT@0..51
+  COMMENT@0..12 "// kind:item"
+  WHITESPACE@12..13 "\n"
+  ITEM@13..51
+    FUNC_DEF@13..51
+      FUNC_MODS@13..13
+      FUNCTION@13..21 "function"
+      WHITESPACE@21..22 " "
+      FUNC_NAME@22..25
+        IDENT@22..25 "foo"
+      FUNC_ARGS@25..47
+        L_PAREN@25..26 "("
+        FUNC_ARG@26..34
+          IDENT@26..29 "bar"
+          COLON@29..30 ":"
+          WHITESPACE@30..31 " "
+          IDENT@31..34 "Baz"
+        COMMA@34..35 ","
+        WHITESPACE@35..36 " "
+        FUNC_ARG@36..46
+          IDENT@36..40 "bing"
+          COLON@40..41 ":"
+          WHITESPACE@41..42 " "
+          IDENT@42..46 "Bang"
+        R_PAREN@46..47 ")"
+      WHITESPACE@47..48 " "
+      BLOCK@48..50
+        L_CURLY@48..49 "{"
+        R_CURLY@49..50 "}"
+      WHITESPACE@50..51 "\n"

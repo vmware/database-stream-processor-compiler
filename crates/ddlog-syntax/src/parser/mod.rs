@@ -201,19 +201,28 @@ impl<'src, 'token> Parser<'src, 'token> {
     }
 
     /// Consume the next token if `kind` matches
+    #[allow(dead_code)]
     fn eat(&mut self, kind: SyntaxKind) -> bool {
-        if !self.at(kind) {
-            return false;
-        }
-        self.bump();
+        self.eat_span(kind).is_some()
+    }
 
-        true
+    fn eat_span(&mut self, kind: SyntaxKind) -> Option<Span> {
+        if !self.at(kind) {
+            return None;
+        }
+
+        Some(self.bump_span())
     }
 
     /// Try to eat a token of the given kind or add an error to the events stack
     fn expect(&mut self, kind: SyntaxKind) -> bool {
-        if self.eat(kind) {
-            true
+        self.expect_span(kind).is_some()
+    }
+
+    /// Try to eat a token of the given kind or add an error to the events stack
+    fn expect_span(&mut self, kind: SyntaxKind) -> Option<Span> {
+        if let Some(span) = self.eat_span(kind) {
+            Some(span)
         } else {
             let error = if self.current() == EOF {
                 Diagnostic::error()
@@ -234,7 +243,19 @@ impl<'src, 'token> Parser<'src, 'token> {
             };
             self.error(error);
 
-            false
+            None
+        }
+    }
+
+    fn try_expect(&mut self, kind: SyntaxKind) -> bool {
+        self.try_expect_span(kind).is_some()
+    }
+
+    fn try_expect_span(&mut self, kind: SyntaxKind) -> Option<Span> {
+        if self.at(kind) {
+            self.expect_span(kind)
+        } else {
+            None
         }
     }
 }

@@ -2,6 +2,14 @@ use crate::utils::{fs2, normalize_line_endings, project_root, CodegenMode};
 use anyhow::Result;
 use walkdir::WalkDir;
 
+const IGNORED_DIRECTORIES: &[&str] = &[
+    ".git",
+    "target",
+    "editors/vscode/node_modules",
+    "editors/vscode/out",
+];
+const IGNORED_EXTENSIONS: &[&str] = &["vsix"];
+
 pub fn line_endings(mode: CodegenMode) -> Result<()> {
     println!(
         "{} line endings...",
@@ -12,16 +20,23 @@ pub fn line_endings(mode: CodegenMode) -> Result<()> {
     );
 
     let root = project_root();
+    let ignored_directories: Vec<_> = IGNORED_DIRECTORIES
+        .iter()
+        .map(|&dir| root.join(dir))
+        .collect();
 
     let mut non_normalized = 0;
     for file in WalkDir::new(&root)
         .into_iter()
         .filter_entry(|entry| {
-            entry.path() != root.join(".git")
-                && entry.path() != root.join("target")
-                && entry.path() != root.join("editors/vscode/node_modules")
-                && entry.path() != root.join("editors/vscode/out")
-                && entry.path() != root.join("editors/vscode/differential-datalog.vsix")
+            ignored_directories
+                .iter()
+                .all(|ignored| entry.path() != ignored)
+                && entry
+                    .path()
+                    .extension()
+                    .and_then(|ext| ext.to_str())
+                    .map_or(true, |ext| !IGNORED_EXTENSIONS.contains(&ext))
         })
         .flatten()
         .filter(|entry| entry.file_type().is_file())

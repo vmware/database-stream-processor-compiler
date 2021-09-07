@@ -84,7 +84,7 @@ where
 }
 
 #[inline]
-pub(super) fn token<T>(parent: &SyntaxNode) -> Option<&T>
+pub fn token<T>(parent: &SyntaxNode) -> Option<&T>
 where
     T: AstToken,
 {

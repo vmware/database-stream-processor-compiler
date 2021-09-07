@@ -1,7 +1,8 @@
 use crate::{
     ast::{
-        nodes::{FuncDef, RelKw, RelationDef},
-        tokens::{Extern, Input, Output},
+        nodes::{FuncDef, RelationDef},
+        support,
+        tokens::{Extern, Input, Multiset, Output, Stream},
         AstNode,
     },
     visitor::RuleCtx,
@@ -92,10 +93,13 @@ impl ModifierValidator {
 
     fn check_relation(&mut self, relation: &RelationDef, ctx: &mut RuleCtx) -> Option<()> {
         let (mut first_input, mut first_output) = (None, None);
-        let relation_kind = match relation.keyword().as_deref() {
-            Some(RelKw::Multiset(_)) => "multiset",
-            Some(RelKw::Stream(_)) => "stream",
-            Some(RelKw::Relation(_)) | None => "relation",
+        // FIXME: Fix codegen for `RelationDef::keyword()`
+        let relation_kind = if support::token::<Multiset>(relation.syntax()).is_some() {
+            "multiset"
+        } else if support::token::<Stream>(relation.syntax()).is_some() {
+            "stream"
+        } else {
+            "relation"
         };
 
         for modifier in relation.modifiers()?.syntax().children_with_tokens() {
@@ -104,7 +108,8 @@ impl ModifierValidator {
                     let span = token.span(ctx.file_id);
                     tracing::trace!(
                         _extern = %span,
-                        "found invalid extern modifier on relation",
+                        "found invalid extern modifier on {}",
+                        relation_kind,
                     );
 
                     let error = Diagnostic::error()
@@ -125,7 +130,8 @@ impl ModifierValidator {
                         tracing::trace!(
                             %first_input,
                             current_input = %span,
-                            "found excess input modifier on relation",
+                            "found excess input modifier on {}",
+                        relation_kind,
                         );
 
                         let error = Diagnostic::error()
