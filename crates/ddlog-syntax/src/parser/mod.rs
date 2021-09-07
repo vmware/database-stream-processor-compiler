@@ -82,7 +82,7 @@ impl<'src, 'token> Parser<'src, 'token> {
     #[track_caller]
     fn bump_span(&mut self) -> Span {
         if let Some(token) = self.source.next() {
-            tracing::debug!(
+            tracing::trace!(
                 token = ?token.kind(),
                 text = token.text(),
                 span = ?token.span(),
@@ -96,6 +96,8 @@ impl<'src, 'token> Parser<'src, 'token> {
 
             token.span()
         } else {
+            tracing::trace!("bumped at end of file");
+
             self.source.end_of_file()
         }
     }

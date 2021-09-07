@@ -1,0 +1,34 @@
+ROOT@0..58
+  COMMENT@0..26 "// kind:item validate ..."
+  WHITESPACE@26..27 "\n"
+  ITEM@27..58
+    FUNC_DEF@27..58
+      FUNC_MODS@27..39
+        EXTERN@27..33 "extern"
+        WHITESPACE@33..34 " "
+        INPUT@34..39 "input"
+      WHITESPACE@39..40 " "
+      FUNCTION@40..48 "function"
+      WHITESPACE@48..49 " "
+      FUNC_NAME@49..52
+        IDENT@49..52 "foo"
+      FUNC_ARGS@52..54
+        L_PAREN@52..53 "("
+        R_PAREN@53..54 ")"
+      WHITESPACE@54..55 " "
+      BLOCK@55..57
+        L_CURLY@55..56 "{"
+        R_CURLY@56..57 "}"
+      WHITESPACE@57..58 "\n"
+--
+Error: received an 'input' modifier on a function definition
+   ,-[inline/fail/input_function.dl:2:8]
+   |
+ 2 | extern input function foo() {}
+   :        ^^|^^  
+   :          `---- functions cannot be marked as 'input'
+---'
+--
+// kind:item validate:true
+extern input function foo() {}
+

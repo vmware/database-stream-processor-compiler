@@ -2,26 +2,32 @@ use crate::{
     providers::{
         self,
         semantic_tokens::tokens::{SUPPORTED_MODIFIERS, SUPPORTED_TYPES},
+        utils,
     },
     Session,
 };
+use cstree::TextRange;
+use ddlog_diagnostics::{Diagnostic, FileId, Level};
+use ddlog_syntax::{validation, RuleCtx};
 use lsp_text::RopeExt;
 use lspower::{
     jsonrpc::Result,
     lsp::{
+        Diagnostic as LspDiagnostic, DiagnosticRelatedInformation, DiagnosticSeverity,
         DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
         DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
         DidSaveTextDocumentParams, ExecuteCommandParams, InitializeParams, InitializeResult,
-        InitializedParams, MessageType, SemanticTokensDeltaParams, SemanticTokensFullDeltaResult,
-        SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions,
-        SemanticTokensParams, SemanticTokensRangeParams, SemanticTokensRangeResult,
-        SemanticTokensResult, SemanticTokensServerCapabilities, ServerCapabilities,
-        TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions, WorkspaceEdit,
+        InitializedParams, Location, MessageType, NumberOrString, SemanticTokensDeltaParams,
+        SemanticTokensFullDeltaResult, SemanticTokensFullOptions, SemanticTokensLegend,
+        SemanticTokensOptions, SemanticTokensParams, SemanticTokensRangeParams,
+        SemanticTokensRangeResult, SemanticTokensResult, SemanticTokensServerCapabilities,
+        ServerCapabilities, TextDocumentSyncCapability, TextDocumentSyncKind,
+        TextDocumentSyncOptions, Url, WorkspaceEdit,
     },
     Client, LanguageServer,
 };
 use serde_json::Value;
-use std::fmt::Display;
+use std::{fmt::Display, str::FromStr};
 use triomphe::Arc;
 
 const DDLOG_LANG: &str = "ddlog";
@@ -57,6 +63,62 @@ impl Backend {
         M: Display,
     {
         self.client.log_message(MessageType::Error, message).await;
+    }
+
+    pub async fn publish_diagnostics(&self, file: FileId, diagnostics: Vec<Diagnostic>) {
+        self.publish_diagnostics_for(file, diagnostics, None).await;
+    }
+
+    pub async fn publish_diagnostics_for(
+        &self,
+        file: FileId,
+        diagnostics: Vec<Diagnostic>,
+        version: Option<i32>,
+    ) {
+        let uri = Url::from_str(file.to_str(self.session.interner())).unwrap();
+        let source = self.session.file_text(file);
+
+        // TODO: Factor this conversion out into utility function(s)
+        let diagnostics: Vec<_> = diagnostics.into_iter().map(|diagnostic| {
+            let primary_span = diagnostic.message_span.or_else(|| {
+                diagnostic.labels
+                    .iter()
+                    .find_map(|label| label.is_primary.then(|| label.span))
+            })
+            .expect("expected a primary label or a message span within a diagnostic but failed to get one");
+
+            let range = utils::ide_range(&source, TextRange::new(primary_span.start().into(), primary_span.end().into()));
+            let level = match diagnostic.level {
+                Level::Error => DiagnosticSeverity::Error,
+                Level::Warning => DiagnosticSeverity::Warning,
+                Level::Note => DiagnosticSeverity::Information,
+            };
+            let code = diagnostic.code.map(|code| NumberOrString::Number(code as i32));
+            let labels: Vec<_> = diagnostic.labels.into_iter().map(|label| {
+                DiagnosticRelatedInformation {
+                    message: label.message.unwrap().into_owned(),
+                    location: Location {
+                        uri: uri.clone(),
+                        range: utils::ide_range(&source, TextRange::new(label.span.start().into(), label.span.end().into()))
+                    },
+                }
+            }).collect();
+
+            LspDiagnostic::new(
+                range,
+                Some(level),
+                code,
+                Some("ddlog-lsp".to_string()),
+                diagnostic.message.unwrap().into_owned(),
+                Some(labels),
+                None,
+            )
+        })
+        .collect();
+
+        self.client
+            .publish_diagnostics(uri, diagnostics, version)
+            .await;
     }
 }
 
@@ -142,8 +204,32 @@ impl LanguageServer for Backend {
         if opened.text_document.language_id == DDLOG_LANG
             || opened.text_document.language_id == DDLOG_DAT_LANG
         {
-            self.session
+            let file = self
+                .session
                 .create_file(&opened.text_document.uri, opened.text_document.text);
+            let source = self.session.file_text(file);
+
+            // FIXME: Allow the parser & lexer to directly operate off of ropes
+            // FIXME: Cache syntax trees
+            tracing::trace!("started parsing");
+            let (parsed, cache) =
+                ddlog_syntax::parse(file, &source.to_string(), self.session.node_cache());
+            self.session.give_node_cache(cache);
+            tracing::trace!("finished parsing: {}", parsed.debug_tree());
+
+            let mut ctx = RuleCtx::new(file, source, self.session.interner().clone());
+
+            validation::run_validators(parsed.syntax(), &mut ctx);
+            ctx.diagnostics.extend(parsed.into_errors());
+
+            if !ctx.diagnostics.is_empty() {
+                self.publish_diagnostics_for(
+                    file,
+                    ctx.diagnostics,
+                    Some(opened.text_document.version),
+                )
+                .await;
+            }
         }
     }
 

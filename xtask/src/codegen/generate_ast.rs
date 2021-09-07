@@ -44,7 +44,8 @@ const NAMED_TOKENS: &[(&str, &str)] = &[
 
 const KEYWORDS: &[&str] = &[
     "function", "var", "match", "input", "output", "relation", "typedef", "for", "while", "loop",
-    "apply", "extern", "and", "or", "if", "else", "return", "break", "true", "false",
+    "apply", "extern", "and", "or", "if", "else", "return", "break", "true", "false", "multiset",
+    "stream",
 ];
 
 const TOKEN_LOGOS: &[(&str, &[&str])] = &[
@@ -52,10 +53,13 @@ const TOKEN_LOGOS: &[(&str, &[&str])] = &[
     ("whitespace", &["regex(\"[\\n\\t\\r ]+\")"]),
     (
         "comment",
+        // Note that these regexae don't include the trailing newlines, this
+        // is on purpose. If they keep ahold of the newline then we'll create
+        // lsp spans that cross line boundaries which is bad
         &[
-            "regex(\"//.*(\r\n|\n)\")",
+            "regex(\"//.*\")",
             // TODO: Make this a separate doc comment
-            "regex(\"///.*(\r\n|\n)\")",
+            "regex(\"///.*\")",
         ],
     ),
     ("bool", &["token(\"true\")", "token(\"false\")"]),
@@ -72,7 +76,6 @@ const TOKEN_LOGOS: &[(&str, &[&str])] = &[
 struct AstGenerator<'a> {
     grammar: &'a Grammar,
     mode: CodegenMode,
-
     ast_node_path: PathBuf,
     ast_token_path: PathBuf,
     rust_keywords: Vec<Ident>,
@@ -186,7 +189,7 @@ impl<'a> AstGenerator<'a> {
             }
 
             let rule_name = self.ast_struct(name)?;
-            let methods = self.gather_node_methods(rule, false, None)?;
+            let methods = self.gather_node_methods(rule, true, false, None)?;
 
             if let Rule::Alt(inner) = rule {
                 if inner.is_empty() {
@@ -446,6 +449,7 @@ impl<'a> AstGenerator<'a> {
     fn gather_node_methods(
         &self,
         rule: &Rule,
+        top_level: bool,
         is_multiple: bool,
         name: Option<Ident>,
     ) -> Result<TokenStream> {
@@ -454,7 +458,7 @@ impl<'a> AstGenerator<'a> {
                 debug_assert!(name.is_none());
 
                 let method_name = format_ident!("{}", label);
-                self.gather_node_methods(rule, is_multiple, Some(method_name))
+                self.gather_node_methods(rule, false, is_multiple, Some(method_name))
             }
 
             &Rule::Node(node) => {
@@ -532,13 +536,13 @@ impl<'a> AstGenerator<'a> {
 
                 let mut methods = TokenStream::new();
                 for rule in rules {
-                    methods.extend(self.gather_node_methods(rule, false, None)?);
+                    methods.extend(self.gather_node_methods(rule, false, false, None)?);
                 }
 
                 Ok(methods)
             }
 
-            Rule::Alt(rules) => {
+            Rule::Alt(rules) if top_level => {
                 debug_assert!(name.is_none());
                 debug_assert!(!is_multiple);
 
@@ -570,9 +574,11 @@ impl<'a> AstGenerator<'a> {
                 Ok(methods)
             }
 
-            Rule::Opt(rule) => self.gather_node_methods(rule, is_multiple, name),
+            Rule::Alt(_) => Ok(TokenStream::new()),
 
-            Rule::Rep(rule) => self.gather_node_methods(rule, true, name),
+            Rule::Opt(rule) => self.gather_node_methods(rule, false, is_multiple, name),
+
+            Rule::Rep(rule) => self.gather_node_methods(rule, false, true, name),
         }
     }
 
@@ -598,10 +604,14 @@ impl<'a> AstGenerator<'a> {
     }
 
     fn ast_method(&self, mut name: &str, plural: bool) -> Result<Ident> {
-        let plural = if plural { "s" } else { "" };
         if let Some((_, special_name)) = NAMED_TOKENS.iter().find(|&&(token, _)| token == name) {
             name = special_name;
         }
+        let plural = if plural && !name.ends_with('s') {
+            "s"
+        } else {
+            ""
+        };
 
         let method =
             if self

@@ -1,17 +1,30 @@
 use crate::{SyntaxNode, SyntaxToken};
-use ddlog_diagnostics::{Diagnostic, Rope};
+use ddlog_diagnostics::{Diagnostic, FileId, Interner, Rope};
 
 /// Context given to a rule when running it.
 #[derive(Debug, Clone)]
 pub struct RuleCtx {
     /// The file id of the file being linted
-    pub file_id: usize,
-    /// Whether the linter is run with the `--verbose` option
-    /// Which dictates whether the linter should include more (potentially spammy) context in diagnostics
-    pub verbose: bool,
+    pub file_id: FileId,
     /// An empty vector of diagnostics which the rule adds to
     pub diagnostics: Vec<Diagnostic>,
     pub source: Rope,
+    pub interner: Interner,
+}
+
+impl RuleCtx {
+    pub fn new(file_id: FileId, source: Rope, interner: Interner) -> Self {
+        Self {
+            file_id,
+            diagnostics: Vec::new(),
+            source,
+            interner,
+        }
+    }
+
+    pub const fn interner(&self) -> &Interner {
+        &self.interner
+    }
 }
 
 pub trait AstVisitor {

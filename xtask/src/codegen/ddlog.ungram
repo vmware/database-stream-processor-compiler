@@ -2,17 +2,21 @@ Root = Item
 
 Item = FuncDef | RelationDef
 
-RelationDef = RelMods* 'relation' RelName RelCols
-RelMods = Input | Output | Extern
+RelationDef = modifiers:RelMods keyword:RelKw name:RelName columns:RelCols
+RelMods = (Input | Output | Extern)*
+RelKw = Relation | Multiset | Stream
+Relation = 'relation'
+Multiset = 'multiset'
+Stream = 'stream'
 RelName = 'ident'
 RelCols = '(' RelCol* ')'
-RelCol = Pat ':' column_ty:Type ','?
+RelCol = binding:Pat ':' ty:Type ','?
 
-FuncDef = FuncMods 'function' name:FuncName args:FuncArgs (':' return_ty:Type)? Block
-FuncMods = 'extern'
+FuncDef = modifiers:FuncMods keyword:'function' name:FuncName args:FuncArgs (':' return_ty:Type)? body:Block
+FuncMods = (Input | Output | Extern)*
 FuncName = 'ident'
 FuncArgs = '(' FuncArg* ')'
-FuncArg = Pat ':' arg_ty:Type ','?
+FuncArg = binding:Pat ':' ty:Type ','?
 
 Type = 'ident'
 
@@ -23,7 +27,7 @@ Stmt =
     | IfStmt
 
 ExprStmt = Expr ';'
-VarDecl = 'var' Pat '=' Expr ';'
+VarDecl = 'var' binding:Pat '=' value:Expr ';'
 
 IfStmt = IfBlock* ElseBlock?
 IfBlock = leading_else:'else' 'if' cond:Expr Block
@@ -45,9 +49,9 @@ Expr =
 
 VarRef = 'ident'
 
-Assign = Pat '=' Expr
+Assign = binding:Pat '=' value:Expr
 
-ParenExpr = '(' Expr ')'
+ParenExpr = '(' inner:Expr ')'
 
 // TODO: Floats
 Literal = Bool | Number | String
@@ -55,9 +59,9 @@ Bool = True | False
 Number = 'number'
 String = 'string'
 
-RetExpr = 'return' Expr
+RetExpr = 'return' expr:Expr
 
-UnaryExpr = UnaryOp Expr
+UnaryExpr = op:UnaryOp expr:Expr
 UnaryOp = Bang | Minus
 
 BinExpr = lhs:Expr op:BinOp rhs:Expr

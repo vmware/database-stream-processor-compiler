@@ -1,0 +1,3 @@
+// kind:item validate:true
+input extern relation Foo()
+input extern extern relation Foo()

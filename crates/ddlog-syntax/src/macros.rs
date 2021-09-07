@@ -24,7 +24,7 @@ macro_rules! match_ast {
         $( $ast:ident($it:ident) => $res:expr, )*
         _ => $catch_all:expr $(,)?
     }) => {{
-        $( if let Some($it) = $crate::ast::nodes::$ast::cast($node.clone()) { $res } else )*
+        $( if let Some($it) = <$crate::ast::nodes::$ast as $crate::ast::AstNode>::cast(&$node) { $res } else )*
         { $catch_all }
     }};
 }

@@ -8,19 +8,20 @@ pub mod ast;
 mod lexer;
 mod parser;
 mod syntax;
-mod validation;
+pub mod validation;
 mod visitor;
 
 pub use lexer::Token;
 pub use syntax::{DifferentialDatalog, SyntaxNodeExt, SyntaxTokenExt};
 pub use syntax_kind::SyntaxKind;
 pub use token_set::TokenSet;
-pub use visitor::AstVisitor;
+pub use visitor::{AstVisitor, RuleCtx};
 
 use crate::{
     ast::nodes::Root,
     lexer::Lexer,
     parser::{sink::Sink, Parser},
+    SyntaxKind::ROOT,
 };
 use ddlog_diagnostics::{Diagnostic, FileId, Interner, Span};
 use std::mem;
@@ -33,6 +34,7 @@ pub type SyntaxText<'node, 'interner> =
     cstree::SyntaxText<'node, 'interner, Interner, DifferentialDatalog>;
 pub type SyntaxToken = cstree::syntax::SyntaxToken<DifferentialDatalog>;
 pub type SyntaxElement = cstree::SyntaxElement<DifferentialDatalog>;
+pub type SyntaxElementRef<'a> = cstree::SyntaxElementRef<'a, DifferentialDatalog>;
 
 #[inline]
 pub fn parse<'interner>(
@@ -87,15 +89,29 @@ impl Parsed {
     /// Get a reference to the root syntax node
     #[inline]
     pub fn root(&self) -> &Root {
+        debug_assert_eq!(self.root.kind(), ROOT);
+
         // Safety: `SyntaxNode` and `Root` have the same layouts,
         //         `Root` is transparent around `SyntaxNode`
         unsafe { mem::transmute::<&SyntaxNode, &Root>(&self.root) }
+    }
+
+    /// Get a reference to the root syntax node
+    #[inline]
+    pub const fn syntax(&self) -> &SyntaxNode {
+        &self.root
     }
 
     /// Get a reference to the parser's diagnostics
     #[inline]
     pub fn errors(&self) -> &[Diagnostic] {
         &self.errors
+    }
+
+    /// Return all of the parser's diagnostics and consume the parser
+    #[inline]
+    pub fn take_errors(&mut self) -> Vec<Diagnostic> {
+        mem::take(&mut self.errors)
     }
 
     /// Return all of the parser's diagnostics and consume the parser

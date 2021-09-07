@@ -1,9 +1,9 @@
 use crate::{
     ast::{nodes, AstNode, AstToken},
-    SyntaxKind, SyntaxNode, SyntaxText, SyntaxToken, TokenSet,
+    SyntaxElementRef, SyntaxKind, SyntaxNode, SyntaxText, SyntaxToken, TokenSet,
 };
 use cstree::{NodeOrToken, TextRange};
-use ddlog_diagnostics::Interner;
+use ddlog_diagnostics::{FileId, Interner, Span};
 use std::borrow::Cow;
 
 #[derive(Debug, Clone, Copy, PartialOrd, Ord, PartialEq, Eq, Hash)]
@@ -286,19 +286,40 @@ pub trait SyntaxNodeExt {
 
     /// Same as [`descendants_with`](Self::descendants_with) but considers tokens too.
     #[inline]
-    fn descendants_with_tokens_with<F>(&self, func: &mut F)
+    fn descendants_with_tokens_with<F>(&self, mut func: F)
     where
-        F: FnMut(&NodeOrToken<&SyntaxNode, &SyntaxToken>) -> bool,
+        F: FnMut(SyntaxElementRef) -> bool,
     {
         for elem in self.to_node().children_with_tokens() {
-            match &elem {
+            match elem {
                 NodeOrToken::Node(node) => {
-                    if func(&elem) {
-                        node.descendants_with_tokens_with(func)
+                    if func(elem) {
+                        node.descendants_with_tokens_with_ref(&mut func);
                     }
                 }
+
                 NodeOrToken::Token(_) => {
-                    let _ = func(&elem);
+                    func(elem);
+                }
+            }
+        }
+    }
+
+    #[inline]
+    fn descendants_with_tokens_with_ref<F>(&self, func: &mut F)
+    where
+        F: FnMut(SyntaxElementRef) -> bool,
+    {
+        for elem in self.to_node().children_with_tokens() {
+            match elem {
+                NodeOrToken::Node(node) => {
+                    if func(elem) {
+                        node.descendants_with_tokens_with_ref(func);
+                    }
+                }
+
+                NodeOrToken::Token(_) => {
+                    func(elem);
                 }
             }
         }
@@ -312,6 +333,13 @@ pub trait SyntaxNodeExt {
         self.to_node()
             .children_with_tokens()
             .find_map(|t| t.into_token().filter(|it| it.kind() == kind))
+    }
+
+    // FIXME: I don't like having to give the `FileId` here
+    #[inline]
+    fn span(&self, file: FileId) -> Span {
+        let range = self.to_node().text_range();
+        Span::new(range.start().into(), range.end().into(), file)
     }
 }
 
@@ -370,6 +398,13 @@ pub trait SyntaxTokenExt {
         T: AstToken,
     {
         T::cast(self.to_token())
+    }
+
+    // FIXME: I don't like having to give the `FileId` here
+    #[inline]
+    fn span(&self, file: FileId) -> Span {
+        let range = self.to_token().text_range();
+        Span::new(range.start().into(), range.end().into(), file)
     }
 }
 

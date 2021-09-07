@@ -1,0 +1,62 @@
+ROOT@0..90
+  COMMENT@0..26 "// kind:item validate ..."
+  WHITESPACE@26..27 "\n"
+  ITEM@27..55
+    RELATION_DEF@27..54
+      REL_MODS@27..39
+        INPUT@27..32 "input"
+        WHITESPACE@32..33 " "
+        EXTERN@33..39 "extern"
+      WHITESPACE@39..40 " "
+      RELATION@40..48 "relation"
+      WHITESPACE@48..49 " "
+      REL_NAME@49..52
+        IDENT@49..52 "Foo"
+      L_PAREN@52..53 "("
+      R_PAREN@53..54 ")"
+    WHITESPACE@54..55 "\n"
+  ITEM@55..90
+    RELATION_DEF@55..89
+      REL_MODS@55..74
+        INPUT@55..60 "input"
+        WHITESPACE@60..61 " "
+        EXTERN@61..67 "extern"
+        WHITESPACE@67..68 " "
+        EXTERN@68..74 "extern"
+      WHITESPACE@74..75 " "
+      RELATION@75..83 "relation"
+      WHITESPACE@83..84 " "
+      REL_NAME@84..87
+        IDENT@84..87 "Foo"
+      L_PAREN@87..88 "("
+      R_PAREN@88..89 ")"
+    WHITESPACE@89..90 "\n"
+--
+Error: received an 'extern' modifier on a relation definition
+   ,-[inline/fail/extern_relation.dl:2:7]
+   |
+ 2 | input extern relation Foo()
+   :       ^^^|^^  
+   :          `---- relations cannot be marked as 'extern'
+---'
+--
+Error: received an 'extern' modifier on a relation definition
+   ,-[inline/fail/extern_relation.dl:3:7]
+   |
+ 3 | input extern extern relation Foo()
+   :       ^^^|^^  
+   :          `---- relations cannot be marked as 'extern'
+---'
+--
+Error: received an 'extern' modifier on a relation definition
+   ,-[inline/fail/extern_relation.dl:3:14]
+   |
+ 3 | input extern extern relation Foo()
+   :              ^^^|^^  
+   :                 `---- relations cannot be marked as 'extern'
+---'
+--
+// kind:item validate:true
+input extern relation Foo()
+input extern extern relation Foo()
+

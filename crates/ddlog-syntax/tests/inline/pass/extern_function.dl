@@ -1,0 +1,2 @@
+// kind:item validate:true
+extern function foo() {}

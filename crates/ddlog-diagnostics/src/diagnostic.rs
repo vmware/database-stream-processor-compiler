@@ -7,12 +7,18 @@ use std::{
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Diagnostic {
-    message: Option<Cow<'static, str>>,
-    note: Option<Cow<'static, str>>,
-    labels: Vec<Label>,
-    level: Level,
-    code: Option<u32>,
-    message_span: Option<Span>,
+    #[doc(hidden)]
+    pub message: Option<Cow<'static, str>>,
+    #[doc(hidden)]
+    pub note: Option<Cow<'static, str>>,
+    #[doc(hidden)]
+    pub labels: Vec<Label>,
+    #[doc(hidden)]
+    pub level: Level,
+    #[doc(hidden)]
+    pub code: Option<u32>,
+    #[doc(hidden)]
+    pub message_span: Option<Span>,
 }
 
 impl Diagnostic {
@@ -163,9 +169,12 @@ impl Default for Level {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Label {
-    message: Option<Cow<'static, str>>,
-    span: Span,
-    is_primary: bool,
+    #[doc(hidden)]
+    pub message: Option<Cow<'static, str>>,
+    #[doc(hidden)]
+    pub span: Span,
+    #[doc(hidden)]
+    pub is_primary: bool,
 }
 
 impl Label {

@@ -1,6 +1,8 @@
 use crate::{
     parser::{CompletedMarker, Parser},
-    SyntaxKind::{FUNC_ARGS, FUNC_DEF, FUNC_NAME, ITEM, RELATION_DEF, REL_MODS, REL_NAME},
+    SyntaxKind::{
+        FUNC_ARGS, FUNC_DEF, FUNC_MODS, FUNC_NAME, ITEM, RELATION_DEF, REL_MODS, REL_NAME,
+    },
     TokenSet,
 };
 use ddlog_diagnostics::{Diagnostic, Label};
@@ -16,6 +18,8 @@ const ITEM_RECOVERY: TokenSet = token_set! {
     T![input],
     T![output],
     T![relation],
+    T![multiset],
+    T![stream],
 };
 
 const MODIFIERS: TokenSet = token_set! {
@@ -39,14 +43,15 @@ impl Parser<'_, '_> {
     fn item(&mut self) -> Option<CompletedMarker> {
         let marker = self.start();
 
+        tracing::trace!(peek = %self.peek(), "parsing item");
         match self.peek() {
             // TODO: `extern`, `typedef`, `input`, `output`,
             //       `relation`, `apply`, etc.
-            T![function] => {
+            T![extern] | T![function] => {
                 self.function_def();
             }
 
-            T![input] | T![output] | T![relation] => {
+            T![input] | T![output] | T![relation] | T![multiset] | T![stream] => {
                 self.relation_def();
             }
 
@@ -73,8 +78,24 @@ impl Parser<'_, '_> {
 
     // test function_definitions
     // - function foo() {}
+    // test(validate) extern_function
+    // - extern function foo() {}
     fn function_def(&mut self) -> Option<CompletedMarker> {
         let marker = self.start();
+
+        // We eat any modifiers given to us, even though they aren't
+        // all completely valid. For instance, this accepts `input extern input function`
+        // even though that's 100% invalid, that's something that will be
+        // caught during validation
+        // test_err(validate) double_extern_function
+        // - extern extern function foo() {}
+        // test_err(validate) input_function
+        // - extern input function foo() {}
+        // test_err(validate) output_function
+        // - extern output function foo() {}
+        let modifiers = self.start();
+        self.eat_modifiers();
+        modifiers.complete(self, FUNC_MODS);
 
         self.expect(T![function]);
 
@@ -120,11 +141,25 @@ impl Parser<'_, '_> {
         // all completely valid. For instance, this accepts `input extern input relation`
         // even though that's 100% invalid, that's something that will be
         // caught during validation
+        // test_err(validate) extern_relation
+        // - input extern relation Foo()
+        // - input extern extern relation Foo()
+        // test_err(validate) relation_with_input_and_output
+        // - input output relation Foo()
         let modifiers = self.start();
         self.eat_modifiers();
         modifiers.complete(self, REL_MODS);
 
-        self.expect(T![relation]);
+        if self.at(T![relation]) {
+            self.expect(T![relation]);
+        } else if self.at(T![multiset]) {
+            self.expect(T![multiset]);
+        } else if self.at(T![stream]) {
+            self.expect(T![stream]);
+        } else {
+            // TODO: Error
+        }
+
         self.identifier(REL_NAME);
 
         self.expect(T!['(']);

@@ -203,10 +203,6 @@ impl Parser<'_, '_> {
 
                 break;
             }
-
-            while self.at(T!['}']) {
-                self.eat(T!['}']);
-            }
         }
 
         self.expect(T!['}']);

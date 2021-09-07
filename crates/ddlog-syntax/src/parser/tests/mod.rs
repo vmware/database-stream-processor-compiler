@@ -2,8 +2,8 @@
 
 mod expr;
 
-use crate::{ast::AstNode, FileId, Interner, NodeCache, Parsed, SyntaxNode};
-use ddlog_diagnostics::{Diagnostic, DiagnosticConfig, FileCache};
+use crate::{ast::AstNode, validation, FileId, Interner, NodeCache, Parsed, RuleCtx, SyntaxNode};
+use ddlog_diagnostics::{Diagnostic, DiagnosticConfig, FileCache, Rope};
 use expect_test::{expect, expect_file, Expect};
 use once_cell::sync::Lazy;
 use std::{
@@ -71,7 +71,7 @@ fn parser_tests() {
         &test_data_dir(),
         &["inline/pass"],
         "rast",
-        |text, path, kind| {
+        |text, path, kind, validate| {
             let file = FileId::new(
                 INTERNER.get_or_intern(
                     &path
@@ -84,8 +84,14 @@ fn parser_tests() {
             );
             file_cache.add_str(file, text);
 
-            let (parsed, ret_cache) = try_parse(file, text, kind, cache.take().unwrap());
+            let (mut parsed, ret_cache) = try_parse(file, text, kind, cache.take().unwrap());
             cache = Some(ret_cache);
+
+            if validate {
+                let mut ctx = RuleCtx::new(file, Rope::from_str(text), INTERNER.clone());
+                validation::run_validators(&parsed.root, &mut ctx);
+                parsed.errors.extend(ctx.diagnostics);
+            }
 
             assert_errors_are_absent(
                 parsed.errors(),
@@ -95,7 +101,9 @@ fn parser_tests() {
                 &mut file_cache,
             );
 
-            parsed.debug_tree()
+            let mut tree = parsed.debug_tree();
+            tree.push('\n');
+            tree
         },
     );
 
@@ -103,7 +111,7 @@ fn parser_tests() {
         &test_data_dir(),
         &["inline/fail"],
         "rast",
-        |text, path, kind| {
+        |text, path, kind, validate| {
             let file = FileId::new(
                 INTERNER.get_or_intern(
                     &path
@@ -116,8 +124,14 @@ fn parser_tests() {
             );
             file_cache.add_str(file, text);
 
-            let (parsed, ret_cache) = try_parse(file, text, kind, cache.take().unwrap());
+            let (mut parsed, ret_cache) = try_parse(file, text, kind, cache.take().unwrap());
             cache = Some(ret_cache);
+
+            if validate {
+                let mut ctx = RuleCtx::new(file, Rope::from_str(text), INTERNER.clone());
+                validation::run_validators(&parsed.root, &mut ctx);
+                parsed.errors.extend(ctx.diagnostics);
+            }
 
             assert_errors_are_present(parsed.errors(), path);
 
@@ -138,6 +152,7 @@ fn parser_tests() {
                 buffer.clear();
             }
             result.push_str(&format!("--\n{}", text));
+            result.push('\n');
             result
         },
     );
@@ -145,12 +160,12 @@ fn parser_tests() {
 
 fn dir_tests<F>(test_data_dir: &Path, paths: &[&str], outfile_extension: &str, mut func: F)
 where
-    F: FnMut(&str, &Path, TestKind) -> String,
+    F: FnMut(&str, &Path, TestKind, bool) -> String,
 {
-    for (path, input_code, kind) in collect_ddlog_files(test_data_dir, paths) {
+    for (path, input_code, kind, validate) in collect_ddlog_files(test_data_dir, paths) {
         eprint!("running '{}'... ", path.display());
 
-        let actual = func(&input_code, &path, kind);
+        let actual = func(&input_code, &path, kind, validate);
         let path = path.with_extension(outfile_extension);
 
         expect_file![path].assert_eq(&actual);
@@ -167,7 +182,7 @@ fn project_root() -> &'static Path {
         .expect("CARGO_MANIFEST_DIR has no parent??")
 }
 
-fn collect_ddlog_files(root_dir: &Path, paths: &[&str]) -> Vec<(PathBuf, String, TestKind)> {
+fn collect_ddlog_files(root_dir: &Path, paths: &[&str]) -> Vec<(PathBuf, String, TestKind, bool)> {
     paths
         .iter()
         .flat_map(|path| {
@@ -176,19 +191,30 @@ fn collect_ddlog_files(root_dir: &Path, paths: &[&str]) -> Vec<(PathBuf, String,
         })
         .map(|path| {
             let text = fs::read_to_string(&path)
-                .unwrap_or_else(|_| format!("could not read ddlog file '{}'", path.display()));
+                .unwrap_or_else(|_| panic!("could not read ddlog file '{}'", path.display()));
 
-            let kind = if text.starts_with("// kind:item") {
-                TestKind::Item
-            } else if text.starts_with("// kind:stmt") {
-                TestKind::Stmt
-            } else if text.starts_with("// kind:expr") {
-                TestKind::Expr
-            } else {
-                panic!("test had no kind '{}'", path.display())
-            };
+            let header = text.lines().next().expect("expected a test header");
+            assert!(header.starts_with("//"), "header must start with `//`");
 
-            (path, text, kind)
+            let (mut kind, mut validate) = (TestKind::Item, false);
+            for attr in header.split(' ') {
+                if let Some(k) = attr.strip_prefix("kind:") {
+                    match k {
+                        "item" => kind = TestKind::Item,
+                        "stmt" => kind = TestKind::Stmt,
+                        "expr" => kind = TestKind::Expr,
+                        _ => panic!("invalid `kind` setting: {:?}", k),
+                    }
+                } else if let Some(v) = attr.strip_prefix("validate:") {
+                    match v {
+                        "true" => validate = true,
+                        "false" => validate = false,
+                        _ => panic!("invalid `validate` setting: {:?}", v),
+                    }
+                }
+            }
+
+            (path, text, kind, validate)
         })
         .collect()
 }

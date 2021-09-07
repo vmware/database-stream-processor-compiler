@@ -1,11 +1,10 @@
-use std::sync::Mutex;
-
 use anyhow::Result;
 use dashmap::DashMap;
 use ddlog_diagnostics::{FileId, Interner};
 use ddlog_syntax::NodeCache;
 use lspower::lsp::Url;
 use ropey::Rope;
+use std::sync::Mutex;
 
 #[derive(Debug)]
 pub struct Session {

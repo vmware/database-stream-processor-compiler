@@ -24,8 +24,33 @@ pub fn parse_tests(mode: CodegenMode) -> Result<()> {
 
     let parser_dir = project_root().join("crates/ddlog-syntax/src/parser");
     let tests = tests_from_dir(&parser_dir)?;
-    install_tests(&tests.pass, "crates/ddlog-syntax/tests/inline/pass", mode)?;
-    install_tests(&tests.fail, "crates/ddlog-syntax/tests/inline/fail", mode)?;
+    let mut missing_dumps =
+        install_tests(&tests.pass, "crates/ddlog-syntax/tests/inline/pass", mode)?;
+    if install_tests(&tests.fail, "crates/ddlog-syntax/tests/inline/fail", mode)? {
+        missing_dumps = true;
+    }
+
+    if missing_dumps {
+        eprintln!(
+            "{}warning{}: missing dump files, run `cargo test` with `UPDATE_EXPECT` set to 1",
+            YELLOW, RESET,
+        );
+        eprintln!(
+            "{}warning{}:     shell: `UPDATE_EXPECT=1 cargo test`",
+            YELLOW, RESET,
+        );
+        eprintln!(
+            "{}warning{}:     cmd: `set UPDATE_EXPECT=1 && cargo test && set UPDATE_EXPECT=`",
+            YELLOW, RESET,
+        );
+        eprintln!(
+            "{}warning{}:     powershell: `$env:UPDATE_EXPECT=1; cargo test; Remove-Item Env:\\UPDATE_EXPECT`",
+            YELLOW, RESET,
+        );
+    }
+    if missing_dumps && mode.is_check() {
+        anyhow::bail!("missing dump files");
+    }
 
     match mode {
         CodegenMode::Run => eprintln!("finished running test generation"),
@@ -35,7 +60,7 @@ pub fn parse_tests(mode: CodegenMode) -> Result<()> {
     Ok(())
 }
 
-fn install_tests(tests: &HashMap<String, Test>, test_dir: &str, mode: CodegenMode) -> Result<()> {
+fn install_tests(tests: &HashMap<String, Test>, test_dir: &str, mode: CodegenMode) -> Result<bool> {
     let tests_dir = project_root().join(test_dir);
     if !tests_dir.is_dir() {
         fs2::create_dir_all(&tests_dir)?;
@@ -97,29 +122,7 @@ fn install_tests(tests: &HashMap<String, Test>, test_dir: &str, mode: CodegenMod
         }
     }
 
-    if missing_dumps {
-        eprintln!(
-            "{}warning{}: missing dump files, run `cargo test` with `UPDATE_EXPECT` set to 1",
-            YELLOW, RESET,
-        );
-        eprintln!(
-            "{}warning{}:     shell: `UPDATE_EXPECT=1 cargo test`",
-            YELLOW, RESET,
-        );
-        eprintln!(
-            "{}warning{}:     cmd: `set UPDATE_EXPECT=1 && cargo test && set UPDATE_EXPECT=`",
-            YELLOW, RESET,
-        );
-        eprintln!(
-            "{}warning{}:     powershell: `$env:UPDATE_EXPECT=1; cargo test; Remove-Item Env:\\UPDATE_EXPECT`",
-            YELLOW, RESET,
-        );
-    }
-    if missing_dumps && mode.is_check() {
-        anyhow::bail!("missing dump files");
-    }
-
-    Ok(())
+    Ok(missing_dumps)
 }
 
 fn extract_comment_blocks(
@@ -175,6 +178,7 @@ enum TestKind {
     Item,
     Stmt,
     Expr,
+    ValidateItem,
 }
 
 #[derive(Default, Debug)]
@@ -202,16 +206,19 @@ fn collect_tests(s: &str) -> Vec<Test> {
             (name, TestKind::Stmt)
         } else if let Some(name) = line.strip_prefix("(expr) ") {
             (name, TestKind::Expr)
+        } else if let Some(name) = line.strip_prefix("(validate) ") {
+            (name, TestKind::ValidateItem)
         } else {
             (line, TestKind::Item)
         };
 
         let header = format!(
-            "// kind:{}",
+            "// {}",
             match kind {
-                TestKind::Item => "item",
-                TestKind::Stmt => "stmt",
-                TestKind::Expr => "expr",
+                TestKind::Item => "kind:item",
+                TestKind::Stmt => "kind:stmt",
+                TestKind::Expr => "kind:expr",
+                TestKind::ValidateItem => "kind:item validate:true",
             },
         );
         let code = iter::once(&*header)
