@@ -56,9 +56,9 @@ impl<'parent, T> TokenChildren<'parent, T> {
 
 impl<'parent, T> Iterator for TokenChildren<'parent, T>
 where
-    T: AstToken + 'parent,
+    T: AstToken + Clone + 'parent,
 {
-    type Item = &'parent T;
+    type Item = Cow<'parent, T>;
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
@@ -84,9 +84,9 @@ where
 }
 
 #[inline]
-pub fn token<T>(parent: &SyntaxNode) -> Option<&T>
+pub(super) fn token<T>(parent: &SyntaxNode) -> Option<Cow<'_, T>>
 where
-    T: AstToken,
+    T: AstToken + Clone,
 {
     parent
         .children_with_tokens()

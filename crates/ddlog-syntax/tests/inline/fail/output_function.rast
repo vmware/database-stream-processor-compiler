@@ -3,7 +3,7 @@ ROOT@0..59
   WHITESPACE@26..27 "\n"
   ITEM@27..59
     FUNC_DEF@27..59
-      FUNC_MODS@27..40
+      MODIFIERS@27..40
         EXTERN@27..33 "extern"
         WHITESPACE@33..34 " "
         OUTPUT@34..40 "output"

@@ -381,7 +381,7 @@ pub trait SyntaxTokenExt {
     ///
     /// Panics if the underlying token cannot be cast to the AST token
     #[inline]
-    fn to<T>(&self) -> &T
+    fn to<T>(&self) -> Cow<'_, T>
     where
         T: AstToken + Clone,
     {
@@ -395,9 +395,9 @@ pub trait SyntaxTokenExt {
 
     /// Try to cast this node to a certain AST token
     #[inline]
-    fn try_to<T>(&self) -> Option<&T>
+    fn try_to<T>(&self) -> Option<Cow<'_, T>>
     where
-        T: AstToken,
+        T: AstToken + Clone,
     {
         T::cast(self.to_token())
     }

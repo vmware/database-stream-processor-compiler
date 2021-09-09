@@ -1,8 +1,8 @@
 use crate::{
     parser::{CompletedMarker, Marker, Parser},
     SyntaxKind::{
-        self, FUNC_ARG, FUNC_ARGS, FUNC_DEF, FUNC_MODS, FUNC_NAME, IDENT, ITEM, RELATION_DEF,
-        REL_COL, REL_COLS, REL_KW, REL_MODS, REL_NAME,
+        self, FUNC_ARG, FUNC_ARGS, FUNC_DEF, FUNC_NAME, IDENT, ITEM, MODIFIERS, RELATION_DEF,
+        REL_COL, REL_COLS, REL_KW, REL_NAME,
     },
     TokenSet,
 };
@@ -23,7 +23,7 @@ const ITEM_RECOVERY: TokenSet = token_set! {
     T![stream],
 };
 
-const MODIFIERS: TokenSet = token_set! {
+const MODIFIER_KEYWORDS: TokenSet = token_set! {
     T![input],
     T![output],
     T![extern],
@@ -49,21 +49,17 @@ impl Parser<'_, '_> {
         // all completely valid. For instance, this accepts `input extern input function`
         // even though that's 100% invalid, that's something that will be
         // caught during validation
-        let modifiers = self.start();
         self.eat_modifiers();
-        // `modifiers` is completed by each individual item
 
         tracing::trace!(peek = %self.peek(), "parsing item");
         match self.peek() {
             // TODO: `extern`, `typedef`, `input`, `output`,
             //       `relation`, `apply`, etc.
             T![function] => {
-                modifiers.complete(self, FUNC_MODS);
                 self.function_def(inner_item);
             }
 
             T![relation] | T![multiset] | T![stream] => {
-                modifiers.complete(self, REL_MODS);
                 self.relation_def(inner_item);
             }
 
@@ -80,7 +76,6 @@ impl Parser<'_, '_> {
                     );
                 self.push_error(error);
 
-                modifiers.abandon(self);
                 inner_item.abandon(self);
                 item.abandon(self);
 
@@ -259,10 +254,10 @@ impl Parser<'_, '_> {
 
     // test indiscriminantly_modify
     // - input input input input input output extern output input relation Foo()
-    // - input input input input input output extern output input function Foo()
+    // - input input input input input output extern output input function foo() {}
     // - extern extern extern relation Foo()
     // - extern extern input extern stream Foo()
-    // - extern extern extern function Foo()
+    // - extern extern extern function foo() {}
     // test_err(validate) double_extern_function
     // - extern extern function foo() {}
     // test_err(validate) input_function
@@ -278,9 +273,12 @@ impl Parser<'_, '_> {
     // - input extern extern stream Foo()
     // test_err(validate) relation_with_input_and_output
     // - input output relation Foo()
-    fn eat_modifiers(&mut self) {
-        while self.at_set(MODIFIERS) {
+    fn eat_modifiers(&mut self) -> CompletedMarker {
+        let modifiers = self.start();
+        while self.at_set(MODIFIER_KEYWORDS) {
             self.bump();
         }
+
+        modifiers.complete(self, MODIFIERS)
     }
 }

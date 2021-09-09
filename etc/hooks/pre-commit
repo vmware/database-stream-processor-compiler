@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Set command failures to be fatal
+set -e
+
 if git rev-parse --verify HEAD >/dev/null 2>&1
 then
     against=HEAD
@@ -17,14 +20,14 @@ exec 1>&2
 # Cross platform projects tend to avoid non-ASCII filenames; prevent
 # them from being added to the repository. We exploit the fact that the
 # printable range starts at the space character and ends with tilde.
-if [ "$allownonascii" != "true" ] &&
+if [ "$allownonascii" != true ] &&
     # Note that the use of brackets around a tr range is ok here, (it's
     # even required, for portability to Solaris 10's /usr/bin/tr), since
     # the square bracket bytes happen to fall in the designated range.
     test $(git diff --cached --name-only --diff-filter=A -z $against |
       LC_ALL=C tr -d '[ -~]\0' | wc -c) != 0
 then
-    cat <<\EOF
+    cat <<EOF
 Error: Attempt to add a non-ASCII file name.
 This can cause problems if you want to work with people on other platforms.
 To be portable it is advisable to rename the file.
@@ -38,26 +41,16 @@ fi
 exec git diff-index --check --cached $against --
 
 # Check line endings
-if ! cargo xtask line-endings --mode check; then
-    exit 1
-fi
+cargo xtask line-endings --mode check
 
 # Check generated code
-if ! cargo xtask codegen check; then
-    exit 1
-fi
+cargo xtask codegen check
 
 # Check formatting
-if ! cargo fmt --all -- --check; then
-    exit 1
-fi
+cargo fmt --all -- --check
 
 # Run clippy
-if ! cargo clippy --locked -D warnings; then
-    exit 1
-fi
+cargo clippy --workspace --locked -D warnings
 
 # Run tests
-if ! cargo test --workspace; then
-    exit 1
-fi
+cargo test --workspace

@@ -3,7 +3,7 @@ ROOT@0..212
   WHITESPACE@26..27 "\n"
   ITEM@27..55
     RELATION_DEF@27..55
-      REL_MODS@27..39
+      MODIFIERS@27..39
         INPUT@27..32 "input"
         WHITESPACE@32..33 " "
         EXTERN@33..39 "extern"
@@ -19,7 +19,7 @@ ROOT@0..212
       WHITESPACE@54..55 "\n"
   ITEM@55..90
     RELATION_DEF@55..90
-      REL_MODS@55..74
+      MODIFIERS@55..74
         INPUT@55..60 "input"
         WHITESPACE@60..61 " "
         EXTERN@61..67 "extern"
@@ -37,7 +37,7 @@ ROOT@0..212
       WHITESPACE@89..90 "\n"
   ITEM@90..118
     RELATION_DEF@90..118
-      REL_MODS@90..102
+      MODIFIERS@90..102
         INPUT@90..95 "input"
         WHITESPACE@95..96 " "
         EXTERN@96..102 "extern"
@@ -53,7 +53,7 @@ ROOT@0..212
       WHITESPACE@117..118 "\n"
   ITEM@118..153
     RELATION_DEF@118..153
-      REL_MODS@118..137
+      MODIFIERS@118..137
         INPUT@118..123 "input"
         WHITESPACE@123..124 " "
         EXTERN@124..130 "extern"
@@ -71,7 +71,7 @@ ROOT@0..212
       WHITESPACE@152..153 "\n"
   ITEM@153..179
     RELATION_DEF@153..179
-      REL_MODS@153..165
+      MODIFIERS@153..165
         INPUT@153..158 "input"
         WHITESPACE@158..159 " "
         EXTERN@159..165 "extern"
@@ -87,7 +87,7 @@ ROOT@0..212
       WHITESPACE@178..179 "\n"
   ITEM@179..212
     RELATION_DEF@179..212
-      REL_MODS@179..198
+      MODIFIERS@179..198
         INPUT@179..184 "input"
         WHITESPACE@184..185 " "
         EXTERN@185..191 "extern"

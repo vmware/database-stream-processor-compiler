@@ -2,21 +2,19 @@ Root = Item
 
 Item = FuncDef | RelationDef
 
-RelationDef = modifiers:RelMods keyword:RelKw name:RelName columns:RelCols
-RelMods = (Input | Output | Extern)*
-RelKw = Relation | Multiset | Stream
-Relation = 'relation'
-Multiset = 'multiset'
-Stream = 'stream'
+RelationDef = modifiers:Modifiers keyword:RelKw name:RelName columns:RelCols
+RelKw = 'relation' | 'multiset' | 'stream'
 RelName = 'ident'
 RelCols = '(' RelCol* ')'
 RelCol = binding:Pat ':' ty:Type ','?
 
-FuncDef = modifiers:FuncMods keyword:'function' name:FuncName args:FuncArgs (':' return_ty:Type)? body:Block
-FuncMods = (Input | Output | Extern)*
+FuncDef = modifiers:Modifiers keyword:'function' name:FuncName args:FuncArgs (':' return_ty:Type)? body:Block
 FuncName = 'ident'
 FuncArgs = '(' FuncArg* ')'
 FuncArg = binding:Pat ':' ty:Type ','?
+
+Modifiers = Modifier*
+Modifier = 'input' | 'output' | 'extern'
 
 Type = 'ident'
 
@@ -90,9 +88,6 @@ Or = 'or'
 And = 'and'
 True = 'true'
 False = 'false'
-Input = 'input'
-Output = 'output'
-Extern = 'extern'
 
 Eq = '='
 Bang = '!'

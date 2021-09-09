@@ -3,7 +3,7 @@ ROOT@0..55
   WHITESPACE@26..27 "\n"
   ITEM@27..55
     RELATION_DEF@27..55
-      REL_MODS@27..39
+      MODIFIERS@27..39
         INPUT@27..32 "input"
         WHITESPACE@32..33 " "
         OUTPUT@33..39 "output"

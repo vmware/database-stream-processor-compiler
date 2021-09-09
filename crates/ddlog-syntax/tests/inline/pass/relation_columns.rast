@@ -3,7 +3,7 @@ ROOT@0..116
   WHITESPACE@12..13 "\n"
   ITEM@13..48
     RELATION_DEF@13..48
-      REL_MODS@13..13
+      MODIFIERS@13..13
       REL_KW@13..21
         RELATION@13..21 "relation"
       WHITESPACE@21..22 " "
@@ -27,7 +27,7 @@ ROOT@0..116
       WHITESPACE@47..48 "\n"
   ITEM@48..83
     RELATION_DEF@48..83
-      REL_MODS@48..48
+      MODIFIERS@48..48
       REL_KW@48..56
         MULTISET@48..56 "multiset"
       WHITESPACE@56..57 " "
@@ -51,7 +51,7 @@ ROOT@0..116
       WHITESPACE@82..83 "\n"
   ITEM@83..116
     RELATION_DEF@83..116
-      REL_MODS@83..83
+      MODIFIERS@83..83
       REL_KW@83..89
         STREAM@83..89 "stream"
       WHITESPACE@89..90 " "

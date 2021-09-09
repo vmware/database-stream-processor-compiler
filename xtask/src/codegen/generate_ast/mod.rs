@@ -83,6 +83,7 @@ struct AstGenerator<'a> {
     ast_node_path: PathBuf,
     ast_token_path: PathBuf,
     rust_keywords: Vec<Ident>,
+    token_enums: Vec<String>,
 }
 
 impl<'a> AstGenerator<'a> {
@@ -107,6 +108,20 @@ impl<'a> AstGenerator<'a> {
 
         let rust_keywords = rust_keywords();
 
+        let token_enums = grammar
+            .iter()
+            .filter_map(|node| {
+                let node = &grammar[node];
+                if let Rule::Alt(inner) = &node.rule {
+                    if inner.iter().all(|rule| matches!(rule, Rule::Token(_))) {
+                        return Some(node.name.to_owned());
+                    }
+                }
+
+                None
+            })
+            .collect();
+
         let ast_module = "pub mod nodes;\npub mod tokens;\n";
         fs2::update(&ast_module_path, ast_module, mode)?;
 
@@ -116,11 +131,11 @@ impl<'a> AstGenerator<'a> {
             ast_node_path,
             ast_token_path,
             rust_keywords,
+            token_enums,
         })
     }
 
-    fn token_ast(&self) -> Result<()> {
-        let mut token_ast = TokenStream::new();
+    fn token_ast(&self, mut token_ast: TokenStream) -> Result<()> {
         let mut token_names = HashSet::new();
 
         let derives = quote! {
@@ -163,8 +178,8 @@ impl<'a> AstGenerator<'a> {
         Ok(())
     }
 
-    fn node_ast(&self) -> Result<()> {
-        let mut node_ast = TokenStream::new();
+    fn node_ast(&self) -> Result<TokenStream> {
+        let (mut node_ast, mut token_ast) = (TokenStream::new(), TokenStream::new());
         let mut rule_names = HashSet::new();
 
         let mut nodes: Vec<_> = self
@@ -195,7 +210,7 @@ impl<'a> AstGenerator<'a> {
             let rule_name = self.ast_struct(name)?;
             let methods = self.gather_node_methods(rule, true, false, None)?;
 
-            if let Rule::Alt(inner) = rule {
+            let ast_token_impl = if let Rule::Alt(inner) = rule {
                 if inner.is_empty() {
                     anyhow::bail!(
                         "created an alternative rule with zero variants (must have at least 1): '{}'",
@@ -210,9 +225,8 @@ impl<'a> AstGenerator<'a> {
                         name,
                     );
                 }
-                if inner.iter().all(|rule| matches!(rule, Rule::Token(_))) {
-                    continue;
-                }
+                // If every variant of the alternative is a token, the generated enum is a token
+                let is_token = inner.iter().all(|rule| matches!(rule, Rule::Token(_)));
 
                 let mut variants = inner
                     .iter()
@@ -224,13 +238,78 @@ impl<'a> AstGenerator<'a> {
                     .into_iter()
                     .map(|(variant, ty)| quote! { #variant(#ty), });
 
-                node_ast.extend(quote! {
+                let ast = if is_token {
+                    &mut token_ast
+                } else {
+                    &mut node_ast
+                };
+                ast.extend(quote! {
                     #derives
                     #[repr(u8)]
                     pub enum #rule_name {
                         #(#variants)*
                     }
                 });
+
+                if is_token {
+                    let token_name = self.ast_struct(name)?;
+                    let variant_kinds = inner
+                        .iter()
+                        .map(|rule| self.get_rule_syntax_kind(rule))
+                        .collect::<Result<Vec<_>>>()?;
+                    let variant_names = inner
+                        .iter()
+                        .map(|rule| self.get_rule_name(rule).map(|(name, _)| name))
+                        .collect::<Result<Vec<_>>>()?;
+
+                    let cast_arms = inner
+                        .iter()
+                        .map(|rule| {
+                            let kind = self.get_rule_syntax_kind(rule)?;
+                            let (variant, ty) = self.get_rule_name(rule)?;
+
+                            Ok(quote! {
+                                crate::SyntaxKind::#kind => ::core::option::Option::Some(
+                                    ::std::borrow::Cow::Owned(
+                                        Self::#variant(
+                                            #ty {
+                                                syntax: <crate::SyntaxToken as ::core::clone::Clone>::clone(
+                                                    syntax,
+                                                ),
+                                            },
+                                        ),
+                                    ),
+                                ),
+                            })
+                        })
+                        .collect::<Result<Vec<_>>>()?;
+
+                    Some(quote! {
+                        impl crate::ast::AstToken for #token_name {
+                            #[inline]
+                            fn can_cast_from(kind: crate::SyntaxKind) -> bool {
+                                ::core::matches!(kind, #(crate::SyntaxKind::#variant_kinds)|*)
+                            }
+
+                            #[inline]
+                            fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
+                                match crate::SyntaxToken::kind(syntax) {
+                                    #(#cast_arms)*
+                                    _ => ::core::option::Option::None,
+                                }
+                            }
+
+                            #[inline]
+                            fn syntax(&self) -> &crate::SyntaxToken {
+                                match self {
+                                    #(Self::#variant_names(syntax) => syntax.syntax(),)*
+                                }
+                            }
+                        }
+                    })
+                } else {
+                    None
+                }
             } else {
                 node_ast.extend(quote! {
                     #derives
@@ -239,23 +318,35 @@ impl<'a> AstGenerator<'a> {
                         pub(crate) syntax: crate::SyntaxNode,
                     }
                 });
-            }
+
+                None
+            };
 
             if !methods.is_empty() {
-                node_ast.extend(quote! {
+                let ast = if ast_token_impl.is_some() {
+                    &mut token_ast
+                } else {
+                    &mut node_ast
+                };
+
+                ast.extend(quote! {
                     impl #rule_name {
                         #methods
                     }
                 });
             }
 
-            node_ast.extend(self.implement_ast_node(rule, name)?);
+            if let Some(ast_token_impl) = ast_token_impl {
+                token_ast.extend(ast_token_impl);
+            } else {
+                node_ast.extend(self.implement_ast_node(rule, name)?);
+            }
         }
 
         let node_ast = node_ast.to_string();
         fs2::update(&self.ast_node_path, &node_ast, self.mode)?;
 
-        Ok(())
+        Ok(token_ast)
     }
 
     fn get_rule_name(&self, rule: &Rule) -> Result<(Ident, TokenStream)> {
@@ -280,6 +371,32 @@ impl<'a> AstGenerator<'a> {
 
                 Ok((token, ty))
             }
+
+            Rule::Seq(_) => anyhow::bail!(
+                "direct sequences in alternatives are not supported, use a named rule",
+            ),
+
+            Rule::Alt(_) => anyhow::bail!(
+                "direct alternatives in alternatives are not supported, use a named rule",
+            ),
+
+            Rule::Opt(_) => anyhow::bail!(
+                "direct optionals in alternatives are not supported, use a named rule",
+            ),
+
+            Rule::Rep(_) => anyhow::bail!(
+                "direct repetition in alternatives are not supported, use a named rule",
+            ),
+        }
+    }
+
+    fn get_rule_syntax_kind(&self, rule: &Rule) -> Result<Ident> {
+        match rule {
+            Rule::Labeled { label, .. } => self.syntax_kind_variant(label),
+
+            &Rule::Node(rule) => self.syntax_kind_variant(&self.grammar[rule].name),
+
+            &Rule::Token(token) => self.syntax_kind_variant(&self.grammar[token].name),
 
             Rule::Seq(_) => anyhow::bail!(
                 "direct sequences in alternatives are not supported, use a named rule",
@@ -429,7 +546,7 @@ impl<'a> AstGenerator<'a> {
                 }
 
                 #[inline]
-                fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<&Self> {
+                fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
                     if <Self as crate::ast::AstToken>::can_cast_from(crate::SyntaxToken::kind(syntax)) {
                         // Safety: `Self` is `#[repr(transparent)]` around a `SyntaxToken`
                         //         so `&SyntaxToken` can be transmuted into an `&Self`
@@ -437,7 +554,9 @@ impl<'a> AstGenerator<'a> {
                             ::core::mem::transmute::<&crate::SyntaxToken, &Self>(syntax)
                         };
 
-                        ::core::option::Option::Some(node)
+                        ::core::option::Option::Some(
+                            ::std::borrow::Cow::Borrowed(node),
+                        )
                     } else {
                         ::core::option::Option::None
                     }
@@ -474,8 +593,21 @@ impl<'a> AstGenerator<'a> {
                     Ok,
                 )?;
                 let node_name = self.ast_struct(&self.grammar[node].name)?;
+                let is_token_enum = self.token_enums.contains(&self.grammar[node].name);
 
-                let ret_ty = if is_multiple {
+                let ret_ty = if is_token_enum {
+                    if is_multiple {
+                        quote! {
+                            crate::ast::support::TokenChildren<'_, crate::ast::tokens::#node_name>
+                        }
+                    } else {
+                        quote! {
+                            ::core::option::Option<
+                                ::std::borrow::Cow<'_, crate::ast::tokens::#node_name>
+                            >
+                        }
+                    }
+                } else if is_multiple {
                     quote! {
                         crate::ast::support::AstChildren<'_, crate::ast::nodes::#node_name>
                     }
@@ -486,7 +618,17 @@ impl<'a> AstGenerator<'a> {
                         >
                     }
                 };
-                let support = if is_multiple {
+                let support = if is_token_enum {
+                    if is_multiple {
+                        quote! {
+                            crate::ast::support::token_children(&self.syntax)
+                        }
+                    } else {
+                        quote! {
+                            crate::ast::support::token(&self.syntax)
+                        }
+                    }
+                } else if is_multiple {
                     quote! {
                         crate::ast::support::children(&self.syntax)
                     }
@@ -516,7 +658,9 @@ impl<'a> AstGenerator<'a> {
                         crate::ast::support::TokenChildren<'_, crate::ast::tokens::#token_name>
                     }
                 } else {
-                    quote! { ::core::option::Option<&crate::ast::tokens::#token_name> }
+                    quote! {
+                        ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::#token_name>>
+                    }
                 };
                 let support = if is_multiple {
                     quote! {
@@ -744,8 +888,8 @@ pub fn generate_ast(mode: CodegenMode) -> Result<()> {
     tokens.dedup();
 
     generate_syntax_kind(&tokens, mode)?;
-    generator.node_ast()?;
-    generator.token_ast()?;
+    let token_ast = generator.node_ast()?;
+    generator.token_ast(token_ast)?;
 
     match mode {
         CodegenMode::Run => eprintln!("finished running code generation"),

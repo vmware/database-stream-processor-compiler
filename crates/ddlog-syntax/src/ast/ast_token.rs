@@ -1,6 +1,7 @@
 use crate::{SyntaxKind, SyntaxToken};
 use cstree::TextRange;
 use ddlog_diagnostics::{FileId, Interner, Span};
+use std::borrow::Cow;
 
 /// Like [`AstNode`][super::AstNode], but wraps tokens rather than interior nodes.
 pub trait AstToken {
@@ -8,7 +9,9 @@ pub trait AstToken {
     where
         Self: Sized;
 
-    fn cast(syntax: &SyntaxToken) -> Option<&Self>;
+    fn cast(syntax: &SyntaxToken) -> Option<Cow<'_, Self>>
+    where
+        Self: Clone;
 
     fn syntax(&self) -> &SyntaxToken;
 

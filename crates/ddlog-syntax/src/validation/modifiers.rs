@@ -1,12 +1,11 @@
 use crate::{
     ast::{
         nodes::{FuncDef, RelationDef},
-        support,
-        tokens::{Extern, Input, Multiset, Output, Stream},
-        AstNode,
+        tokens::{Modifier, RelKw},
+        AstToken,
     },
     visitor::RuleCtx,
-    AstVisitor, SyntaxElementRef, SyntaxNode, SyntaxTokenExt,
+    AstVisitor, SyntaxNode,
 };
 use ddlog_diagnostics::{Diagnostic, Label};
 
@@ -25,10 +24,11 @@ impl ModifierValidator {
     fn check_function(&mut self, function: &FuncDef, ctx: &mut RuleCtx) -> Option<()> {
         let mut first_extern = None;
 
-        for modifier in function.modifiers()?.syntax().children_with_tokens() {
-            if let SyntaxElementRef::Token(token) = modifier {
-                if token.is::<Extern>() {
-                    let span = token.span(ctx.file_id);
+        let modifiers = function.modifiers()?;
+        for modifier in modifiers.modifiers() {
+            match &*modifier {
+                Modifier::Extern(ext) => {
+                    let span = ext.span(ctx.file_id);
 
                     if let Some(first_extern) = first_extern {
                         tracing::trace!(
@@ -54,8 +54,10 @@ impl ModifierValidator {
                     } else {
                         first_extern = Some(span);
                     }
-                } else if token.is::<Input>() {
-                    let span = token.span(ctx.file_id);
+                }
+
+                Modifier::Input(input) => {
+                    let span = input.span(ctx.file_id);
                     tracing::trace!(
                         output = %span,
                         "found invalid output modifier on function",
@@ -69,8 +71,10 @@ impl ModifierValidator {
                         );
 
                     ctx.diagnostics.push(error);
-                } else if token.is::<Output>() {
-                    let span = token.span(ctx.file_id);
+                }
+
+                Modifier::Output(output) => {
+                    let span = output.span(ctx.file_id);
                     tracing::trace!(
                         input = %span,
                         "found invalid input modifier on function",
@@ -94,18 +98,17 @@ impl ModifierValidator {
     fn check_relation(&mut self, relation: &RelationDef, ctx: &mut RuleCtx) -> Option<()> {
         let (mut first_input, mut first_output) = (None, None);
         // FIXME: Fix codegen for `RelationDef::keyword()`
-        let relation_kind = if support::token::<Multiset>(relation.syntax()).is_some() {
-            "multiset"
-        } else if support::token::<Stream>(relation.syntax()).is_some() {
-            "stream"
-        } else {
-            "relation"
+        let relation_kind = match relation.keyword().as_deref() {
+            Some(RelKw::Multiset(_)) => "multiset",
+            Some(RelKw::Stream(_)) => "stream",
+            Some(RelKw::Relation(_)) | None => "relation",
         };
 
-        for modifier in relation.modifiers()?.syntax().children_with_tokens() {
-            if let SyntaxElementRef::Token(token) = modifier {
-                if token.is::<Extern>() {
-                    let span = token.span(ctx.file_id);
+        let modifiers = relation.modifiers()?;
+        for modifier in modifiers.modifiers() {
+            match &*modifier {
+                Modifier::Extern(ext) => {
+                    let span = ext.span(ctx.file_id);
                     tracing::trace!(
                         _extern = %span,
                         "found invalid extern modifier on {}",
@@ -123,8 +126,10 @@ impl ModifierValidator {
                         )));
 
                     ctx.diagnostics.push(error);
-                } else if token.is::<Input>() {
-                    let span = token.span(ctx.file_id);
+                }
+
+                Modifier::Input(input) => {
+                    let span = input.span(ctx.file_id);
 
                     if let Some(first_input) = first_input {
                         tracing::trace!(
@@ -167,8 +172,10 @@ impl ModifierValidator {
                             ctx.diagnostics.push(error);
                         }
                     }
-                } else if token.is::<Output>() {
-                    let span = token.span(ctx.file_id);
+                }
+
+                Modifier::Output(output) => {
+                    let span = output.span(ctx.file_id);
 
                     if let Some(first_output) = first_output {
                         tracing::trace!(
