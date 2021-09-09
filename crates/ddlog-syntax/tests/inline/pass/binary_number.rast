@@ -1,7 +1,0 @@
-ROOT@0..22
-  COMMENT@0..12 "// kind:expr"
-  WHITESPACE@12..13 "\n"
-  EXPR@13..22
-    LITERAL@13..21
-      NUMBER@13..21 "0b010101"
-    WHITESPACE@21..22 "\n"

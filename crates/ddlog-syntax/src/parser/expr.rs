@@ -22,7 +22,6 @@ pub(super) const EXPR_RECOVERY_SET: TokenSet = token_set! {
 };
 
 impl Parser<'_, '_> {
-    #[must_use]
     pub(super) fn expr(&mut self) -> Option<CompletedMarker> {
         let expr = self.start();
         // TODO: Should we abandon the marker if `.expr_inner()` fails?

@@ -154,6 +154,22 @@ pub trait SyntaxNodeExt {
         TextRange::new(start, end)
     }
 
+    #[inline]
+    fn trimmed_span(&self, file: FileId) -> Span {
+        let node = self.to_node();
+        let tokens = node.lossy_tokens();
+        let start = tokens
+            .first()
+            .map(|t| t.text_range().start().into())
+            .unwrap_or_else(|| 0);
+        let end = tokens
+            .last()
+            .map(|t| t.text_range().end().into())
+            .unwrap_or_else(|| 0);
+
+        Span::new(start, end, file)
+    }
+
     /// Get the text of this node, not including leading or trailing whitespace
     ///
     // # Examples

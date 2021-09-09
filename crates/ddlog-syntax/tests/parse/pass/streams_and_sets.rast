@@ -1,0 +1,29 @@
+ROOT@0..56
+  COMMENT@0..27 "// kind:item validate ..."
+  WHITESPACE@27..28 "\n"
+  ITEM@28..41
+    RELATION_DEF@28..41
+      ATTRIBUTES@28..28
+      MODIFIERS@28..28
+      REL_KW@28..34
+        STREAM@28..34 "stream"
+      WHITESPACE@34..35 " "
+      REL_NAME@35..38
+        IDENT@35..38 "Bar"
+      REL_COLS@38..40
+        L_PAREN@38..39 "("
+        R_PAREN@39..40 ")"
+      WHITESPACE@40..41 "\n"
+  ITEM@41..56
+    RELATION_DEF@41..56
+      ATTRIBUTES@41..41
+      MODIFIERS@41..41
+      REL_KW@41..49
+        MULTISET@41..49 "multiset"
+      WHITESPACE@49..50 " "
+      REL_NAME@50..53
+        IDENT@50..53 "Foo"
+      REL_COLS@53..55
+        L_PAREN@53..54 "("
+        R_PAREN@54..55 ")"
+      WHITESPACE@55..56 "\n"

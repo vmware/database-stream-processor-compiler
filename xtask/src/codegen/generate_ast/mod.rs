@@ -43,6 +43,7 @@ const NAMED_TOKENS: &[(&str, &str)] = &[
     (";", "SEMICOLON"),
     ("<=", "L_ANGLE_EQ"),
     (">=", "R_ANGLE_EQ"),
+    ("#[", "HASH_BRACK"),
     ("=>", "RIGHT_ROCKET"),
 ];
 
@@ -960,7 +961,7 @@ fn generate_syntax_kind(tokens: &[&str], mode: CodegenMode) -> Result<()> {
     Ok(())
 }
 
-const FUNKY_CHARS: &[&str] = &["(", ")", "{", "}", "[", "]"];
+const FUNKY_CHARS: &[&str] = &["(", ")", "{", "}", "[", "]", "#["];
 
 fn token_macro(tokens: &[&str]) -> TokenStream {
     let arms = tokens.iter().filter_map(|&token| {
@@ -968,10 +969,16 @@ fn token_macro(tokens: &[&str]) -> TokenStream {
             let ident = format_ident!("{}", token);
             quote! { #ident }
         } else if FUNKY_CHARS.contains(&token) {
-            assert_eq!(token.chars().count(), 1);
-            let char = token.chars().next().unwrap();
+            let char_count = token.chars().count();
+            assert!(char_count >= 1);
 
-            quote! { #char }
+            if char_count == 1 {
+                let char = token.chars().next().unwrap();
+
+                quote! { #char }
+            } else {
+                quote! { #token }
+            }
         } else if NAMED_TOKENS
             .iter()
             .any(|&(named_token, _)| named_token == token)

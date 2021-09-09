@@ -1,8 +1,8 @@
 use crate::{
     parser::{CompletedMarker, Marker, Parser},
     SyntaxKind::{
-        self, FUNC_ARG, FUNC_ARGS, FUNC_DEF, FUNC_NAME, IDENT, ITEM, MODIFIERS, RELATION_DEF,
-        REL_COL, REL_COLS, REL_KW, REL_NAME,
+        self, ATTRIBUTE, ATTRIBUTES, ATTR_PAIR, FUNC_ARG, FUNC_ARGS, FUNC_DEF, FUNC_NAME, IDENT,
+        ITEM, MODIFIERS, RELATION_DEF, REL_COL, REL_COLS, REL_KW, REL_NAME,
     },
     TokenSet,
 };
@@ -45,11 +45,12 @@ impl Parser<'_, '_> {
         let item = self.start();
         let inner_item = self.start();
 
+        self.attributes();
         // We eat any modifiers given to us, even though they aren't
         // all completely valid. For instance, this accepts `input extern input function`
         // even though that's 100% invalid, that's something that will be
         // caught during validation
-        self.eat_modifiers();
+        self.modifiers();
 
         tracing::trace!(peek = %self.peek(), "parsing item");
         match self.peek() {
@@ -88,8 +89,6 @@ impl Parser<'_, '_> {
 
     // test function_definitions
     // - function foo() {}
-    // test(validate) extern_function
-    // - extern function foo() {}
     fn function_def(&mut self, function: Marker) -> Option<CompletedMarker> {
         self.expect(T![function]);
 
@@ -120,34 +119,6 @@ impl Parser<'_, '_> {
 
         while !self.at(T![')']) && !self.at_end() {
             self.argument(FUNC_ARG);
-
-            // FIXME: Eat multiple commas
-            // test_err function_arg_without_comma
-            // - function foo(bar: Baz bing: Bang) {}
-            let at_comma = self.try_expect(T![,]);
-            if !at_comma && !self.at(T![')']) {
-                let error = Diagnostic::error()
-                    .with_message("expected a comma between function arguments")
-                    .with_label(
-                        // FIXME: Fix this span
-                        Label::primary(self.current_span()).with_message("expected a comma"),
-                    );
-
-                self.push_error(error);
-
-            // test_err double_comma_function_arg
-            // - function foo(bar: Baz,,) {}
-            } else if at_comma && !self.at(T![')']) {
-                if let Some(comma_span) = self.try_expect_span(T![,]) {
-                    let error = Diagnostic::error()
-                        .with_message("got multiple commas between function arguments")
-                        .with_label(
-                            Label::primary(comma_span).with_message("help: remove this comma"),
-                        );
-
-                    self.push_error(error);
-                }
-            }
         }
 
         self.expect(T![')']);
@@ -197,34 +168,6 @@ impl Parser<'_, '_> {
 
         while !self.at(T![')']) && !self.at_end() {
             self.argument(REL_COL);
-
-            // FIXME: Eat multiple commas
-            // test_err relation_arg_without_comma
-            // - relation Foo(bar: Baz bing: Bang)
-            let at_comma = self.try_expect(T![,]);
-            if !at_comma && !self.at(T![')']) {
-                let error = Diagnostic::error()
-                    .with_message("expected a comma between relation arguments")
-                    .with_label(
-                        // FIXME: Fix this span
-                        Label::primary(self.current_span()).with_message("expected a comma"),
-                    );
-
-                self.push_error(error);
-
-            // test_err double_comma_relation_arg
-            // - relation Foo(bar: Baz,,)
-            } else if at_comma && !self.at(T![')']) {
-                if let Some(comma_span) = self.try_expect_span(T![,]) {
-                    let error = Diagnostic::error()
-                        .with_message("got multiple commas between relation arguments")
-                        .with_label(
-                            Label::primary(comma_span).with_message("help: remove this comma"),
-                        );
-
-                    self.push_error(error);
-                }
-            }
         }
 
         self.expect(T![')']);
@@ -238,6 +181,8 @@ impl Parser<'_, '_> {
         self.pattern();
         self.expect(T![:]);
         self.ty();
+
+        while self.try_expect(T![,]) {}
 
         Some(column.complete(self, kind))
     }
@@ -258,27 +203,49 @@ impl Parser<'_, '_> {
     // - extern extern extern relation Foo()
     // - extern extern input extern stream Foo()
     // - extern extern extern function foo() {}
-    // test_err(validate) double_extern_function
-    // - extern extern function foo() {}
-    // test_err(validate) input_function
-    // - extern input function foo() {}
-    // test_err(validate) output_function
-    // - extern output function foo() {}
-    // test_err(validate) extern_relation
-    // - input extern relation Foo()
-    // - input extern extern relation Foo()
-    // - input extern multiset Foo()
-    // - input extern extern multiset Foo()
-    // - input extern stream Foo()
-    // - input extern extern stream Foo()
-    // test_err(validate) relation_with_input_and_output
-    // - input output relation Foo()
-    fn eat_modifiers(&mut self) -> CompletedMarker {
+    fn modifiers(&mut self) -> CompletedMarker {
         let modifiers = self.start();
         while self.at_set(MODIFIER_KEYWORDS) {
             self.bump();
         }
 
         modifiers.complete(self, MODIFIERS)
+    }
+
+    fn attributes(&mut self) -> CompletedMarker {
+        let attributes = self.start();
+
+        while self.at(T!["#["]) {
+            if self.attribute().is_none() {
+                // TODO: Error handling & recovery
+                break;
+            }
+        }
+
+        attributes.complete(self, ATTRIBUTES)
+    }
+
+    // test attributes
+    // - #[something = something_else] function foo() {}
+    // - #[something = 10,,,] function foo() {}
+    fn attribute(&mut self) -> Option<CompletedMarker> {
+        let attribute = self.start();
+
+        self.expect(T!["#["]);
+        while !self.at(T![']']) {
+            let pair = self.start();
+
+            self.expect(IDENT);
+            self.expect(T![=]);
+            self.expr();
+
+            while self.try_expect(T![,]) {}
+
+            pair.complete(self, ATTR_PAIR);
+        }
+
+        self.expect(T![']']);
+
+        Some(attribute.complete(self, ATTRIBUTE))
     }
 }

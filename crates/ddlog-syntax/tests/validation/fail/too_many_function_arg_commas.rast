@@ -1,0 +1,44 @@
+ROOT@0..64
+  COMMENT@0..26 "// kind:item validate ..."
+  WHITESPACE@26..27 "\n"
+  ITEM@27..64
+    FUNC_DEF@27..64
+      ATTRIBUTES@27..27
+      MODIFIERS@27..27
+      FUNCTION@27..35 "function"
+      WHITESPACE@35..36 " "
+      FUNC_NAME@36..39
+        IDENT@36..39 "foo"
+      FUNC_ARGS@39..60
+        L_PAREN@39..40 "("
+        FUNC_ARG@40..50
+          IDENT@40..43 "foo"
+          COLON@43..44 ":"
+          WHITESPACE@44..45 " "
+          IDENT@45..48 "Bar"
+          COMMA@48..49 ","
+          COMMA@49..50 ","
+        WHITESPACE@50..51 " "
+        FUNC_ARG@51..59
+          IDENT@51..54 "bar"
+          COLON@54..55 ":"
+          WHITESPACE@55..56 " "
+          IDENT@56..59 "Baz"
+        R_PAREN@59..60 ")"
+      WHITESPACE@60..61 " "
+      BLOCK@61..63
+        L_CURLY@61..62 "{"
+        R_CURLY@62..63 "}"
+      WHITESPACE@63..64 "\n"
+--
+Error: too many commas between function arguments
+   ,-[validation/fail/too_many_function_arg_commas.dl:2:23]
+   |
+ 2 | function foo(foo: Bar,, bar: Baz) {}
+   :                       |  
+   :                       `-- remove this comma
+---'
+--
+// kind:item validate:true
+function foo(foo: Bar,, bar: Baz) {}
+

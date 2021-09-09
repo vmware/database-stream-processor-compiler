@@ -1,0 +1,105 @@
+ROOT@0..121
+  COMMENT@0..26 "// kind:item validate ..."
+  WHITESPACE@26..27 "\n"
+  ITEM@27..59
+    RELATION_DEF@27..59
+      ATTRIBUTES@27..27
+      MODIFIERS@27..27
+      REL_KW@27..35
+        RELATION@27..35 "relation"
+      WHITESPACE@35..36 " "
+      REL_NAME@36..39
+        IDENT@36..39 "Foo"
+      REL_COLS@39..58
+        L_PAREN@39..40 "("
+        REL_COL@40..48
+          IDENT@40..43 "foo"
+          COLON@43..44 ":"
+          WHITESPACE@44..45 " "
+          IDENT@45..48 "Bar"
+        WHITESPACE@48..49 " "
+        REL_COL@49..57
+          IDENT@49..52 "bar"
+          COLON@52..53 ":"
+          WHITESPACE@53..54 " "
+          IDENT@54..57 "Baz"
+        R_PAREN@57..58 ")"
+      WHITESPACE@58..59 "\n"
+  ITEM@59..91
+    RELATION_DEF@59..91
+      ATTRIBUTES@59..59
+      MODIFIERS@59..59
+      REL_KW@59..67
+        MULTISET@59..67 "multiset"
+      WHITESPACE@67..68 " "
+      REL_NAME@68..71
+        IDENT@68..71 "Foo"
+      REL_COLS@71..90
+        L_PAREN@71..72 "("
+        REL_COL@72..80
+          IDENT@72..75 "foo"
+          COLON@75..76 ":"
+          WHITESPACE@76..77 " "
+          IDENT@77..80 "Bar"
+        WHITESPACE@80..81 " "
+        REL_COL@81..89
+          IDENT@81..84 "bar"
+          COLON@84..85 ":"
+          WHITESPACE@85..86 " "
+          IDENT@86..89 "Baz"
+        R_PAREN@89..90 ")"
+      WHITESPACE@90..91 "\n"
+  ITEM@91..121
+    RELATION_DEF@91..121
+      ATTRIBUTES@91..91
+      MODIFIERS@91..91
+      REL_KW@91..97
+        STREAM@91..97 "stream"
+      WHITESPACE@97..98 " "
+      REL_NAME@98..101
+        IDENT@98..101 "Foo"
+      REL_COLS@101..120
+        L_PAREN@101..102 "("
+        REL_COL@102..110
+          IDENT@102..105 "foo"
+          COLON@105..106 ":"
+          WHITESPACE@106..107 " "
+          IDENT@107..110 "Bar"
+        WHITESPACE@110..111 " "
+        REL_COL@111..119
+          IDENT@111..114 "bar"
+          COLON@114..115 ":"
+          WHITESPACE@115..116 " "
+          IDENT@116..119 "Baz"
+        R_PAREN@119..120 ")"
+      WHITESPACE@120..121 "\n"
+--
+Error: missing comma between relation columns
+   ,-[validation/fail/missing_column_commas.dl:2:22]
+   |
+ 2 | relation Foo(foo: Bar bar: Baz)
+   :                      | 
+   :                      `- expected a comma here
+---'
+--
+Error: missing comma between relation columns
+   ,-[validation/fail/missing_column_commas.dl:3:22]
+   |
+ 3 | multiset Foo(foo: Bar bar: Baz)
+   :                      | 
+   :                      `- expected a comma here
+---'
+--
+Error: missing comma between relation columns
+   ,-[validation/fail/missing_column_commas.dl:4:20]
+   |
+ 4 | stream Foo(foo: Bar bar: Baz)
+   :                    | 
+   :                    `- expected a comma here
+---'
+--
+// kind:item validate:true
+relation Foo(foo: Bar bar: Baz)
+multiset Foo(foo: Bar bar: Baz)
+stream Foo(foo: Bar bar: Baz)
+

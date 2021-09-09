@@ -1,0 +1,28 @@
+ROOT@0..36
+  COMMENT@0..27 "// kind:expr validate ..."
+  WHITESPACE@27..28 "\n"
+  EXPR@28..36
+    BLOCK@28..36
+      L_CURLY@28..29 "{"
+      EXPR@29..36
+        BLOCK@29..35
+          L_CURLY@29..30 "{"
+          WHITESPACE@30..31 " "
+          EXPR@31..34
+            LITERAL@31..33
+              NUMBER@31..33 "10"
+            WHITESPACE@33..34 " "
+          R_CURLY@34..35 "}"
+        WHITESPACE@35..36 "\n"
+--
+Error: expected '}' but instead the file ends
+   ,-[parse/fail/unclosed_block.dl:2:9]
+   |
+ 2 | {{ 10 }
+   :         | 
+   :         `- the file ends here
+---'
+--
+// kind:expr validate:false
+{{ 10 }
+

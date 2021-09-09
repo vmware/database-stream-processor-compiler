@@ -1,0 +1,37 @@
+ROOT@0..59
+  COMMENT@0..26 "// kind:item validate ..."
+  WHITESPACE@26..27 "\n"
+  ITEM@27..59
+    FUNC_DEF@27..59
+      ATTRIBUTES@27..27
+      MODIFIERS@27..40
+        EXTERN@27..33 "extern"
+        WHITESPACE@33..34 " "
+        EXTERN@34..40 "extern"
+      WHITESPACE@40..41 " "
+      FUNCTION@41..49 "function"
+      WHITESPACE@49..50 " "
+      FUNC_NAME@50..53
+        IDENT@50..53 "foo"
+      FUNC_ARGS@53..55
+        L_PAREN@53..54 "("
+        R_PAREN@54..55 ")"
+      WHITESPACE@55..56 " "
+      BLOCK@56..58
+        L_CURLY@56..57 "{"
+        R_CURLY@57..58 "}"
+      WHITESPACE@58..59 "\n"
+--
+Error: received multiple 'extern' modifiers where one was expected
+   ,-[validation/fail/double_extern_function.dl:2:8]
+   |
+ 2 | extern extern function foo() {}
+   : ^^^|^^ ^^^|^^  
+   :    `----------- first 'extern' given here
+   :           |    
+   :           `---- functions can only have a single 'extern' modifier
+---'
+--
+// kind:item validate:true
+extern extern function foo() {}
+

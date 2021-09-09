@@ -1,9 +1,11 @@
+mod extra_commas;
 mod modifiers;
 
 use crate::{
     ast::nodes::Root, visitor::RuleCtx, AstVisitor, SyntaxElementRef, SyntaxKind, SyntaxNode,
     SyntaxNodeExt,
 };
+use extra_commas::ExtraCommas;
 use modifiers::ModifierValidator;
 
 pub fn run_validators(node: &SyntaxNode, ctx: &mut RuleCtx) {
@@ -34,5 +36,5 @@ pub fn run_validators(node: &SyntaxNode, ctx: &mut RuleCtx) {
 }
 
 fn validators() -> Vec<Box<dyn AstVisitor>> {
-    vec![Box::new(ModifierValidator)]
+    vec![Box::new(ModifierValidator), Box::new(ExtraCommas)]
 }

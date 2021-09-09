@@ -1,0 +1,4 @@
+// kind:item validate:false
+relation Foo(bar: Baz, bing: Bang)
+multiset Foo(bar: Baz, bing: Bang)
+stream Foo(bar: Baz, bing: Bang)

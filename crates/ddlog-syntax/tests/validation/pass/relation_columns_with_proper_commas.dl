@@ -1,0 +1,13 @@
+// kind:item validate:true
+relation foo(bar: Baz)
+relation foo(bar: Baz,)
+relation foo(bar: Baz, foo: Bar, bing: Bop)
+relation foo(bar: Baz, foo: Bar, bing: Bop,)
+multiset foo(bar: Baz)
+multiset foo(bar: Baz,)
+multiset foo(bar: Baz, foo: Bar, bing: Bop)
+multiset foo(bar: Baz, foo: Bar, bing: Bop,)
+stream foo(bar: Baz)
+stream foo(bar: Baz,)
+stream foo(bar: Baz, foo: Bar, bing: Bop)
+stream foo(bar: Baz, foo: Bar, bing: Bop,)

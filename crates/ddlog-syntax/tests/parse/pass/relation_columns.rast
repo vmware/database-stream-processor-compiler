@@ -1,0 +1,78 @@
+ROOT@0..131
+  COMMENT@0..27 "// kind:item validate ..."
+  WHITESPACE@27..28 "\n"
+  ITEM@28..63
+    RELATION_DEF@28..63
+      ATTRIBUTES@28..28
+      MODIFIERS@28..28
+      REL_KW@28..36
+        RELATION@28..36 "relation"
+      WHITESPACE@36..37 " "
+      REL_NAME@37..40
+        IDENT@37..40 "Foo"
+      REL_COLS@40..62
+        L_PAREN@40..41 "("
+        REL_COL@41..50
+          IDENT@41..44 "bar"
+          COLON@44..45 ":"
+          WHITESPACE@45..46 " "
+          IDENT@46..49 "Baz"
+          COMMA@49..50 ","
+        WHITESPACE@50..51 " "
+        REL_COL@51..61
+          IDENT@51..55 "bing"
+          COLON@55..56 ":"
+          WHITESPACE@56..57 " "
+          IDENT@57..61 "Bang"
+        R_PAREN@61..62 ")"
+      WHITESPACE@62..63 "\n"
+  ITEM@63..98
+    RELATION_DEF@63..98
+      ATTRIBUTES@63..63
+      MODIFIERS@63..63
+      REL_KW@63..71
+        MULTISET@63..71 "multiset"
+      WHITESPACE@71..72 " "
+      REL_NAME@72..75
+        IDENT@72..75 "Foo"
+      REL_COLS@75..97
+        L_PAREN@75..76 "("
+        REL_COL@76..85
+          IDENT@76..79 "bar"
+          COLON@79..80 ":"
+          WHITESPACE@80..81 " "
+          IDENT@81..84 "Baz"
+          COMMA@84..85 ","
+        WHITESPACE@85..86 " "
+        REL_COL@86..96
+          IDENT@86..90 "bing"
+          COLON@90..91 ":"
+          WHITESPACE@91..92 " "
+          IDENT@92..96 "Bang"
+        R_PAREN@96..97 ")"
+      WHITESPACE@97..98 "\n"
+  ITEM@98..131
+    RELATION_DEF@98..131
+      ATTRIBUTES@98..98
+      MODIFIERS@98..98
+      REL_KW@98..104
+        STREAM@98..104 "stream"
+      WHITESPACE@104..105 " "
+      REL_NAME@105..108
+        IDENT@105..108 "Foo"
+      REL_COLS@108..130
+        L_PAREN@108..109 "("
+        REL_COL@109..118
+          IDENT@109..112 "bar"
+          COLON@112..113 ":"
+          WHITESPACE@113..114 " "
+          IDENT@114..117 "Baz"
+          COMMA@117..118 ","
+        WHITESPACE@118..119 " "
+        REL_COL@119..129
+          IDENT@119..123 "bing"
+          COLON@123..124 ":"
+          WHITESPACE@124..125 " "
+          IDENT@125..129 "Bang"
+        R_PAREN@129..130 ")"
+      WHITESPACE@130..131 "\n"

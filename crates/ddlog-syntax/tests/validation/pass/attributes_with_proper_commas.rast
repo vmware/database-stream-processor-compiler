@@ -1,0 +1,109 @@
+ROOT@0..145
+  COMMENT@0..26 "// kind:item validate ..."
+  WHITESPACE@26..27 "\n"
+  ITEM@27..145
+    FUNC_DEF@27..145
+      ATTRIBUTES@27..127
+        ATTRIBUTE@27..39
+          HASH_BRACK@27..29 "#["
+          ATTR_PAIR@29..38
+            IDENT@29..32 "foo"
+            WHITESPACE@32..33 " "
+            EQ@33..34 "="
+            WHITESPACE@34..35 " "
+            EXPR@35..38
+              VAR_REF@35..38
+                IDENT@35..38 "bar"
+          R_BRACK@38..39 "]"
+        WHITESPACE@39..40 "\n"
+        ATTRIBUTE@40..53
+          HASH_BRACK@40..42 "#["
+          ATTR_PAIR@42..52
+            IDENT@42..45 "foo"
+            WHITESPACE@45..46 " "
+            EQ@46..47 "="
+            WHITESPACE@47..48 " "
+            EXPR@48..51
+              VAR_REF@48..51
+                IDENT@48..51 "bar"
+            COMMA@51..52 ","
+          R_BRACK@52..53 "]"
+        WHITESPACE@53..54 "\n"
+        ATTRIBUTE@54..90
+          HASH_BRACK@54..56 "#["
+          ATTR_PAIR@56..66
+            IDENT@56..59 "foo"
+            WHITESPACE@59..60 " "
+            EQ@60..61 "="
+            WHITESPACE@61..62 " "
+            EXPR@62..65
+              VAR_REF@62..65
+                IDENT@62..65 "bar"
+            COMMA@65..66 ","
+          WHITESPACE@66..67 " "
+          ATTR_PAIR@67..77
+            IDENT@67..70 "bar"
+            WHITESPACE@70..71 " "
+            EQ@71..72 "="
+            WHITESPACE@72..73 " "
+            EXPR@73..76
+              VAR_REF@73..76
+                IDENT@73..76 "baz"
+            COMMA@76..77 ","
+          WHITESPACE@77..78 " "
+          ATTR_PAIR@78..89
+            IDENT@78..82 "bing"
+            WHITESPACE@82..83 " "
+            EQ@83..84 "="
+            WHITESPACE@84..85 " "
+            EXPR@85..88
+              VAR_REF@85..88
+                IDENT@85..88 "bop"
+            COMMA@88..89 ","
+          R_BRACK@89..90 "]"
+        WHITESPACE@90..91 "\n"
+        ATTRIBUTE@91..126
+          HASH_BRACK@91..93 "#["
+          ATTR_PAIR@93..103
+            IDENT@93..96 "foo"
+            WHITESPACE@96..97 " "
+            EQ@97..98 "="
+            WHITESPACE@98..99 " "
+            EXPR@99..102
+              VAR_REF@99..102
+                IDENT@99..102 "bar"
+            COMMA@102..103 ","
+          WHITESPACE@103..104 " "
+          ATTR_PAIR@104..114
+            IDENT@104..107 "bar"
+            WHITESPACE@107..108 " "
+            EQ@108..109 "="
+            WHITESPACE@109..110 " "
+            EXPR@110..113
+              VAR_REF@110..113
+                IDENT@110..113 "baz"
+            COMMA@113..114 ","
+          WHITESPACE@114..115 " "
+          ATTR_PAIR@115..125
+            IDENT@115..119 "bing"
+            WHITESPACE@119..120 " "
+            EQ@120..121 "="
+            WHITESPACE@121..122 " "
+            EXPR@122..125
+              VAR_REF@122..125
+                IDENT@122..125 "bop"
+          R_BRACK@125..126 "]"
+        WHITESPACE@126..127 "\n"
+      MODIFIERS@127..127
+      FUNCTION@127..135 "function"
+      WHITESPACE@135..136 " "
+      FUNC_NAME@136..139
+        IDENT@136..139 "foo"
+      FUNC_ARGS@139..141
+        L_PAREN@139..140 "("
+        R_PAREN@140..141 ")"
+      WHITESPACE@141..142 " "
+      BLOCK@142..144
+        L_CURLY@142..143 "{"
+        R_CURLY@143..144 "}"
+      WHITESPACE@144..145 "\n"

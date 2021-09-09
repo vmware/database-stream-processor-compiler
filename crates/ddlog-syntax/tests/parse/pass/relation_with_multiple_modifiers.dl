@@ -1,0 +1,4 @@
+// kind:item validate:false
+input output relation Foo()
+input output multiset Foo()
+input output stream Foo()

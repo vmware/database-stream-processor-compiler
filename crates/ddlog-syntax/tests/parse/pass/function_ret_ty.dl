@@ -1,0 +1,2 @@
+// kind:item validate:false
+function foo(): Bar {}

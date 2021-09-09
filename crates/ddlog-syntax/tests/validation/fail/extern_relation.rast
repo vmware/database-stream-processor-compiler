@@ -1,0 +1,192 @@
+ROOT@0..212
+  COMMENT@0..26 "// kind:item validate ..."
+  WHITESPACE@26..27 "\n"
+  ITEM@27..55
+    RELATION_DEF@27..55
+      ATTRIBUTES@27..27
+      MODIFIERS@27..39
+        INPUT@27..32 "input"
+        WHITESPACE@32..33 " "
+        EXTERN@33..39 "extern"
+      WHITESPACE@39..40 " "
+      REL_KW@40..48
+        RELATION@40..48 "relation"
+      WHITESPACE@48..49 " "
+      REL_NAME@49..52
+        IDENT@49..52 "Foo"
+      REL_COLS@52..54
+        L_PAREN@52..53 "("
+        R_PAREN@53..54 ")"
+      WHITESPACE@54..55 "\n"
+  ITEM@55..90
+    RELATION_DEF@55..90
+      ATTRIBUTES@55..55
+      MODIFIERS@55..74
+        INPUT@55..60 "input"
+        WHITESPACE@60..61 " "
+        EXTERN@61..67 "extern"
+        WHITESPACE@67..68 " "
+        EXTERN@68..74 "extern"
+      WHITESPACE@74..75 " "
+      REL_KW@75..83
+        RELATION@75..83 "relation"
+      WHITESPACE@83..84 " "
+      REL_NAME@84..87
+        IDENT@84..87 "Foo"
+      REL_COLS@87..89
+        L_PAREN@87..88 "("
+        R_PAREN@88..89 ")"
+      WHITESPACE@89..90 "\n"
+  ITEM@90..118
+    RELATION_DEF@90..118
+      ATTRIBUTES@90..90
+      MODIFIERS@90..102
+        INPUT@90..95 "input"
+        WHITESPACE@95..96 " "
+        EXTERN@96..102 "extern"
+      WHITESPACE@102..103 " "
+      REL_KW@103..111
+        MULTISET@103..111 "multiset"
+      WHITESPACE@111..112 " "
+      REL_NAME@112..115
+        IDENT@112..115 "Foo"
+      REL_COLS@115..117
+        L_PAREN@115..116 "("
+        R_PAREN@116..117 ")"
+      WHITESPACE@117..118 "\n"
+  ITEM@118..153
+    RELATION_DEF@118..153
+      ATTRIBUTES@118..118
+      MODIFIERS@118..137
+        INPUT@118..123 "input"
+        WHITESPACE@123..124 " "
+        EXTERN@124..130 "extern"
+        WHITESPACE@130..131 " "
+        EXTERN@131..137 "extern"
+      WHITESPACE@137..138 " "
+      REL_KW@138..146
+        MULTISET@138..146 "multiset"
+      WHITESPACE@146..147 " "
+      REL_NAME@147..150
+        IDENT@147..150 "Foo"
+      REL_COLS@150..152
+        L_PAREN@150..151 "("
+        R_PAREN@151..152 ")"
+      WHITESPACE@152..153 "\n"
+  ITEM@153..179
+    RELATION_DEF@153..179
+      ATTRIBUTES@153..153
+      MODIFIERS@153..165
+        INPUT@153..158 "input"
+        WHITESPACE@158..159 " "
+        EXTERN@159..165 "extern"
+      WHITESPACE@165..166 " "
+      REL_KW@166..172
+        STREAM@166..172 "stream"
+      WHITESPACE@172..173 " "
+      REL_NAME@173..176
+        IDENT@173..176 "Foo"
+      REL_COLS@176..178
+        L_PAREN@176..177 "("
+        R_PAREN@177..178 ")"
+      WHITESPACE@178..179 "\n"
+  ITEM@179..212
+    RELATION_DEF@179..212
+      ATTRIBUTES@179..179
+      MODIFIERS@179..198
+        INPUT@179..184 "input"
+        WHITESPACE@184..185 " "
+        EXTERN@185..191 "extern"
+        WHITESPACE@191..192 " "
+        EXTERN@192..198 "extern"
+      WHITESPACE@198..199 " "
+      REL_KW@199..205
+        STREAM@199..205 "stream"
+      WHITESPACE@205..206 " "
+      REL_NAME@206..209
+        IDENT@206..209 "Foo"
+      REL_COLS@209..211
+        L_PAREN@209..210 "("
+        R_PAREN@210..211 ")"
+      WHITESPACE@211..212 "\n"
+--
+Error: received an 'extern' modifier on a relation definition
+   ,-[validation/fail/extern_relation.dl:2:7]
+   |
+ 2 | input extern relation Foo()
+   :       ^^^|^^  
+   :          `---- relations cannot be marked as 'extern'
+---'
+--
+Error: received an 'extern' modifier on a relation definition
+   ,-[validation/fail/extern_relation.dl:3:7]
+   |
+ 3 | input extern extern relation Foo()
+   :       ^^^|^^  
+   :          `---- relations cannot be marked as 'extern'
+---'
+--
+Error: received an 'extern' modifier on a relation definition
+   ,-[validation/fail/extern_relation.dl:3:14]
+   |
+ 3 | input extern extern relation Foo()
+   :              ^^^|^^  
+   :                 `---- relations cannot be marked as 'extern'
+---'
+--
+Error: received an 'extern' modifier on a relation definition
+   ,-[validation/fail/extern_relation.dl:4:7]
+   |
+ 4 | input extern multiset Foo()
+   :       ^^^|^^  
+   :          `---- relations cannot be marked as 'extern'
+---'
+--
+Error: received an 'extern' modifier on a relation definition
+   ,-[validation/fail/extern_relation.dl:5:7]
+   |
+ 5 | input extern extern multiset Foo()
+   :       ^^^|^^  
+   :          `---- relations cannot be marked as 'extern'
+---'
+--
+Error: received an 'extern' modifier on a relation definition
+   ,-[validation/fail/extern_relation.dl:5:14]
+   |
+ 5 | input extern extern multiset Foo()
+   :              ^^^|^^  
+   :                 `---- relations cannot be marked as 'extern'
+---'
+--
+Error: received an 'extern' modifier on a relation definition
+   ,-[validation/fail/extern_relation.dl:6:7]
+   |
+ 6 | input extern stream Foo()
+   :       ^^^|^^  
+   :          `---- relations cannot be marked as 'extern'
+---'
+--
+Error: received an 'extern' modifier on a relation definition
+   ,-[validation/fail/extern_relation.dl:7:7]
+   |
+ 7 | input extern extern stream Foo()
+   :       ^^^|^^  
+   :          `---- relations cannot be marked as 'extern'
+---'
+--
+Error: received an 'extern' modifier on a relation definition
+   ,-[validation/fail/extern_relation.dl:7:14]
+   |
+ 7 | input extern extern stream Foo()
+   :              ^^^|^^  
+   :                 `---- relations cannot be marked as 'extern'
+---'
+--
+// kind:item validate:true
+input extern relation Foo()
+input extern extern relation Foo()
+input extern multiset Foo()
+input extern extern multiset Foo()
+input extern stream Foo()
+input extern extern stream Foo()
+

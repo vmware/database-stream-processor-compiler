@@ -1,0 +1,5 @@
+// kind:item validate:true
+function foo(bar: Baz) {}
+function foo(bar: Baz,) {}
+function foo(bar: Baz, foo: Bar, bing: Bop) {}
+function foo(bar: Baz, foo: Bar, bing: Bop,) {}

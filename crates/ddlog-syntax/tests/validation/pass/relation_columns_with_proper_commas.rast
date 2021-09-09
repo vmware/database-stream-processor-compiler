@@ -1,0 +1,309 @@
+ROOT@0..427
+  COMMENT@0..26 "// kind:item validate ..."
+  WHITESPACE@26..27 "\n"
+  ITEM@27..50
+    RELATION_DEF@27..50
+      ATTRIBUTES@27..27
+      MODIFIERS@27..27
+      REL_KW@27..35
+        RELATION@27..35 "relation"
+      WHITESPACE@35..36 " "
+      REL_NAME@36..39
+        IDENT@36..39 "foo"
+      REL_COLS@39..49
+        L_PAREN@39..40 "("
+        REL_COL@40..48
+          IDENT@40..43 "bar"
+          COLON@43..44 ":"
+          WHITESPACE@44..45 " "
+          IDENT@45..48 "Baz"
+        R_PAREN@48..49 ")"
+      WHITESPACE@49..50 "\n"
+  ITEM@50..74
+    RELATION_DEF@50..74
+      ATTRIBUTES@50..50
+      MODIFIERS@50..50
+      REL_KW@50..58
+        RELATION@50..58 "relation"
+      WHITESPACE@58..59 " "
+      REL_NAME@59..62
+        IDENT@59..62 "foo"
+      REL_COLS@62..73
+        L_PAREN@62..63 "("
+        REL_COL@63..72
+          IDENT@63..66 "bar"
+          COLON@66..67 ":"
+          WHITESPACE@67..68 " "
+          IDENT@68..71 "Baz"
+          COMMA@71..72 ","
+        R_PAREN@72..73 ")"
+      WHITESPACE@73..74 "\n"
+  ITEM@74..118
+    RELATION_DEF@74..118
+      ATTRIBUTES@74..74
+      MODIFIERS@74..74
+      REL_KW@74..82
+        RELATION@74..82 "relation"
+      WHITESPACE@82..83 " "
+      REL_NAME@83..86
+        IDENT@83..86 "foo"
+      REL_COLS@86..117
+        L_PAREN@86..87 "("
+        REL_COL@87..96
+          IDENT@87..90 "bar"
+          COLON@90..91 ":"
+          WHITESPACE@91..92 " "
+          IDENT@92..95 "Baz"
+          COMMA@95..96 ","
+        WHITESPACE@96..97 " "
+        REL_COL@97..106
+          IDENT@97..100 "foo"
+          COLON@100..101 ":"
+          WHITESPACE@101..102 " "
+          IDENT@102..105 "Bar"
+          COMMA@105..106 ","
+        WHITESPACE@106..107 " "
+        REL_COL@107..116
+          IDENT@107..111 "bing"
+          COLON@111..112 ":"
+          WHITESPACE@112..113 " "
+          IDENT@113..116 "Bop"
+        R_PAREN@116..117 ")"
+      WHITESPACE@117..118 "\n"
+  ITEM@118..163
+    RELATION_DEF@118..163
+      ATTRIBUTES@118..118
+      MODIFIERS@118..118
+      REL_KW@118..126
+        RELATION@118..126 "relation"
+      WHITESPACE@126..127 " "
+      REL_NAME@127..130
+        IDENT@127..130 "foo"
+      REL_COLS@130..162
+        L_PAREN@130..131 "("
+        REL_COL@131..140
+          IDENT@131..134 "bar"
+          COLON@134..135 ":"
+          WHITESPACE@135..136 " "
+          IDENT@136..139 "Baz"
+          COMMA@139..140 ","
+        WHITESPACE@140..141 " "
+        REL_COL@141..150
+          IDENT@141..144 "foo"
+          COLON@144..145 ":"
+          WHITESPACE@145..146 " "
+          IDENT@146..149 "Bar"
+          COMMA@149..150 ","
+        WHITESPACE@150..151 " "
+        REL_COL@151..161
+          IDENT@151..155 "bing"
+          COLON@155..156 ":"
+          WHITESPACE@156..157 " "
+          IDENT@157..160 "Bop"
+          COMMA@160..161 ","
+        R_PAREN@161..162 ")"
+      WHITESPACE@162..163 "\n"
+  ITEM@163..186
+    RELATION_DEF@163..186
+      ATTRIBUTES@163..163
+      MODIFIERS@163..163
+      REL_KW@163..171
+        MULTISET@163..171 "multiset"
+      WHITESPACE@171..172 " "
+      REL_NAME@172..175
+        IDENT@172..175 "foo"
+      REL_COLS@175..185
+        L_PAREN@175..176 "("
+        REL_COL@176..184
+          IDENT@176..179 "bar"
+          COLON@179..180 ":"
+          WHITESPACE@180..181 " "
+          IDENT@181..184 "Baz"
+        R_PAREN@184..185 ")"
+      WHITESPACE@185..186 "\n"
+  ITEM@186..210
+    RELATION_DEF@186..210
+      ATTRIBUTES@186..186
+      MODIFIERS@186..186
+      REL_KW@186..194
+        MULTISET@186..194 "multiset"
+      WHITESPACE@194..195 " "
+      REL_NAME@195..198
+        IDENT@195..198 "foo"
+      REL_COLS@198..209
+        L_PAREN@198..199 "("
+        REL_COL@199..208
+          IDENT@199..202 "bar"
+          COLON@202..203 ":"
+          WHITESPACE@203..204 " "
+          IDENT@204..207 "Baz"
+          COMMA@207..208 ","
+        R_PAREN@208..209 ")"
+      WHITESPACE@209..210 "\n"
+  ITEM@210..254
+    RELATION_DEF@210..254
+      ATTRIBUTES@210..210
+      MODIFIERS@210..210
+      REL_KW@210..218
+        MULTISET@210..218 "multiset"
+      WHITESPACE@218..219 " "
+      REL_NAME@219..222
+        IDENT@219..222 "foo"
+      REL_COLS@222..253
+        L_PAREN@222..223 "("
+        REL_COL@223..232
+          IDENT@223..226 "bar"
+          COLON@226..227 ":"
+          WHITESPACE@227..228 " "
+          IDENT@228..231 "Baz"
+          COMMA@231..232 ","
+        WHITESPACE@232..233 " "
+        REL_COL@233..242
+          IDENT@233..236 "foo"
+          COLON@236..237 ":"
+          WHITESPACE@237..238 " "
+          IDENT@238..241 "Bar"
+          COMMA@241..242 ","
+        WHITESPACE@242..243 " "
+        REL_COL@243..252
+          IDENT@243..247 "bing"
+          COLON@247..248 ":"
+          WHITESPACE@248..249 " "
+          IDENT@249..252 "Bop"
+        R_PAREN@252..253 ")"
+      WHITESPACE@253..254 "\n"
+  ITEM@254..299
+    RELATION_DEF@254..299
+      ATTRIBUTES@254..254
+      MODIFIERS@254..254
+      REL_KW@254..262
+        MULTISET@254..262 "multiset"
+      WHITESPACE@262..263 " "
+      REL_NAME@263..266
+        IDENT@263..266 "foo"
+      REL_COLS@266..298
+        L_PAREN@266..267 "("
+        REL_COL@267..276
+          IDENT@267..270 "bar"
+          COLON@270..271 ":"
+          WHITESPACE@271..272 " "
+          IDENT@272..275 "Baz"
+          COMMA@275..276 ","
+        WHITESPACE@276..277 " "
+        REL_COL@277..286
+          IDENT@277..280 "foo"
+          COLON@280..281 ":"
+          WHITESPACE@281..282 " "
+          IDENT@282..285 "Bar"
+          COMMA@285..286 ","
+        WHITESPACE@286..287 " "
+        REL_COL@287..297
+          IDENT@287..291 "bing"
+          COLON@291..292 ":"
+          WHITESPACE@292..293 " "
+          IDENT@293..296 "Bop"
+          COMMA@296..297 ","
+        R_PAREN@297..298 ")"
+      WHITESPACE@298..299 "\n"
+  ITEM@299..320
+    RELATION_DEF@299..320
+      ATTRIBUTES@299..299
+      MODIFIERS@299..299
+      REL_KW@299..305
+        STREAM@299..305 "stream"
+      WHITESPACE@305..306 " "
+      REL_NAME@306..309
+        IDENT@306..309 "foo"
+      REL_COLS@309..319
+        L_PAREN@309..310 "("
+        REL_COL@310..318
+          IDENT@310..313 "bar"
+          COLON@313..314 ":"
+          WHITESPACE@314..315 " "
+          IDENT@315..318 "Baz"
+        R_PAREN@318..319 ")"
+      WHITESPACE@319..320 "\n"
+  ITEM@320..342
+    RELATION_DEF@320..342
+      ATTRIBUTES@320..320
+      MODIFIERS@320..320
+      REL_KW@320..326
+        STREAM@320..326 "stream"
+      WHITESPACE@326..327 " "
+      REL_NAME@327..330
+        IDENT@327..330 "foo"
+      REL_COLS@330..341
+        L_PAREN@330..331 "("
+        REL_COL@331..340
+          IDENT@331..334 "bar"
+          COLON@334..335 ":"
+          WHITESPACE@335..336 " "
+          IDENT@336..339 "Baz"
+          COMMA@339..340 ","
+        R_PAREN@340..341 ")"
+      WHITESPACE@341..342 "\n"
+  ITEM@342..384
+    RELATION_DEF@342..384
+      ATTRIBUTES@342..342
+      MODIFIERS@342..342
+      REL_KW@342..348
+        STREAM@342..348 "stream"
+      WHITESPACE@348..349 " "
+      REL_NAME@349..352
+        IDENT@349..352 "foo"
+      REL_COLS@352..383
+        L_PAREN@352..353 "("
+        REL_COL@353..362
+          IDENT@353..356 "bar"
+          COLON@356..357 ":"
+          WHITESPACE@357..358 " "
+          IDENT@358..361 "Baz"
+          COMMA@361..362 ","
+        WHITESPACE@362..363 " "
+        REL_COL@363..372
+          IDENT@363..366 "foo"
+          COLON@366..367 ":"
+          WHITESPACE@367..368 " "
+          IDENT@368..371 "Bar"
+          COMMA@371..372 ","
+        WHITESPACE@372..373 " "
+        REL_COL@373..382
+          IDENT@373..377 "bing"
+          COLON@377..378 ":"
+          WHITESPACE@378..379 " "
+          IDENT@379..382 "Bop"
+        R_PAREN@382..383 ")"
+      WHITESPACE@383..384 "\n"
+  ITEM@384..427
+    RELATION_DEF@384..427
+      ATTRIBUTES@384..384
+      MODIFIERS@384..384
+      REL_KW@384..390
+        STREAM@384..390 "stream"
+      WHITESPACE@390..391 " "
+      REL_NAME@391..394
+        IDENT@391..394 "foo"
+      REL_COLS@394..426
+        L_PAREN@394..395 "("
+        REL_COL@395..404
+          IDENT@395..398 "bar"
+          COLON@398..399 ":"
+          WHITESPACE@399..400 " "
+          IDENT@400..403 "Baz"
+          COMMA@403..404 ","
+        WHITESPACE@404..405 " "
+        REL_COL@405..414
+          IDENT@405..408 "foo"
+          COLON@408..409 ":"
+          WHITESPACE@409..410 " "
+          IDENT@410..413 "Bar"
+          COMMA@413..414 ","
+        WHITESPACE@414..415 " "
+        REL_COL@415..425
+          IDENT@415..419 "bing"
+          COLON@419..420 ":"
+          WHITESPACE@420..421 " "
+          IDENT@421..424 "Bop"
+          COMMA@424..425 ","
+        R_PAREN@425..426 ")"
+      WHITESPACE@426..427 "\n"

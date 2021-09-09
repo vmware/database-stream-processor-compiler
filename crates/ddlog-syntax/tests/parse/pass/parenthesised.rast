@@ -1,0 +1,70 @@
+ROOT@0..62
+  COMMENT@0..27 "// kind:expr validate ..."
+  WHITESPACE@27..28 "\n"
+  EXPR@28..62
+    PAREN_EXPR@28..61
+      L_PAREN@28..29 "("
+      EXPR@29..60
+        PAREN_EXPR@29..60
+          L_PAREN@29..30 "("
+          EXPR@30..59
+            PAREN_EXPR@30..59
+              L_PAREN@30..31 "("
+              EXPR@31..58
+                PAREN_EXPR@31..58
+                  L_PAREN@31..32 "("
+                  EXPR@32..57
+                    PAREN_EXPR@32..57
+                      L_PAREN@32..33 "("
+                      EXPR@33..56
+                        PAREN_EXPR@33..56
+                          L_PAREN@33..34 "("
+                          EXPR@34..55
+                            PAREN_EXPR@34..55
+                              L_PAREN@34..35 "("
+                              EXPR@35..54
+                                PAREN_EXPR@35..54
+                                  L_PAREN@35..36 "("
+                                  EXPR@36..53
+                                    PAREN_EXPR@36..53
+                                      L_PAREN@36..37 "("
+                                      EXPR@37..52
+                                        BIN_EXPR@37..52
+                                          LITERAL@37..38
+                                            NUMBER@37..38 "2"
+                                          WHITESPACE@38..39 " "
+                                          BIN_OP@39..40
+                                            PLUS@39..40 "+"
+                                          WHITESPACE@40..41 " "
+                                          PAREN_EXPR@41..52
+                                            L_PAREN@41..42 "("
+                                            EXPR@42..51
+                                              PAREN_EXPR@42..51
+                                                L_PAREN@42..43 "("
+                                                EXPR@43..50
+                                                  PAREN_EXPR@43..50
+                                                    L_PAREN@43..44 "("
+                                                    EXPR@44..49
+                                                      PAREN_EXPR@44..49
+                                                        L_PAREN@44..45 "("
+                                                        EXPR@45..48
+                                                          PAREN_EXPR@45..48
+                                                            L_PAREN@45..46 "("
+                                                            EXPR@46..47
+                                                              LITERAL@46..47
+                                                                NUMBER@46..47 "5"
+                                                            R_PAREN@47..48 ")"
+                                                        R_PAREN@48..49 ")"
+                                                    R_PAREN@49..50 ")"
+                                                R_PAREN@50..51 ")"
+                                            R_PAREN@51..52 ")"
+                                      R_PAREN@52..53 ")"
+                                  R_PAREN@53..54 ")"
+                              R_PAREN@54..55 ")"
+                          R_PAREN@55..56 ")"
+                      R_PAREN@56..57 ")"
+                  R_PAREN@57..58 ")"
+              R_PAREN@58..59 ")"
+          R_PAREN@59..60 ")"
+      R_PAREN@60..61 ")"
+    WHITESPACE@61..62 "\n"

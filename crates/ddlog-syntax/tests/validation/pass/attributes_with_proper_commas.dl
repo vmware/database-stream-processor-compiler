@@ -1,0 +1,6 @@
+// kind:item validate:true
+#[foo = bar]
+#[foo = bar,]
+#[foo = bar, bar = baz, bing = bop,]
+#[foo = bar, bar = baz, bing = bop]
+function foo() {}

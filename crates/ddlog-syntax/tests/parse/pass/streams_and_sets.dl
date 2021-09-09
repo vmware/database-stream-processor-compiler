@@ -1,0 +1,3 @@
+// kind:item validate:false
+stream Bar()
+multiset Foo()

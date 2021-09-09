@@ -13,31 +13,43 @@ pub struct Span {
 }
 
 impl Span {
-    /// Create a new range
+    /// Create a new span
     #[inline]
     pub const fn new(start: u32, end: u32, file: FileId) -> Self {
         Self { start, end, file }
     }
 
-    /// Create a new range with the same start and end value
+    /// Create a new span with the same start and end value
     #[inline]
     pub const fn single(span: u32, file: FileId) -> Self {
         Self::new(span, span, file)
     }
 
-    /// Get the range's start
+    /// Get the span's start
     #[inline]
     pub const fn start(self) -> u32 {
         self.start
     }
 
-    /// Get the range's end
+    /// Get the span's start as a `Span`
+    #[inline]
+    pub const fn start_span(self) -> Self {
+        Self::single(self.start(), self.file)
+    }
+
+    /// Get the span's end
     #[inline]
     pub const fn end(self) -> u32 {
         self.end
     }
 
-    /// Get the range's file
+    /// Get the span's end as a `Span`
+    #[inline]
+    pub const fn end_span(self) -> Self {
+        Self::single(self.end(), self.file)
+    }
+
+    /// Get the span's file
     #[inline]
     pub const fn file(self) -> FileId {
         self.file

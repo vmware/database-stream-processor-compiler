@@ -1,2 +1,0 @@
-// kind:item
-function foo(bar: Baz bing: Bang) {}

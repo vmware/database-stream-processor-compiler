@@ -69,7 +69,7 @@ fn parser_tests() {
 
     dir_tests(
         &test_data_dir(),
-        &["inline/pass"],
+        &["parse/pass", "validation/pass"],
         "rast",
         |text, path, kind, validate| {
             let file = FileId::new(
@@ -109,7 +109,7 @@ fn parser_tests() {
 
     dir_tests(
         &test_data_dir(),
-        &["inline/fail"],
+        &["parse/fail", "validation/fail"],
         "rast",
         |text, path, kind, validate| {
             let file = FileId::new(

@@ -21,6 +21,12 @@ use ddlog_diagnostics::{Diagnostic, Label};
 pub struct ModifierValidator;
 
 impl ModifierValidator {
+    // test extern_function
+    // - extern function foo() {}
+    // test_err double_extern_function
+    // - extern extern function foo() {}
+    // test_err output_function
+    // - extern output function foo() {}
     fn check_function(&mut self, function: &FuncDef, ctx: &mut RuleCtx) -> Option<()> {
         let mut first_extern = None;
 
@@ -31,12 +37,6 @@ impl ModifierValidator {
                     let span = ext.span(ctx.file_id);
 
                     if let Some(first_extern) = first_extern {
-                        tracing::trace!(
-                            %first_extern,
-                            current_extern = %span,
-                            "found excess extern modifier on function",
-                        );
-
                         let error =
                             Diagnostic::error()
                                 .with_message(
@@ -58,11 +58,6 @@ impl ModifierValidator {
 
                 Modifier::Input(input) => {
                     let span = input.span(ctx.file_id);
-                    tracing::trace!(
-                        output = %span,
-                        "found invalid output modifier on function",
-                    );
-
                     let error = Diagnostic::error()
                         .with_message("received an 'input' modifier on a function definition")
                         .with_label(
@@ -75,11 +70,6 @@ impl ModifierValidator {
 
                 Modifier::Output(output) => {
                     let span = output.span(ctx.file_id);
-                    tracing::trace!(
-                        input = %span,
-                        "found invalid input modifier on function",
-                    );
-
                     let error = Diagnostic::error()
                         .with_message("received an 'output' modifier on a function definition")
                         .with_label(
@@ -95,9 +85,19 @@ impl ModifierValidator {
         Some(())
     }
 
+    // test_err relation_with_input_and_output
+    // - input output relation Foo()
+    // test_err input_function
+    // - extern input function foo() {}
+    // test_err extern_relation
+    // - input extern relation Foo()
+    // - input extern extern relation Foo()
+    // - input extern multiset Foo()
+    // - input extern extern multiset Foo()
+    // - input extern stream Foo()
+    // - input extern extern stream Foo()
     fn check_relation(&mut self, relation: &RelationDef, ctx: &mut RuleCtx) -> Option<()> {
         let (mut first_input, mut first_output) = (None, None);
-        // FIXME: Fix codegen for `RelationDef::keyword()`
         let relation_kind = match relation.keyword().as_deref() {
             Some(RelKw::Multiset(_)) => "multiset",
             Some(RelKw::Stream(_)) => "stream",
@@ -109,12 +109,6 @@ impl ModifierValidator {
             match &*modifier {
                 Modifier::Extern(ext) => {
                     let span = ext.span(ctx.file_id);
-                    tracing::trace!(
-                        _extern = %span,
-                        "found invalid extern modifier on {}",
-                        relation_kind,
-                    );
-
                     let error = Diagnostic::error()
                         .with_message(format!(
                             "received an 'extern' modifier on a {} definition",
@@ -132,13 +126,6 @@ impl ModifierValidator {
                     let span = input.span(ctx.file_id);
 
                     if let Some(first_input) = first_input {
-                        tracing::trace!(
-                            %first_input,
-                            current_input = %span,
-                            "found excess input modifier on {}",
-                        relation_kind,
-                        );
-
                         let error = Diagnostic::error()
                             .with_message(
                                 "received multiple 'input' modifiers where one was expected",
@@ -178,12 +165,6 @@ impl ModifierValidator {
                     let span = output.span(ctx.file_id);
 
                     if let Some(first_output) = first_output {
-                        tracing::trace!(
-                            %first_output,
-                            current_output = %span,
-                            "found excess output modifier on relation",
-                        );
-
                         let error = Diagnostic::error()
                             .with_message(
                                 "received multiple 'output' modifiers where one was expected",
@@ -227,12 +208,6 @@ impl ModifierValidator {
 
 impl AstVisitor for ModifierValidator {
     fn check_node(&mut self, node: &SyntaxNode, ctx: &mut RuleCtx) -> Option<()> {
-        tracing::trace!(
-            visitor = "ModifierValidator",
-            node = %node.debug(ctx.interner(), true),
-            "checking node",
-        );
-
         match_ast! {
             match node {
                 FuncDef(function) => self.check_function(&*function, ctx),

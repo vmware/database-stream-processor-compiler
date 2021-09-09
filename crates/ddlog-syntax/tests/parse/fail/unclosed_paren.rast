@@ -1,0 +1,30 @@
+ROOT@0..37
+  COMMENT@0..27 "// kind:expr validate ..."
+  WHITESPACE@27..28 "\n"
+  EXPR@28..37
+    PAREN_EXPR@28..37
+      L_PAREN@28..29 "("
+      EXPR@29..37
+        PAREN_EXPR@29..36
+          L_PAREN@29..30 "("
+          EXPR@30..35
+            PAREN_EXPR@30..35
+              L_PAREN@30..31 "("
+              EXPR@31..34
+                LITERAL@31..34
+                  NUMBER@31..34 "100"
+              R_PAREN@34..35 ")"
+          R_PAREN@35..36 ")"
+        WHITESPACE@36..37 "\n"
+--
+Error: expected ')' but instead the file ends
+   ,-[parse/fail/unclosed_paren.dl:2:10]
+   |
+ 2 | (((100))
+   :          | 
+   :          `- the file ends here
+---'
+--
+// kind:expr validate:false
+(((100))
+

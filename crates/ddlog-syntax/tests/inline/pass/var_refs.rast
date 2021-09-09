@@ -1,7 +1,0 @@
-ROOT@0..23
-  COMMENT@0..12 "// kind:expr"
-  WHITESPACE@12..13 "\n"
-  EXPR@13..23
-    VAR_REF@13..22
-      IDENT@13..22 "foo1245__"
-    WHITESPACE@22..23 "\n"

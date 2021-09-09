@@ -1,0 +1,16 @@
+ROOT@0..49
+  COMMENT@0..27 "// kind:item validate ..."
+  WHITESPACE@27..28 "\n"
+  ITEM@28..49
+    RELATION_DEF@28..49
+      ATTRIBUTES@28..28
+      MODIFIERS@28..28
+      REL_KW@28..36
+        RELATION@28..36 "relation"
+      WHITESPACE@36..37 " "
+      REL_NAME@37..46
+        IDENT@37..46 "Something"
+      REL_COLS@46..48
+        L_PAREN@46..47 "("
+        R_PAREN@47..48 ")"
+      WHITESPACE@48..49 "\n"

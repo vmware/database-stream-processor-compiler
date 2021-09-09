@@ -1,0 +1,42 @@
+ROOT@0..62
+  COMMENT@0..26 "// kind:item validate ..."
+  WHITESPACE@26..27 "\n"
+  ITEM@27..62
+    FUNC_DEF@27..62
+      ATTRIBUTES@27..27
+      MODIFIERS@27..27
+      FUNCTION@27..35 "function"
+      WHITESPACE@35..36 " "
+      FUNC_NAME@36..39
+        IDENT@36..39 "foo"
+      FUNC_ARGS@39..58
+        L_PAREN@39..40 "("
+        FUNC_ARG@40..48
+          IDENT@40..43 "foo"
+          COLON@43..44 ":"
+          WHITESPACE@44..45 " "
+          IDENT@45..48 "Bar"
+        WHITESPACE@48..49 " "
+        FUNC_ARG@49..57
+          IDENT@49..52 "bar"
+          COLON@52..53 ":"
+          WHITESPACE@53..54 " "
+          IDENT@54..57 "Baz"
+        R_PAREN@57..58 ")"
+      WHITESPACE@58..59 " "
+      BLOCK@59..61
+        L_CURLY@59..60 "{"
+        R_CURLY@60..61 "}"
+      WHITESPACE@61..62 "\n"
+--
+Error: missing comma between function arguments
+   ,-[validation/fail/missing_function_arg_commas.dl:2:22]
+   |
+ 2 | function foo(foo: Bar bar: Baz) {}
+   :                      | 
+   :                      `- expected a comma here
+---'
+--
+// kind:item validate:true
+function foo(foo: Bar bar: Baz) {}
+

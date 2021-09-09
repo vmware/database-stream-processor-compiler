@@ -1,0 +1,20 @@
+ROOT@0..38
+  COMMENT@0..27 "// kind:expr validate ..."
+  WHITESPACE@27..28 "\n"
+  EXPR@28..38
+    UNARY_EXPR@28..38
+      UNARY_OP@28..29
+        BANG@28..29 "!"
+      UNARY_EXPR@29..38
+        UNARY_OP@29..30
+          BANG@29..30 "!"
+        PAREN_EXPR@30..37
+          L_PAREN@30..31 "("
+          EXPR@31..36
+            UNARY_EXPR@31..36
+              UNARY_OP@31..32
+                BANG@31..32 "!"
+              LITERAL@32..36
+                TRUE@32..36 "true"
+          R_PAREN@36..37 ")"
+        WHITESPACE@37..38 "\n"

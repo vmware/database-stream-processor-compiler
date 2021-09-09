@@ -1,0 +1,19 @@
+ROOT@0..46
+  COMMENT@0..27 "// kind:item validate ..."
+  WHITESPACE@27..28 "\n"
+  ITEM@28..46
+    FUNC_DEF@28..46
+      ATTRIBUTES@28..28
+      MODIFIERS@28..28
+      FUNCTION@28..36 "function"
+      WHITESPACE@36..37 " "
+      FUNC_NAME@37..40
+        IDENT@37..40 "foo"
+      FUNC_ARGS@40..42
+        L_PAREN@40..41 "("
+        R_PAREN@41..42 ")"
+      WHITESPACE@42..43 " "
+      BLOCK@43..45
+        L_CURLY@43..44 "{"
+        R_CURLY@44..45 "}"
+      WHITESPACE@45..46 "\n"

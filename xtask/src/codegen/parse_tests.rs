@@ -22,11 +22,41 @@ pub fn parse_tests(mode: CodegenMode) -> Result<()> {
         CodegenMode::Check => eprintln!("checking generated tests..."),
     }
 
+    let mut missing_dumps = false;
+
     let parser_dir = project_root().join("crates/ddlog-syntax/src/parser");
-    let tests = tests_from_dir(&parser_dir)?;
-    let mut missing_dumps =
-        install_tests(&tests.pass, "crates/ddlog-syntax/tests/inline/pass", mode)?;
-    if install_tests(&tests.fail, "crates/ddlog-syntax/tests/inline/fail", mode)? {
+    let parse_tests = tests_from_dir(&parser_dir, false)?;
+
+    if install_tests(
+        &parse_tests.pass,
+        "crates/ddlog-syntax/tests/parse/pass",
+        mode,
+    )? {
+        missing_dumps = true
+    }
+    if install_tests(
+        &parse_tests.fail,
+        "crates/ddlog-syntax/tests/parse/fail",
+        mode,
+    )? {
+        missing_dumps = true;
+    }
+
+    let validation_dir = project_root().join("crates/ddlog-syntax/src/validation");
+    let validation_tests = tests_from_dir(&validation_dir, true)?;
+
+    if install_tests(
+        &validation_tests.pass,
+        "crates/ddlog-syntax/tests/validation/pass",
+        mode,
+    )? {
+        missing_dumps = true
+    }
+    if install_tests(
+        &validation_tests.fail,
+        "crates/ddlog-syntax/tests/validation/fail",
+        mode,
+    )? {
         missing_dumps = true;
     }
 
@@ -178,7 +208,6 @@ enum TestKind {
     Item,
     Stmt,
     Expr,
-    ValidateItem,
 }
 
 #[derive(Default, Debug)]
@@ -188,9 +217,12 @@ struct Tests {
 }
 
 // TODO: Allow for giving `:expr`/`:stmt`/`:item` specifiers in tests
-fn collect_tests(s: &str) -> Vec<Test> {
+fn collect_tests(source: &str, all_validate: bool) -> Vec<Test> {
     let mut tests = Vec::new();
-    for comment_block in extract_comment_blocks(s, false).into_iter().map(|(_, x)| x) {
+    for comment_block in extract_comment_blocks(source, false)
+        .into_iter()
+        .map(|(_, x)| x)
+    {
         let first_line = &comment_block[0];
         let (line, pass) = if let Some(line) = first_line.strip_prefix("test_err") {
             (line.trim(), false)
@@ -206,20 +238,18 @@ fn collect_tests(s: &str) -> Vec<Test> {
             (name, TestKind::Stmt)
         } else if let Some(name) = line.strip_prefix("(expr) ") {
             (name, TestKind::Expr)
-        } else if let Some(name) = line.strip_prefix("(validate) ") {
-            (name, TestKind::ValidateItem)
         } else {
             (line, TestKind::Item)
         };
 
         let header = format!(
-            "// {}",
+            "// kind:{} validate:{}",
             match kind {
-                TestKind::Item => "kind:item",
-                TestKind::Stmt => "kind:stmt",
-                TestKind::Expr => "kind:expr",
-                TestKind::ValidateItem => "kind:item validate:true",
+                TestKind::Item => "item",
+                TestKind::Stmt => "stmt",
+                TestKind::Expr => "expr",
             },
+            if all_validate { "true" } else { "false" },
         );
         let code = iter::once(&*header)
             .chain(comment_block[1..].iter().map(|line| &**line))
@@ -240,7 +270,7 @@ fn collect_tests(s: &str) -> Vec<Test> {
     tests
 }
 
-fn tests_from_dir(dir: &Path) -> Result<Tests> {
+fn tests_from_dir(dir: &Path, all_validate: bool) -> Result<Tests> {
     let mut tests = Tests::default();
     for entry in WalkDir::new(dir) {
         let entry = entry.unwrap();
@@ -248,7 +278,7 @@ fn tests_from_dir(dir: &Path) -> Result<Tests> {
             continue;
         }
 
-        process_file(&mut tests, entry.path())?;
+        process_file(&mut tests, entry.path(), all_validate)?;
     }
 
     let total = tests.pass.len() + tests.fail.len();
@@ -261,10 +291,10 @@ fn tests_from_dir(dir: &Path) -> Result<Tests> {
     Ok(tests)
 }
 
-fn process_file(res: &mut Tests, path: &Path) -> Result<()> {
+fn process_file(res: &mut Tests, path: &Path, all_validate: bool) -> Result<()> {
     let text = fs::read_to_string(path)?;
 
-    for test in collect_tests(&text) {
+    for test in collect_tests(&text, all_validate) {
         if test.pass {
             if let Some(old_test) = res.pass.insert(test.name.clone(), test) {
                 anyhow::bail!("duplicate test: {}", old_test.name);

@@ -2,16 +2,20 @@ Root = Item
 
 Item = FuncDef | RelationDef
 
-RelationDef = modifiers:Modifiers keyword:RelKw name:RelName columns:RelCols
+RelationDef = Modifiers keyword:RelKw name:RelName columns:RelCols
 RelKw = 'relation' | 'multiset' | 'stream'
 RelName = 'ident'
-RelCols = '(' RelCol* ')'
-RelCol = binding:Pat ':' ty:Type ','?
+RelCols = '(' columns:RelCol* ')'
+RelCol = binding:Pat ':' ty:Type ','*
 
-FuncDef = modifiers:Modifiers keyword:'function' name:FuncName args:FuncArgs (':' return_ty:Type)? body:Block
+FuncDef = Modifiers keyword:'function' name:FuncName args:FuncArgs (':' return_ty:Type)? body:Block
 FuncName = 'ident'
-FuncArgs = '(' FuncArg* ')'
-FuncArg = binding:Pat ':' ty:Type ','?
+FuncArgs = '(' args:FuncArg* ')'
+FuncArg = binding:Pat ':' ty:Type ','*
+
+Attributes = Attribute*
+Attribute = '#[' AttrPair* ']'
+AttrPair = 'ident' '=' Expr ','*
 
 Modifiers = Modifier*
 Modifier = 'input' | 'output' | 'extern'

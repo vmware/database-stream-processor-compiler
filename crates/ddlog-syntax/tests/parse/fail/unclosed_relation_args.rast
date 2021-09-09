@@ -1,0 +1,27 @@
+ROOT@0..42
+  COMMENT@0..27 "// kind:item validate ..."
+  WHITESPACE@27..28 "\n"
+  ITEM@28..42
+    RELATION_DEF@28..42
+      ATTRIBUTES@28..28
+      MODIFIERS@28..28
+      REL_KW@28..36
+        RELATION@28..36 "relation"
+      WHITESPACE@36..37 " "
+      REL_NAME@37..40
+        IDENT@37..40 "Foo"
+      REL_COLS@40..41
+        L_PAREN@40..41 "("
+      WHITESPACE@41..42 "\n"
+--
+Error: expected ')' but instead the file ends
+   ,-[parse/fail/unclosed_relation_args.dl:2:15]
+   |
+ 2 | relation Foo(
+   :               | 
+   :               `- the file ends here
+---'
+--
+// kind:item validate:false
+relation Foo(
+
