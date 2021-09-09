@@ -2,7 +2,7 @@ use crate::{
     parser::{CompletedMarker, Marker, Parser},
     SyntaxKind::{
         self, FUNC_ARG, FUNC_ARGS, FUNC_DEF, FUNC_MODS, FUNC_NAME, IDENT, ITEM, RELATION_DEF,
-        REL_COL, REL_COLS, REL_MODS, REL_NAME,
+        REL_COL, REL_COLS, REL_KW, REL_MODS, REL_NAME,
     },
     TokenSet,
 };
@@ -174,6 +174,7 @@ impl Parser<'_, '_> {
     // - stream Bar()
     // - multiset Foo()
     fn relation_def(&mut self, relation: Marker) -> Option<CompletedMarker> {
+        let keyword = self.start();
         if self.at(T![relation]) {
             self.expect(T![relation]);
         } else if self.at(T![multiset]) {
@@ -183,6 +184,7 @@ impl Parser<'_, '_> {
         } else {
             unreachable!()
         }
+        keyword.complete(self, REL_KW);
 
         self.identifier(REL_NAME);
         self.relation_columns();

@@ -4,7 +4,8 @@ ROOT@0..38
   ITEM@13..38
     RELATION_DEF@13..38
       REL_MODS@13..13
-      RELATION@13..21 "relation"
+      REL_KW@13..21
+        RELATION@13..21 "relation"
       WHITESPACE@21..22 " "
       REL_NAME@22..25
         IDENT@22..25 "Foo"

@@ -8,7 +8,8 @@ ROOT@0..95
         WHITESPACE@18..19 " "
         OUTPUT@19..25 "output"
       WHITESPACE@25..26 " "
-      RELATION@26..34 "relation"
+      REL_KW@26..34
+        RELATION@26..34 "relation"
       WHITESPACE@34..35 " "
       REL_NAME@35..38
         IDENT@35..38 "Foo"
@@ -23,7 +24,8 @@ ROOT@0..95
         WHITESPACE@46..47 " "
         OUTPUT@47..53 "output"
       WHITESPACE@53..54 " "
-      MULTISET@54..62 "multiset"
+      REL_KW@54..62
+        MULTISET@54..62 "multiset"
       WHITESPACE@62..63 " "
       REL_NAME@63..66
         IDENT@63..66 "Foo"
@@ -38,7 +40,8 @@ ROOT@0..95
         WHITESPACE@74..75 " "
         OUTPUT@75..81 "output"
       WHITESPACE@81..82 " "
-      STREAM@82..88 "stream"
+      REL_KW@82..88
+        STREAM@82..88 "stream"
       WHITESPACE@88..89 " "
       REL_NAME@89..92
         IDENT@89..92 "Foo"

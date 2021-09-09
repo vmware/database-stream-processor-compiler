@@ -8,7 +8,8 @@ ROOT@0..55
         WHITESPACE@32..33 " "
         OUTPUT@33..39 "output"
       WHITESPACE@39..40 " "
-      RELATION@40..48 "relation"
+      REL_KW@40..48
+        RELATION@40..48 "relation"
       WHITESPACE@48..49 " "
       REL_NAME@49..52
         IDENT@49..52 "Foo"

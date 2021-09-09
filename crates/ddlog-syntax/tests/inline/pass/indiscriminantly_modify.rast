@@ -22,7 +22,8 @@ ROOT@0..85
         WHITESPACE@63..64 " "
         INPUT@64..69 "input"
       WHITESPACE@69..70 " "
-      RELATION@70..78 "relation"
+      REL_KW@70..78
+        RELATION@70..78 "relation"
       WHITESPACE@78..79 " "
       REL_NAME@79..82
         IDENT@79..82 "Foo"

@@ -236,6 +236,39 @@ pub mod fs2 {
 
         Ok(())
     }
+
+    pub fn copy<P1, P2>(from: P1, to: P2) -> Result<()>
+    where
+        P1: AsRef<Path>,
+        P2: AsRef<Path>,
+    {
+        let (from, to) = (from.as_ref(), to.as_ref());
+
+        if !from.exists() {
+            let from = from.display();
+            anyhow::bail!(
+                "cannot copy from '{}' to '{}', '{}' doesn't exist",
+                from,
+                to.display(),
+                from,
+            )
+        }
+
+        // Create the path to the target file
+        let parent_dir = to.parent().expect("files should have a parent path");
+        create_dir_all(parent_dir)?;
+
+        // Copy the file
+        fs::copy(from, to).with_context(|| {
+            format!(
+                "failed to copy from '{}' to '{}'",
+                from.display(),
+                to.display(),
+            )
+        })?;
+
+        Ok(())
+    }
 }
 
 pub mod ansi {

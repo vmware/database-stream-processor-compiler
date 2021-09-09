@@ -4,7 +4,8 @@ ROOT@0..116
   ITEM@13..48
     RELATION_DEF@13..48
       REL_MODS@13..13
-      RELATION@13..21 "relation"
+      REL_KW@13..21
+        RELATION@13..21 "relation"
       WHITESPACE@21..22 " "
       REL_NAME@22..25
         IDENT@22..25 "Foo"
@@ -27,7 +28,8 @@ ROOT@0..116
   ITEM@48..83
     RELATION_DEF@48..83
       REL_MODS@48..48
-      MULTISET@48..56 "multiset"
+      REL_KW@48..56
+        MULTISET@48..56 "multiset"
       WHITESPACE@56..57 " "
       REL_NAME@57..60
         IDENT@57..60 "Foo"
@@ -50,7 +52,8 @@ ROOT@0..116
   ITEM@83..116
     RELATION_DEF@83..116
       REL_MODS@83..83
-      STREAM@83..89 "stream"
+      REL_KW@83..89
+        STREAM@83..89 "stream"
       WHITESPACE@89..90 " "
       REL_NAME@90..93
         IDENT@90..93 "Foo"

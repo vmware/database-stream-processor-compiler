@@ -210,6 +210,9 @@ impl<'a> AstGenerator<'a> {
                         name,
                     );
                 }
+                if inner.iter().all(|rule| matches!(rule, Rule::Token(_))) {
+                    continue;
+                }
 
                 let mut variants = inner
                     .iter()

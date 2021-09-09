@@ -8,7 +8,8 @@ ROOT@0..212
         WHITESPACE@32..33 " "
         EXTERN@33..39 "extern"
       WHITESPACE@39..40 " "
-      RELATION@40..48 "relation"
+      REL_KW@40..48
+        RELATION@40..48 "relation"
       WHITESPACE@48..49 " "
       REL_NAME@49..52
         IDENT@49..52 "Foo"
@@ -25,7 +26,8 @@ ROOT@0..212
         WHITESPACE@67..68 " "
         EXTERN@68..74 "extern"
       WHITESPACE@74..75 " "
-      RELATION@75..83 "relation"
+      REL_KW@75..83
+        RELATION@75..83 "relation"
       WHITESPACE@83..84 " "
       REL_NAME@84..87
         IDENT@84..87 "Foo"
@@ -40,7 +42,8 @@ ROOT@0..212
         WHITESPACE@95..96 " "
         EXTERN@96..102 "extern"
       WHITESPACE@102..103 " "
-      MULTISET@103..111 "multiset"
+      REL_KW@103..111
+        MULTISET@103..111 "multiset"
       WHITESPACE@111..112 " "
       REL_NAME@112..115
         IDENT@112..115 "Foo"
@@ -57,7 +60,8 @@ ROOT@0..212
         WHITESPACE@130..131 " "
         EXTERN@131..137 "extern"
       WHITESPACE@137..138 " "
-      MULTISET@138..146 "multiset"
+      REL_KW@138..146
+        MULTISET@138..146 "multiset"
       WHITESPACE@146..147 " "
       REL_NAME@147..150
         IDENT@147..150 "Foo"
@@ -72,7 +76,8 @@ ROOT@0..212
         WHITESPACE@158..159 " "
         EXTERN@159..165 "extern"
       WHITESPACE@165..166 " "
-      STREAM@166..172 "stream"
+      REL_KW@166..172
+        STREAM@166..172 "stream"
       WHITESPACE@172..173 " "
       REL_NAME@173..176
         IDENT@173..176 "Foo"
@@ -89,7 +94,8 @@ ROOT@0..212
         WHITESPACE@191..192 " "
         EXTERN@192..198 "extern"
       WHITESPACE@198..199 " "
-      STREAM@199..205 "stream"
+      REL_KW@199..205
+        STREAM@199..205 "stream"
       WHITESPACE@205..206 " "
       REL_NAME@206..209
         IDENT@206..209 "Foo"
@@ -122,52 +128,52 @@ Error: received an 'extern' modifier on a relation definition
    :                 `---- relations cannot be marked as 'extern'
 ---'
 --
-Error: received an 'extern' modifier on a multiset definition
+Error: received an 'extern' modifier on a relation definition
    ,-[inline/fail/extern_relation.dl:4:7]
    |
  4 | input extern multiset Foo()
    :       ^^^|^^  
-   :          `---- multisets cannot be marked as 'extern'
+   :          `---- relations cannot be marked as 'extern'
 ---'
 --
-Error: received an 'extern' modifier on a multiset definition
+Error: received an 'extern' modifier on a relation definition
    ,-[inline/fail/extern_relation.dl:5:7]
    |
  5 | input extern extern multiset Foo()
    :       ^^^|^^  
-   :          `---- multisets cannot be marked as 'extern'
+   :          `---- relations cannot be marked as 'extern'
 ---'
 --
-Error: received an 'extern' modifier on a multiset definition
+Error: received an 'extern' modifier on a relation definition
    ,-[inline/fail/extern_relation.dl:5:14]
    |
  5 | input extern extern multiset Foo()
    :              ^^^|^^  
-   :                 `---- multisets cannot be marked as 'extern'
+   :                 `---- relations cannot be marked as 'extern'
 ---'
 --
-Error: received an 'extern' modifier on a stream definition
+Error: received an 'extern' modifier on a relation definition
    ,-[inline/fail/extern_relation.dl:6:7]
    |
  6 | input extern stream Foo()
    :       ^^^|^^  
-   :          `---- streams cannot be marked as 'extern'
+   :          `---- relations cannot be marked as 'extern'
 ---'
 --
-Error: received an 'extern' modifier on a stream definition
+Error: received an 'extern' modifier on a relation definition
    ,-[inline/fail/extern_relation.dl:7:7]
    |
  7 | input extern extern stream Foo()
    :       ^^^|^^  
-   :          `---- streams cannot be marked as 'extern'
+   :          `---- relations cannot be marked as 'extern'
 ---'
 --
-Error: received an 'extern' modifier on a stream definition
+Error: received an 'extern' modifier on a relation definition
    ,-[inline/fail/extern_relation.dl:7:14]
    |
  7 | input extern extern stream Foo()
    :              ^^^|^^  
-   :                 `---- streams cannot be marked as 'extern'
+   :                 `---- relations cannot be marked as 'extern'
 ---'
 --
 // kind:item validate:true
