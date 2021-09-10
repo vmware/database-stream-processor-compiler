@@ -132,6 +132,11 @@ impl Parsed {
         !self.errors.is_empty()
     }
 
+    #[inline]
+    pub fn into_parts(self) -> (SyntaxNode, Vec<Diagnostic>) {
+        (self.root, self.errors)
+    }
+
     /// Make a debug representation of the current tree
     #[inline]
     pub fn debug_tree(&self) -> String {

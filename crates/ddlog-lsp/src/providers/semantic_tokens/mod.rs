@@ -4,25 +4,27 @@ mod builder;
 mod highlighter;
 pub(crate) mod tokens;
 
-use crate::{providers::semantic_tokens::highlighter::SemanticHighlighter, Session};
+use crate::{
+    database::{DDlogDatabase, Session, Source},
+    providers::semantic_tokens::highlighter::SemanticHighlighter,
+};
 use anyhow::Result;
+use ddlog_syntax::{ast::nodes::Root, SyntaxNodeExt};
 use lspower::lsp::{SemanticTokens, Url};
+use salsa::Snapshot;
 
-pub(crate) fn handle_semantic_tokens_full(session: &Session, url: &Url) -> Result<SemanticTokens> {
-    let file = session.file_id(url)?;
-    let text = session.file_text(file);
+pub(crate) fn handle_semantic_tokens_full(
+    snapshot: Snapshot<DDlogDatabase>,
+    url: &Url,
+) -> Result<SemanticTokens> {
+    let session = snapshot.session();
+    let file = session.file_id(url);
 
-    // FIXME: Allow the parser & lexer to directly operate off of ropes
-    tracing::trace!("started parsing");
-    let (parsed, cache) = ddlog_syntax::parse(file, &text.to_string(), session.node_cache());
-    session.give_node_cache(cache);
-    tracing::trace!("finished parsing: {}", parsed.debug_tree());
+    let text = snapshot.file_source(file);
+    let root = snapshot.syntax(file);
 
-    // TODO: Token caching
-    // TODO: Cache syntax trees
-    tracing::trace!("started highlighting");
-    let semantic_tokens = SemanticHighlighter::highlight(&text, parsed.root(), session.interner());
-    tracing::trace!("finished highlighting");
+    let semantic_tokens =
+        SemanticHighlighter::highlight(&text, &*root.to::<Root>(), session.interner());
 
     Ok(semantic_tokens)
 }

@@ -1,15 +1,11 @@
-use anyhow::Result;
-use dashmap::DashMap;
 use ddlog_diagnostics::{FileId, Interner};
 use ddlog_syntax::NodeCache;
 use lspower::lsp::Url;
-use ropey::Rope;
 use std::sync::Mutex;
 
 #[derive(Debug)]
 pub struct Session {
     interner: Interner,
-    pub(crate) files: DashMap<FileId, Rope>,
     node_caches: Mutex<Vec<NodeCache<'static>>>,
 }
 
@@ -17,7 +13,6 @@ impl Session {
     pub fn new(interner: Interner) -> Self {
         Self {
             interner: interner.clone(),
-            files: DashMap::new(),
             node_caches: Mutex::new(vec![NodeCache::from_interner(interner)]),
         }
     }
@@ -46,6 +41,11 @@ impl Session {
         &self.interner
     }
 
+    pub fn file_id(&self, url: &Url) -> FileId {
+        FileId::new(self.interner().get_or_intern(url.as_str()))
+    }
+
+    /*
     // Invariant: The only way to gain access to a `FileId` is via
     // file creation or calling `.file_id()` with a valid (read:
     // previously created) url. This means we can safely add unwraps
@@ -82,4 +82,5 @@ impl Session {
             .expect("got test for a file that doesn't exist")
             .clone()
     }
+    */
 }

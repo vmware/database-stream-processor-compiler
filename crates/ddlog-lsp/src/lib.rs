@@ -1,4 +1,5 @@
 mod backend;
+mod database;
 mod providers;
 mod session;
 

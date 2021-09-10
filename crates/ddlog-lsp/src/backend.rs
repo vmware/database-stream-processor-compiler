@@ -1,4 +1,5 @@
 use crate::{
+    database::{DDlogDatabase, Session as _, Source, Validation},
     providers::{
         self,
         semantic_tokens::tokens::{SUPPORTED_MODIFIERS, SUPPORTED_TYPES},
@@ -7,28 +8,25 @@ use crate::{
     Session,
 };
 use cstree::TextRange;
-use ddlog_diagnostics::{Diagnostic, FileId, Level};
-use ddlog_syntax::{validation, RuleCtx};
+use ddlog_diagnostics::{Diagnostic, FileId, Level, Rope};
 use lsp_text::RopeExt;
 use lspower::{
     jsonrpc::Result,
     lsp::{
         Diagnostic as LspDiagnostic, DiagnosticRelatedInformation, DiagnosticSeverity,
-        DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
-        DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
-        DidSaveTextDocumentParams, ExecuteCommandParams, InitializeParams, InitializeResult,
-        InitializedParams, Location, MessageType, NumberOrString, SemanticTokensDeltaParams,
-        SemanticTokensFullDeltaResult, SemanticTokensFullOptions, SemanticTokensLegend,
-        SemanticTokensOptions, SemanticTokensParams, SemanticTokensRangeParams,
-        SemanticTokensRangeResult, SemanticTokensResult, SemanticTokensServerCapabilities,
-        ServerCapabilities, TextDocumentSyncCapability, TextDocumentSyncKind,
-        TextDocumentSyncOptions, Url, WorkspaceEdit,
+        DidChangeTextDocumentParams, DidOpenTextDocumentParams, InitializeParams, InitializeResult,
+        Location, MessageType, NumberOrString, SemanticTokensFullOptions, SemanticTokensLegend,
+        SemanticTokensOptions, SemanticTokensParams, SemanticTokensResult,
+        SemanticTokensServerCapabilities, ServerCapabilities, TextDocumentSyncCapability,
+        TextDocumentSyncKind, TextDocumentSyncOptions, Url,
     },
     Client, LanguageServer,
 };
-use serde_json::Value;
-use std::{fmt::Display, str::FromStr};
+use salsa::{ParallelDatabase, Snapshot};
+use std::{env, ffi::OsStr, fmt::Display, fs, path::PathBuf, str::FromStr, sync::Mutex};
+use tokio::task;
 use triomphe::Arc;
+use walkdir::WalkDir;
 
 const DDLOG_LANG: &str = "ddlog";
 const DDLOG_DAT_LANG: &str = "ddlog-command";
@@ -37,11 +35,16 @@ const DDLOG_DAT_LANG: &str = "ddlog-command";
 pub struct Backend {
     client: Client,
     session: Arc<Session>,
+    database: Arc<Mutex<DDlogDatabase>>,
 }
 
 impl Backend {
     pub fn new(client: Client, session: Arc<Session>) -> Self {
-        Self { client, session }
+        Self {
+            client,
+            database: Arc::new(Mutex::new(DDlogDatabase::default())),
+            session,
+        }
     }
 
     pub async fn info<M>(&self, message: M)
@@ -65,8 +68,14 @@ impl Backend {
         self.client.log_message(MessageType::Error, message).await;
     }
 
-    pub async fn publish_diagnostics(&self, file: FileId, diagnostics: Vec<Diagnostic>) {
-        self.publish_diagnostics_for(file, diagnostics, None).await;
+    pub async fn publish_diagnostics(
+        &self,
+        file: FileId,
+        diagnostics: Vec<Diagnostic>,
+        snapshot: Snapshot<DDlogDatabase>,
+    ) {
+        self.publish_diagnostics_for(file, diagnostics, None, snapshot)
+            .await;
     }
 
     pub async fn publish_diagnostics_for(
@@ -74,9 +83,10 @@ impl Backend {
         file: FileId,
         diagnostics: Vec<Diagnostic>,
         version: Option<i32>,
+        snapshot: Snapshot<DDlogDatabase>,
     ) {
         let uri = Url::from_str(file.to_str(self.session.interner())).unwrap();
-        let source = self.session.file_text(file);
+        let source = snapshot.file_source(file);
 
         // TODO: Factor this conversion out into utility function(s)
         let diagnostics: Vec<_> = diagnostics.into_iter().map(|diagnostic| {
@@ -148,49 +158,54 @@ impl LanguageServer for Backend {
             ..Default::default()
         };
 
+        self.database
+            .lock()
+            .unwrap()
+            .set_session(self.session.clone());
+
+        if let Ok(ddlog_home) = env::var("DDLOG_HOME") {
+            let ddlog_home = PathBuf::from(ddlog_home);
+
+            if ddlog_home.exists() {
+                task::spawn_blocking(move || {
+                    let ddlog_libs = WalkDir::new(&ddlog_home)
+                        .into_iter()
+                        .flatten()
+                        // Filter out anything that's not a `.dl` file
+                        .filter(|entry| {
+                            entry.file_type().is_file()
+                                && matches!(
+                                    entry.path().extension().and_then(OsStr::to_str),
+                                    Some("dl"),
+                                )
+                        });
+
+                    for file in ddlog_libs {
+                        let contents = fs::read_to_string(file.path()).unwrap();
+                        println!("{}", contents);
+
+                        // TODO: Load stdlib
+                    }
+                });
+            } else {
+                self.error(format!(
+                    "DDLOG_HOME dir does not exist: '{}'",
+                    ddlog_home.display(),
+                ))
+                .await;
+            }
+        }
+
         Ok(InitializeResult {
             server_info: None,
             capabilities,
         })
     }
 
-    async fn initialized(&self, params: InitializedParams) {
-        self.info(format!("initialized: {:?}", params)).await;
-    }
-
     async fn shutdown(&self) -> Result<()> {
         self.info("shutting down").await;
 
         Ok(())
-    }
-
-    async fn did_change_workspace_folders(&self, _: DidChangeWorkspaceFoldersParams) {
-        self.info("workspace folders changed!").await;
-    }
-
-    async fn did_change_configuration(&self, _: DidChangeConfigurationParams) {
-        self.info("configuration changed!").await;
-    }
-
-    async fn did_change_watched_files(&self, files: DidChangeWatchedFilesParams) {
-        self.info(format!("watched files changed: {:?}", files))
-            .await;
-    }
-
-    async fn execute_command(&self, _: ExecuteCommandParams) -> Result<Option<Value>> {
-        self.info("command executed!").await;
-
-        match self
-            .client
-            .apply_edit(WorkspaceEdit::default(), Default::default())
-            .await
-        {
-            Ok(res) if res.applied => self.info("applied").await,
-            Ok(_) => self.info("rejected").await,
-            Err(error) => self.error(error).await,
-        }
-
-        Ok(None)
     }
 
     async fn did_open(&self, opened: DidOpenTextDocumentParams) {
@@ -204,29 +219,24 @@ impl LanguageServer for Backend {
         if opened.text_document.language_id == DDLOG_LANG
             || opened.text_document.language_id == DDLOG_DAT_LANG
         {
-            let file = self
-                .session
-                .create_file(&opened.text_document.uri, opened.text_document.text);
-            let source = self.session.file_text(file);
+            let file = self.session.file_id(&opened.text_document.uri);
 
-            // FIXME: Allow the parser & lexer to directly operate off of ropes
-            // FIXME: Cache syntax trees
-            tracing::trace!("started parsing");
-            let (parsed, cache) =
-                ddlog_syntax::parse(file, &source.to_string(), self.session.node_cache());
-            self.session.give_node_cache(cache);
-            tracing::trace!("finished parsing: {}", parsed.debug_tree());
+            let snapshot = {
+                let mut database = self.database.lock().unwrap();
+                database.set_file_source(file, Rope::from(opened.text_document.text));
 
-            let mut ctx = RuleCtx::new(file, source, self.session.interner().clone());
+                database.snapshot()
+            };
 
-            validation::run_validators(parsed.syntax(), &mut ctx);
-            ctx.diagnostics.extend(parsed.into_errors());
+            let mut diagnostics = (*snapshot.parse_diagnostics(file)).clone();
+            diagnostics.extend((*snapshot.validation_diagnostics(file)).clone());
 
-            if !ctx.diagnostics.is_empty() {
+            if !diagnostics.is_empty() {
                 self.publish_diagnostics_for(
                     file,
-                    ctx.diagnostics,
+                    diagnostics,
                     Some(opened.text_document.version),
+                    snapshot,
                 )
                 .await;
             }
@@ -236,44 +246,38 @@ impl LanguageServer for Backend {
     async fn did_change(&self, changes: DidChangeTextDocumentParams) {
         let file_name = changes.text_document.uri.as_str();
 
-        if let Ok(file_id) = self.session.file_id(&changes.text_document.uri) {
-            self.info(format!("file changed: {}", file_name)).await;
+        let file = self.session.file_id(&changes.text_document.uri);
+        self.info(format!("file changed: {}", file_name)).await;
 
-            if let Some(mut contents) = self.session.files.get_mut(&file_id) {
-                for change in changes.content_changes {
-                    // TODO: Error handling
-                    let edit = contents
-                        .build_edit(&change)
-                        .expect("failed to create text edit");
+        let snapshot = {
+            let mut database = self.database.lock().unwrap();
+            let mut contents = database.file_source(file);
 
-                    contents.apply_edit(&edit);
-                }
-            } else {
-                self.error(format!(
-                    "tried to change file that doesn't exist: {}",
-                    file_name,
-                ))
-                .await;
+            for change in changes.content_changes {
+                // TODO: Error handling
+                let edit = contents
+                    .build_edit(&change)
+                    .expect("failed to create text edit");
+
+                contents.apply_edit(&edit);
             }
-        } else {
-            self.warn(format!("unregistered file changed: {}", file_name))
-                .await;
-        }
-    }
 
-    async fn did_save(&self, _: DidSaveTextDocumentParams) {
-        self.info("file saved!").await;
-    }
+            database.set_file_source(file, contents);
 
-    async fn did_close(&self, closed: DidCloseTextDocumentParams) {
-        let file_name = closed.text_document.uri.as_str();
+            database.snapshot()
+        };
 
-        if let Ok(file_id) = self.session.file_id(&closed.text_document.uri) {
-            self.info(format!("file closed: {}", file_name)).await;
-            self.session.close_file(file_id);
-        } else {
-            self.warn(format!("unregistered file closed: {}", file_name))
-                .await;
+        let mut diagnostics = (*snapshot.parse_diagnostics(file)).clone();
+        diagnostics.extend((*snapshot.validation_diagnostics(file)).clone());
+
+        if !diagnostics.is_empty() {
+            self.publish_diagnostics_for(
+                file,
+                diagnostics,
+                Some(changes.text_document.version),
+                snapshot,
+            )
+            .await;
         }
     }
 
@@ -287,38 +291,11 @@ impl LanguageServer for Backend {
 
         Ok(Some(SemanticTokensResult::Tokens(
             // FIXME: Error handling
-            providers::semantic_tokens::handle_semantic_tokens_full(&self.session, file_name)
-                .unwrap(),
-        )))
-    }
-
-    async fn semantic_tokens_full_delta(
-        &self,
-        params: SemanticTokensDeltaParams,
-    ) -> Result<Option<SemanticTokensFullDeltaResult>> {
-        let file_name = &params.text_document.uri;
-        self.info(format!("semantic tokens full delta: {}", file_name))
-            .await;
-
-        Ok(Some(SemanticTokensFullDeltaResult::Tokens(
-            // FIXME: Error handling
-            providers::semantic_tokens::handle_semantic_tokens_full(&self.session, file_name)
-                .unwrap(),
-        )))
-    }
-
-    async fn semantic_tokens_range(
-        &self,
-        params: SemanticTokensRangeParams,
-    ) -> Result<Option<SemanticTokensRangeResult>> {
-        let file_name = &params.text_document.uri;
-        self.info(format!("semantic tokens range: {}", file_name))
-            .await;
-
-        Ok(Some(SemanticTokensRangeResult::Tokens(
-            // FIXME: Error handling
-            providers::semantic_tokens::handle_semantic_tokens_full(&self.session, file_name)
-                .unwrap(),
+            providers::semantic_tokens::handle_semantic_tokens_full(
+                self.database.lock().unwrap().snapshot(),
+                file_name,
+            )
+            .unwrap(),
         )))
     }
 }

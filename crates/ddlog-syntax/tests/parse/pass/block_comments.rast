@@ -1,0 +1,6 @@
+ROOT@0..62
+  COMMENT@0..27 "// kind:item validate ..."
+  WHITESPACE@27..28 "\n"
+  COMMENT@28..62 "/*
+    /*
+        Hel ..."

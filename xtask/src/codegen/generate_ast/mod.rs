@@ -65,6 +65,8 @@ const TOKEN_LOGOS: &[(&str, &[&str])] = &[
             "regex(\"//.*\")",
             // TODO: Make this a separate doc comment
             "regex(\"///.*\")",
+            // Block comments
+            "token(\"/*\", lex_block_comment)",
         ],
     ),
     ("bool", &["token(\"true\")", "token(\"false\")"]),
@@ -949,6 +951,29 @@ fn generate_syntax_kind(tokens: &[&str], mode: CodegenMode) -> Result<()> {
             }
         }
 
+        fn lex_block_comment(lexer: &mut logos::Lexer<'_, SyntaxKind>) {
+            let remainder = lexer.remainder();
+
+            let (mut nesting, mut previous) = (1, None);
+            for (idx, current) in remainder.char_indices() {
+                if let Some(previous) = previous {
+                    match dbg!(current, previous) {
+                        ('/', '*') => nesting += 1,
+                        ('*', '/') if nesting != 0 => nesting -= 1,
+                        ('*', '/') => {
+                            lexer.bump(idx + 2);
+                            return;
+                        }
+                        _ => {}
+                    }
+                }
+
+                previous = Some(current);
+            }
+
+            lexer.bump(remainder.len());
+        }
+
         #debug_impl
         #display_impl
         #trait_impls
@@ -961,7 +986,7 @@ fn generate_syntax_kind(tokens: &[&str], mode: CodegenMode) -> Result<()> {
     Ok(())
 }
 
-const FUNKY_CHARS: &[&str] = &["(", ")", "{", "}", "[", "]", "#["];
+const FUNKY_CHARS: &[&str] = &["(", ")", "{", "}", "[", "]", "#[", "/*", "*/"];
 
 fn token_macro(tokens: &[&str]) -> TokenStream {
     let arms = tokens.iter().filter_map(|&token| {

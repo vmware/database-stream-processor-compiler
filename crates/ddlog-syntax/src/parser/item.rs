@@ -249,3 +249,10 @@ impl Parser<'_, '_> {
         Some(attribute.complete(self, ATTRIBUTE))
     }
 }
+
+// test block_comments
+// - /*
+// -     /*
+// -         Hello
+// -     */
+// - */
