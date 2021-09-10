@@ -1,6 +1,6 @@
 Root = Item
 
-Item = FuncDef | RelationDef
+Item = FuncDef | RelationDef | TypeDef
 
 RelationDef = Attributes Modifiers keyword:RelKw name:RelName columns:RelCols
 RelKw = 'relation' | 'multiset' | 'stream'
@@ -12,6 +12,15 @@ FuncDef = Attributes Modifiers keyword:'function' name:FuncName args:FuncArgs ('
 FuncName = 'ident'
 FuncArgs = '(' args:FuncArg* ')'
 FuncArg = Attributes binding:Pat ':' ty:Type ','*
+
+TypeDef = Attributes Modifiers keyword:'typedef' name:TypeName '=' body:TypeBody
+TypeName = 'ident'
+
+TypeBody = RecordType | SumType
+RecordType = constructor:RecordName ('{' fields:RecordField* '}')?
+RecordName = 'ident'
+RecordField = Attributes name:Pat ':' ty:Type ','*
+SumType = ('|' RecordType)*
 
 Attributes = Attribute*
 Attribute = '#[' AttrPair* ']'

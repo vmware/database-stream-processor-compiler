@@ -1,4 +1,4 @@
-ROOT@0..121
+ROOT@0..191
   COMMENT@0..27 "// kind:item validate ..."
   WHITESPACE@27..28 "\n"
   ITEM@28..75
@@ -86,3 +86,65 @@ ROOT@0..121
           COMMA@118..119 ","
         R_PAREN@119..120 ")"
       WHITESPACE@120..121 "\n"
+  ITEM@121..157
+    FUNC_DEF@121..157
+      ATTRIBUTES@121..121
+      MODIFIERS@121..121
+      FUNCTION@121..129 "function"
+      WHITESPACE@129..130 " "
+      FUNC_NAME@130..133
+        IDENT@130..133 "foo"
+      FUNC_ARGS@133..153
+        L_PAREN@133..134 "("
+        FUNC_ARG@134..152
+          ATTRIBUTES@134..134
+          IDENT@134..137 "bar"
+          COLON@137..138 ":"
+          WHITESPACE@138..139 " "
+          TYPE@139..152
+            FUNCTION_TYPE@139..152
+              FUNCTION@139..147 "function"
+              FUNCTION_TYPE_ARGS@147..152
+                L_PAREN@147..148 "("
+                FUNCTION_TYPE_ARG@148..151
+                  TYPE@148..151
+                    GENERIC_TYPE@148..151
+                      IDENT@148..151 "Bar"
+                R_PAREN@151..152 ")"
+              FUNCTION_RETURN_TYPE@152..152
+        R_PAREN@152..153 ")"
+      WHITESPACE@153..154 " "
+      BLOCK@154..156
+        L_CURLY@154..155 "{"
+        R_CURLY@155..156 "}"
+      WHITESPACE@156..157 "\n"
+  ITEM@157..191
+    RELATION_DEF@157..191
+      ATTRIBUTES@157..157
+      MODIFIERS@157..157
+      REL_KW@157..165
+        RELATION@157..165 "relation"
+      WHITESPACE@165..166 " "
+      REL_NAME@166..169
+        IDENT@166..169 "Foo"
+      REL_COLS@169..190
+        L_PAREN@169..170 "("
+        REL_COL@170..189
+          ATTRIBUTES@170..170
+          IDENT@170..173 "bar"
+          COLON@173..174 ":"
+          WHITESPACE@174..175 " "
+          TYPE@175..189
+            FUNCTION_TYPE@175..189
+              FUNCTION@175..183 "function"
+              FUNCTION_TYPE_ARGS@183..189
+                L_PAREN@183..184 "("
+                FUNCTION_TYPE_ARG@184..188
+                  TYPE@184..187
+                    GENERIC_TYPE@184..187
+                      IDENT@184..187 "Bar"
+                  COMMA@187..188 ","
+                R_PAREN@188..189 ")"
+              FUNCTION_RETURN_TYPE@189..189
+        R_PAREN@189..190 ")"
+      WHITESPACE@190..191 "\n"

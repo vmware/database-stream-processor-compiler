@@ -1,0 +1,19 @@
+ROOT@0..46
+  COMMENT@0..27 "// kind:item validate ..."
+  WHITESPACE@27..28 "\n"
+  ITEM@28..46
+    TYPE_DEF@28..46
+      ATTRIBUTES@28..28
+      MODIFIERS@28..28
+      TYPEDEF@28..35 "typedef"
+      WHITESPACE@35..36 " "
+      TYPE_NAME@36..39
+        IDENT@36..39 "Foo"
+      WHITESPACE@39..40 " "
+      EQ@40..41 "="
+      WHITESPACE@41..42 " "
+      TYPE_BODY@42..46
+        RECORD_TYPE@42..46
+          RECORD_NAME@42..45
+            IDENT@42..45 "Bar"
+          WHITESPACE@45..46 "\n"

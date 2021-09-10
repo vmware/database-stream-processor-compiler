@@ -1,3 +1,5 @@
 // kind:item validate:false
 function foo(bar: function(Bar, Baz): Bing) {}
 relation Foo(bar: function(Bar, Baz,): Bing,)
+function foo(bar: function(Bar)) {}
+relation Foo(bar: function(Bar,))

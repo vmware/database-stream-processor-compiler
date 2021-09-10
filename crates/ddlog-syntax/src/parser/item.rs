@@ -3,8 +3,9 @@ use crate::{
     SyntaxKind::{
         self, ATTRIBUTE, ATTRIBUTES, ATTR_PAIR, FUNCTION_RETURN_TYPE, FUNCTION_TYPE,
         FUNCTION_TYPE_ARG, FUNCTION_TYPE_ARGS, FUNC_ARG, FUNC_ARGS, FUNC_DEF, FUNC_NAME, GENERICS,
-        GENERIC_ARG, GENERIC_TYPE, IDENT, ITEM, MODIFIERS, RELATION_DEF, REL_COL, REL_COLS, REL_KW,
-        REL_NAME, TUPLE_TYPE, TUPLE_TYPE_ELEM, TYPE,
+        GENERIC_ARG, GENERIC_TYPE, IDENT, ITEM, MODIFIERS, RECORD_FIELD, RECORD_NAME, RECORD_TYPE,
+        RELATION_DEF, REL_COL, REL_COLS, REL_KW, REL_NAME, TUPLE_TYPE, TUPLE_TYPE_ELEM, TYPE,
+        TYPE_BODY, TYPE_DEF, TYPE_NAME,
     },
     TokenSet,
 };
@@ -17,12 +18,13 @@ const ITEM_RECOVERY: TokenSet = token_set! {
     T!['}'],
     T![function],
     T![extern],
-    // T![typedef],
+    T![typedef],
     T![input],
     T![output],
     T![relation],
     T![multiset],
     T![stream],
+    // T![import],
 };
 
 const MODIFIER_KEYWORDS: TokenSet = token_set! {
@@ -65,15 +67,11 @@ impl Parser<'_, '_> {
 
         tracing::trace!(peek = %self.peek(), "parsing item");
         match self.peek() {
-            // TODO: `extern`, `typedef`, `input`, `output`,
-            //       `relation`, `apply`, etc.
-            T![function] => {
-                self.function_def(inner_item);
-            }
+            T![function] => self.function_def(inner_item),
+            T![relation] | T![multiset] | T![stream] => self.relation_def(inner_item),
+            T![typedef] => self.typedef(inner_item),
 
-            T![relation] | T![multiset] | T![stream] => {
-                self.relation_def(inner_item);
-            }
+            // TODO: `import`
 
             // TODO: Errors
             _ => {
@@ -93,7 +91,7 @@ impl Parser<'_, '_> {
 
                 return None;
             }
-        }
+        };
 
         Some(item.complete(self, ITEM))
     }
@@ -184,6 +182,49 @@ impl Parser<'_, '_> {
         self.expect(T![')']);
 
         Some(columns.complete(self, REL_COLS))
+    }
+
+    fn typedef(&mut self, typedef: Marker) -> Option<CompletedMarker> {
+        self.expect(T![typedef]);
+        self.identifier(TYPE_NAME);
+
+        self.expect(T![=]);
+
+        {
+            let body = self.start();
+
+            self.record_type();
+
+            body.complete(self, TYPE_BODY);
+        }
+
+        Some(typedef.complete(self, TYPE_DEF))
+    }
+
+    // test typedefs
+    // - typedef Foo = Bar
+    // TODO: Generic type aliases
+    fn record_type(&mut self) -> Option<CompletedMarker> {
+        let record = self.start();
+
+        self.identifier(RECORD_NAME);
+
+        if self.try_expect(T!['{']) {
+            while !self.at(T!['}']) {
+                let field = self.start();
+
+                self.pattern();
+                self.expect(T![:]);
+                self.ty();
+
+                while self.try_expect(T![,]) {}
+
+                field.complete(self, RECORD_FIELD);
+            }
+            self.expect(T!['}']);
+        }
+
+        Some(record.complete(self, RECORD_TYPE))
     }
 
     // test argument_attributes
@@ -277,6 +318,8 @@ impl Parser<'_, '_> {
     // test function_types
     // - function foo(bar: function(Bar, Baz): Bing) {}
     // - relation Foo(bar: function(Bar, Baz,): Bing,)
+    // - function foo(bar: function(Bar)) {}
+    // - relation Foo(bar: function(Bar,))
     fn function_type(&mut self) -> Option<CompletedMarker> {
         let function = self.start();
 

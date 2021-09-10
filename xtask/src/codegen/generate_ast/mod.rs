@@ -876,7 +876,7 @@ pub fn generate_ast(mode: CodegenMode) -> Result<()> {
         .iter()
         .map(|node| &*grammar[node].name)
         .filter(|&token| {
-            let lowercase = token.to_lowercase();
+            let lowercase = token.to_snake_case();
 
             !matches!(&*lowercase, "number" | "string")
                 && !KEYWORDS.contains(&&*lowercase)
