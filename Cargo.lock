@@ -182,7 +182,6 @@ dependencies = [
  "tokio",
  "tracing",
  "triomphe",
- "walkdir",
 ]
 
 [[package]]
@@ -195,7 +194,9 @@ dependencies = [
  "logos",
  "once_cell",
  "tracing",
+ "tracing-subscriber",
  "triomphe",
+ "walkdir",
 ]
 
 [[package]]

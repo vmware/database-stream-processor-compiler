@@ -54,7 +54,7 @@ const KEYWORDS: &[&str] = &[
 ];
 
 const TOKEN_LOGOS: &[(&str, &[&str])] = &[
-    ("ident", &["regex(\"[A-Za-z_][A-Za-z0-9_]*\")"]),
+    ("ident", &["regex(\"[A-Za-z_'][A-Za-z0-9_']*\")"]),
     ("whitespace", &["regex(\"[\\n\\t\\r ]+\")"]),
     (
         "comment",
@@ -951,27 +951,26 @@ fn generate_syntax_kind(tokens: &[&str], mode: CodegenMode) -> Result<()> {
             }
         }
 
-        fn lex_block_comment(lexer: &mut logos::Lexer<'_, SyntaxKind>) {
+        fn lex_block_comment(lexer: &mut logos::Lexer<'_, SyntaxKind>) -> bool {
             let remainder = lexer.remainder();
+            let mut nesting = 0;
 
-            let (mut nesting, mut previous) = (1, None);
-            for (idx, current) in remainder.char_indices() {
-                if let Some(previous) = previous {
-                    match dbg!(current, previous) {
-                        ('/', '*') => nesting += 1,
-                        ('*', '/') if nesting != 0 => nesting -= 1,
-                        ('*', '/') => {
-                            lexer.bump(idx + 2);
-                            return;
-                        }
-                        _ => {}
+            for (idx, _) in remainder.char_indices() {
+                match remainder.get(idx..idx + 2) {
+                    Some("*/") if nesting == 0 => {
+                        lexer.bump(idx + 2);
+
+                        return true;
                     }
-                }
+                    Some("*/") => nesting -= 1,
+                    Some("/*") => nesting += 1,
 
-                previous = Some(current);
+                    Some(_) => continue,
+                    None => break,
+                }
             }
 
-            lexer.bump(remainder.len());
+            false
         }
 
         #debug_impl

@@ -2,16 +2,16 @@ Root = Item
 
 Item = FuncDef | RelationDef
 
-RelationDef = Modifiers keyword:RelKw name:RelName columns:RelCols
+RelationDef = Attributes Modifiers keyword:RelKw name:RelName columns:RelCols
 RelKw = 'relation' | 'multiset' | 'stream'
 RelName = 'ident'
 RelCols = '(' columns:RelCol* ')'
-RelCol = binding:Pat ':' ty:Type ','*
+RelCol = Attributes binding:Pat ':' ty:Type ','*
 
-FuncDef = Modifiers keyword:'function' name:FuncName args:FuncArgs (':' return_ty:Type)? body:Block
+FuncDef = Attributes Modifiers keyword:'function' name:FuncName args:FuncArgs (':' return_ty:Type)? body:Block
 FuncName = 'ident'
 FuncArgs = '(' args:FuncArg* ')'
-FuncArg = binding:Pat ':' ty:Type ','*
+FuncArg = Attributes binding:Pat ':' ty:Type ','*
 
 Attributes = Attribute*
 Attribute = '#[' AttrPair* ']'
@@ -20,7 +20,14 @@ AttrPair = 'ident' '=' Expr ','*
 Modifiers = Modifier*
 Modifier = 'input' | 'output' | 'extern'
 
-Type = 'ident'
+Type = GenericType | TupleType
+
+GenericType = 'ident' Generics?
+Generics = '<' generics:GenericArg* '>'
+GenericArg = Type ','*
+
+TupleType = '(' elements:TupleTypeElem* ')'
+TupleTypeElem = Type ','*
 
 Block = '{' (Stmt ';'*)* '}'
 Stmt =

@@ -13,10 +13,13 @@ ROOT@0..427
       REL_COLS@39..49
         L_PAREN@39..40 "("
         REL_COL@40..48
+          ATTRIBUTES@40..40
           IDENT@40..43 "bar"
           COLON@43..44 ":"
           WHITESPACE@44..45 " "
-          IDENT@45..48 "Baz"
+          TYPE@45..48
+            GENERIC_TYPE@45..48
+              IDENT@45..48 "Baz"
         R_PAREN@48..49 ")"
       WHITESPACE@49..50 "\n"
   ITEM@50..74
@@ -31,10 +34,13 @@ ROOT@0..427
       REL_COLS@62..73
         L_PAREN@62..63 "("
         REL_COL@63..72
+          ATTRIBUTES@63..63
           IDENT@63..66 "bar"
           COLON@66..67 ":"
           WHITESPACE@67..68 " "
-          IDENT@68..71 "Baz"
+          TYPE@68..71
+            GENERIC_TYPE@68..71
+              IDENT@68..71 "Baz"
           COMMA@71..72 ","
         R_PAREN@72..73 ")"
       WHITESPACE@73..74 "\n"
@@ -50,24 +56,33 @@ ROOT@0..427
       REL_COLS@86..117
         L_PAREN@86..87 "("
         REL_COL@87..96
+          ATTRIBUTES@87..87
           IDENT@87..90 "bar"
           COLON@90..91 ":"
           WHITESPACE@91..92 " "
-          IDENT@92..95 "Baz"
+          TYPE@92..95
+            GENERIC_TYPE@92..95
+              IDENT@92..95 "Baz"
           COMMA@95..96 ","
         WHITESPACE@96..97 " "
         REL_COL@97..106
+          ATTRIBUTES@97..97
           IDENT@97..100 "foo"
           COLON@100..101 ":"
           WHITESPACE@101..102 " "
-          IDENT@102..105 "Bar"
+          TYPE@102..105
+            GENERIC_TYPE@102..105
+              IDENT@102..105 "Bar"
           COMMA@105..106 ","
         WHITESPACE@106..107 " "
         REL_COL@107..116
+          ATTRIBUTES@107..107
           IDENT@107..111 "bing"
           COLON@111..112 ":"
           WHITESPACE@112..113 " "
-          IDENT@113..116 "Bop"
+          TYPE@113..116
+            GENERIC_TYPE@113..116
+              IDENT@113..116 "Bop"
         R_PAREN@116..117 ")"
       WHITESPACE@117..118 "\n"
   ITEM@118..163
@@ -82,24 +97,33 @@ ROOT@0..427
       REL_COLS@130..162
         L_PAREN@130..131 "("
         REL_COL@131..140
+          ATTRIBUTES@131..131
           IDENT@131..134 "bar"
           COLON@134..135 ":"
           WHITESPACE@135..136 " "
-          IDENT@136..139 "Baz"
+          TYPE@136..139
+            GENERIC_TYPE@136..139
+              IDENT@136..139 "Baz"
           COMMA@139..140 ","
         WHITESPACE@140..141 " "
         REL_COL@141..150
+          ATTRIBUTES@141..141
           IDENT@141..144 "foo"
           COLON@144..145 ":"
           WHITESPACE@145..146 " "
-          IDENT@146..149 "Bar"
+          TYPE@146..149
+            GENERIC_TYPE@146..149
+              IDENT@146..149 "Bar"
           COMMA@149..150 ","
         WHITESPACE@150..151 " "
         REL_COL@151..161
+          ATTRIBUTES@151..151
           IDENT@151..155 "bing"
           COLON@155..156 ":"
           WHITESPACE@156..157 " "
-          IDENT@157..160 "Bop"
+          TYPE@157..160
+            GENERIC_TYPE@157..160
+              IDENT@157..160 "Bop"
           COMMA@160..161 ","
         R_PAREN@161..162 ")"
       WHITESPACE@162..163 "\n"
@@ -115,10 +139,13 @@ ROOT@0..427
       REL_COLS@175..185
         L_PAREN@175..176 "("
         REL_COL@176..184
+          ATTRIBUTES@176..176
           IDENT@176..179 "bar"
           COLON@179..180 ":"
           WHITESPACE@180..181 " "
-          IDENT@181..184 "Baz"
+          TYPE@181..184
+            GENERIC_TYPE@181..184
+              IDENT@181..184 "Baz"
         R_PAREN@184..185 ")"
       WHITESPACE@185..186 "\n"
   ITEM@186..210
@@ -133,10 +160,13 @@ ROOT@0..427
       REL_COLS@198..209
         L_PAREN@198..199 "("
         REL_COL@199..208
+          ATTRIBUTES@199..199
           IDENT@199..202 "bar"
           COLON@202..203 ":"
           WHITESPACE@203..204 " "
-          IDENT@204..207 "Baz"
+          TYPE@204..207
+            GENERIC_TYPE@204..207
+              IDENT@204..207 "Baz"
           COMMA@207..208 ","
         R_PAREN@208..209 ")"
       WHITESPACE@209..210 "\n"
@@ -152,24 +182,33 @@ ROOT@0..427
       REL_COLS@222..253
         L_PAREN@222..223 "("
         REL_COL@223..232
+          ATTRIBUTES@223..223
           IDENT@223..226 "bar"
           COLON@226..227 ":"
           WHITESPACE@227..228 " "
-          IDENT@228..231 "Baz"
+          TYPE@228..231
+            GENERIC_TYPE@228..231
+              IDENT@228..231 "Baz"
           COMMA@231..232 ","
         WHITESPACE@232..233 " "
         REL_COL@233..242
+          ATTRIBUTES@233..233
           IDENT@233..236 "foo"
           COLON@236..237 ":"
           WHITESPACE@237..238 " "
-          IDENT@238..241 "Bar"
+          TYPE@238..241
+            GENERIC_TYPE@238..241
+              IDENT@238..241 "Bar"
           COMMA@241..242 ","
         WHITESPACE@242..243 " "
         REL_COL@243..252
+          ATTRIBUTES@243..243
           IDENT@243..247 "bing"
           COLON@247..248 ":"
           WHITESPACE@248..249 " "
-          IDENT@249..252 "Bop"
+          TYPE@249..252
+            GENERIC_TYPE@249..252
+              IDENT@249..252 "Bop"
         R_PAREN@252..253 ")"
       WHITESPACE@253..254 "\n"
   ITEM@254..299
@@ -184,24 +223,33 @@ ROOT@0..427
       REL_COLS@266..298
         L_PAREN@266..267 "("
         REL_COL@267..276
+          ATTRIBUTES@267..267
           IDENT@267..270 "bar"
           COLON@270..271 ":"
           WHITESPACE@271..272 " "
-          IDENT@272..275 "Baz"
+          TYPE@272..275
+            GENERIC_TYPE@272..275
+              IDENT@272..275 "Baz"
           COMMA@275..276 ","
         WHITESPACE@276..277 " "
         REL_COL@277..286
+          ATTRIBUTES@277..277
           IDENT@277..280 "foo"
           COLON@280..281 ":"
           WHITESPACE@281..282 " "
-          IDENT@282..285 "Bar"
+          TYPE@282..285
+            GENERIC_TYPE@282..285
+              IDENT@282..285 "Bar"
           COMMA@285..286 ","
         WHITESPACE@286..287 " "
         REL_COL@287..297
+          ATTRIBUTES@287..287
           IDENT@287..291 "bing"
           COLON@291..292 ":"
           WHITESPACE@292..293 " "
-          IDENT@293..296 "Bop"
+          TYPE@293..296
+            GENERIC_TYPE@293..296
+              IDENT@293..296 "Bop"
           COMMA@296..297 ","
         R_PAREN@297..298 ")"
       WHITESPACE@298..299 "\n"
@@ -217,10 +265,13 @@ ROOT@0..427
       REL_COLS@309..319
         L_PAREN@309..310 "("
         REL_COL@310..318
+          ATTRIBUTES@310..310
           IDENT@310..313 "bar"
           COLON@313..314 ":"
           WHITESPACE@314..315 " "
-          IDENT@315..318 "Baz"
+          TYPE@315..318
+            GENERIC_TYPE@315..318
+              IDENT@315..318 "Baz"
         R_PAREN@318..319 ")"
       WHITESPACE@319..320 "\n"
   ITEM@320..342
@@ -235,10 +286,13 @@ ROOT@0..427
       REL_COLS@330..341
         L_PAREN@330..331 "("
         REL_COL@331..340
+          ATTRIBUTES@331..331
           IDENT@331..334 "bar"
           COLON@334..335 ":"
           WHITESPACE@335..336 " "
-          IDENT@336..339 "Baz"
+          TYPE@336..339
+            GENERIC_TYPE@336..339
+              IDENT@336..339 "Baz"
           COMMA@339..340 ","
         R_PAREN@340..341 ")"
       WHITESPACE@341..342 "\n"
@@ -254,24 +308,33 @@ ROOT@0..427
       REL_COLS@352..383
         L_PAREN@352..353 "("
         REL_COL@353..362
+          ATTRIBUTES@353..353
           IDENT@353..356 "bar"
           COLON@356..357 ":"
           WHITESPACE@357..358 " "
-          IDENT@358..361 "Baz"
+          TYPE@358..361
+            GENERIC_TYPE@358..361
+              IDENT@358..361 "Baz"
           COMMA@361..362 ","
         WHITESPACE@362..363 " "
         REL_COL@363..372
+          ATTRIBUTES@363..363
           IDENT@363..366 "foo"
           COLON@366..367 ":"
           WHITESPACE@367..368 " "
-          IDENT@368..371 "Bar"
+          TYPE@368..371
+            GENERIC_TYPE@368..371
+              IDENT@368..371 "Bar"
           COMMA@371..372 ","
         WHITESPACE@372..373 " "
         REL_COL@373..382
+          ATTRIBUTES@373..373
           IDENT@373..377 "bing"
           COLON@377..378 ":"
           WHITESPACE@378..379 " "
-          IDENT@379..382 "Bop"
+          TYPE@379..382
+            GENERIC_TYPE@379..382
+              IDENT@379..382 "Bop"
         R_PAREN@382..383 ")"
       WHITESPACE@383..384 "\n"
   ITEM@384..427
@@ -286,24 +349,33 @@ ROOT@0..427
       REL_COLS@394..426
         L_PAREN@394..395 "("
         REL_COL@395..404
+          ATTRIBUTES@395..395
           IDENT@395..398 "bar"
           COLON@398..399 ":"
           WHITESPACE@399..400 " "
-          IDENT@400..403 "Baz"
+          TYPE@400..403
+            GENERIC_TYPE@400..403
+              IDENT@400..403 "Baz"
           COMMA@403..404 ","
         WHITESPACE@404..405 " "
         REL_COL@405..414
+          ATTRIBUTES@405..405
           IDENT@405..408 "foo"
           COLON@408..409 ":"
           WHITESPACE@409..410 " "
-          IDENT@410..413 "Bar"
+          TYPE@410..413
+            GENERIC_TYPE@410..413
+              IDENT@410..413 "Bar"
           COMMA@413..414 ","
         WHITESPACE@414..415 " "
         REL_COL@415..425
+          ATTRIBUTES@415..415
           IDENT@415..419 "bing"
           COLON@419..420 ":"
           WHITESPACE@420..421 " "
-          IDENT@421..424 "Bop"
+          TYPE@421..424
+            GENERIC_TYPE@421..424
+              IDENT@421..424 "Bop"
           COMMA@424..425 ","
         R_PAREN@425..426 ")"
       WHITESPACE@426..427 "\n"

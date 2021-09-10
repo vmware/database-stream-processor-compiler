@@ -1,5 +1,5 @@
 use crate::{
-    database::{DDlogDatabase, Session as _, Source, Validation},
+    database::{DDlogDatabase, Source, Validation},
     providers::{
         self,
         semantic_tokens::tokens::{SUPPORTED_MODIFIERS, SUPPORTED_TYPES},
@@ -8,7 +8,7 @@ use crate::{
     Session,
 };
 use cstree::TextRange;
-use ddlog_diagnostics::{Diagnostic, FileId, Level, Rope};
+use ddlog_diagnostics::{Diagnostic, FileId, Interner, Level, Rope};
 use lsp_text::RopeExt;
 use lspower::{
     jsonrpc::Result,
@@ -23,10 +23,8 @@ use lspower::{
     Client, LanguageServer,
 };
 use salsa::{ParallelDatabase, Snapshot};
-use std::{env, ffi::OsStr, fmt::Display, fs, path::PathBuf, str::FromStr, sync::Mutex};
-use tokio::task;
+use std::{fmt::Display, str::FromStr, sync::Mutex};
 use triomphe::Arc;
-use walkdir::WalkDir;
 
 const DDLOG_LANG: &str = "ddlog";
 const DDLOG_DAT_LANG: &str = "ddlog-command";
@@ -85,7 +83,26 @@ impl Backend {
         version: Option<i32>,
         snapshot: Snapshot<DDlogDatabase>,
     ) {
-        let uri = Url::from_str(file.to_str(self.session.interner())).unwrap();
+        Self::publish_diagnostics_raw(
+            file,
+            diagnostics,
+            version,
+            snapshot,
+            self.session.interner(),
+            &self.client,
+        )
+        .await;
+    }
+
+    pub async fn publish_diagnostics_raw(
+        file: FileId,
+        diagnostics: Vec<Diagnostic>,
+        version: Option<i32>,
+        snapshot: Snapshot<DDlogDatabase>,
+        interner: &Interner,
+        client: &Client,
+    ) -> Snapshot<DDlogDatabase> {
+        let uri = Url::from_str(file.to_str(interner)).unwrap();
         let source = snapshot.file_source(file);
 
         // TODO: Factor this conversion out into utility function(s)
@@ -126,9 +143,8 @@ impl Backend {
         })
         .collect();
 
-        self.client
-            .publish_diagnostics(uri, diagnostics, version)
-            .await;
+        client.publish_diagnostics(uri, diagnostics, version).await;
+        snapshot
     }
 }
 
@@ -158,6 +174,7 @@ impl LanguageServer for Backend {
             ..Default::default()
         };
 
+        /*
         self.database
             .lock()
             .unwrap()
@@ -167,6 +184,12 @@ impl LanguageServer for Backend {
             let ddlog_home = PathBuf::from(ddlog_home);
 
             if ddlog_home.exists() {
+                let (database, interner) = (
+                    self.database.clone(),
+                    self.session.interner().clone(),
+                    // self.client.clone(),
+                );
+
                 task::spawn_blocking(move || {
                     let ddlog_libs = WalkDir::new(&ddlog_home)
                         .into_iter()
@@ -180,11 +203,53 @@ impl LanguageServer for Backend {
                                 )
                         });
 
-                    for file in ddlog_libs {
-                        let contents = fs::read_to_string(file.path()).unwrap();
-                        println!("{}", contents);
+                    let (snapshot, files, mut cache) = {
+                        let mut database = database.lock().unwrap();
+                        let mut cache = FileCache::new(interner.clone());
+                        let files: Vec<_> = ddlog_libs
+                            .map(|file| {
+                                let uri = format!(
+                                    "file:{}",
+                                    file.path().canonicalize().unwrap().display(),
+                                );
+                                let file_id = FileId::new(interner.get_or_intern(&uri));
 
-                        // TODO: Load stdlib
+                                let contents = fs::read_to_string(file.path()).unwrap();
+                                database.set_file_source(file_id, Rope::from(contents));
+
+                                cache.add(file_id, database.file_source(file_id));
+
+                                file_id
+                            })
+                            .collect();
+
+                        (database.snapshot(), files, cache)
+                    };
+
+                    for file in files {
+                        let mut diagnostics = (*snapshot.parse_diagnostics(file)).clone();
+                        diagnostics.extend((*snapshot.validation_diagnostics(file)).clone());
+
+                        // Can't do this since VSCode doesn't know that these files exist?
+                        //     snapshot = Backend::publish_diagnostics_raw(
+                        //         file,
+                        //         diagnostics,
+                        //         None,
+                        //         snapshot,
+                        //         &interner,
+                        //         &client,
+                        //     )
+                        //     .await;
+
+                        let config = DiagnosticConfig::default();
+                        let stdout = io::stdout();
+                        let mut stdout = stdout.lock();
+
+                        for diagnostic in diagnostics {
+                            diagnostic
+                                .emit_to(&config, &mut cache, &mut stdout)
+                                .unwrap();
+                        }
                     }
                 });
             } else {
@@ -195,6 +260,7 @@ impl LanguageServer for Backend {
                 .await;
             }
         }
+        */
 
         Ok(InitializeResult {
             server_info: None,

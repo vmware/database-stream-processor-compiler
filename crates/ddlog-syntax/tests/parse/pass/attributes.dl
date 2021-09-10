@@ -1,3 +1,5 @@
 // kind:item validate:false
-#[something = something_else] function foo() {}
-#[something = 10,,,] function foo() {}
+#[something = 10,,,]
+#[something_else = 10,,,]
+#[something_again = wheee,,,]
+function foobaz() {}

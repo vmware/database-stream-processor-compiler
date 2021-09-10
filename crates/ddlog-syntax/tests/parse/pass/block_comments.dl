@@ -1,6 +1,8 @@
 // kind:item validate:false
+relation Foo()
 /*
     /*
         Hello
     */
 */
+function bar() {}

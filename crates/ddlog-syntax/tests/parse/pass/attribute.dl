@@ -1,0 +1,5 @@
+// kind:item validate:false
+#[something = something_else] function foo() {}
+#[something = 10,,,] function foobar() {}
+#[by_val] function foobar() {}
+#[by_val, from_val] function foobar() {}

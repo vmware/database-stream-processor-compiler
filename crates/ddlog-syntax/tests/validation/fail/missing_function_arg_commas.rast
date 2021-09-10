@@ -11,17 +11,23 @@ ROOT@0..62
         IDENT@36..39 "foo"
       FUNC_ARGS@39..58
         L_PAREN@39..40 "("
-        FUNC_ARG@40..48
+        FUNC_ARG@40..49
+          ATTRIBUTES@40..40
           IDENT@40..43 "foo"
           COLON@43..44 ":"
           WHITESPACE@44..45 " "
-          IDENT@45..48 "Bar"
-        WHITESPACE@48..49 " "
+          TYPE@45..49
+            GENERIC_TYPE@45..48
+              IDENT@45..48 "Bar"
+            WHITESPACE@48..49 " "
         FUNC_ARG@49..57
+          ATTRIBUTES@49..49
           IDENT@49..52 "bar"
           COLON@52..53 ":"
           WHITESPACE@53..54 " "
-          IDENT@54..57 "Baz"
+          TYPE@54..57
+            GENERIC_TYPE@54..57
+              IDENT@54..57 "Baz"
         R_PAREN@57..58 ")"
       WHITESPACE@58..59 " "
       BLOCK@59..61

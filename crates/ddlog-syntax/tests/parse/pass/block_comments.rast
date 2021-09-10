@@ -1,6 +1,36 @@
-ROOT@0..62
+ROOT@0..95
   COMMENT@0..27 "// kind:item validate ..."
   WHITESPACE@27..28 "\n"
-  COMMENT@28..62 "/*
+  ITEM@28..77
+    RELATION_DEF@28..77
+      ATTRIBUTES@28..28
+      MODIFIERS@28..28
+      REL_KW@28..36
+        RELATION@28..36 "relation"
+      WHITESPACE@36..37 " "
+      REL_NAME@37..40
+        IDENT@37..40 "Foo"
+      REL_COLS@40..42
+        L_PAREN@40..41 "("
+        R_PAREN@41..42 ")"
+      WHITESPACE@42..43 "\n"
+      COMMENT@43..76 "/*
     /*
         Hel ..."
+      WHITESPACE@76..77 "\n"
+  ITEM@77..95
+    FUNC_DEF@77..95
+      ATTRIBUTES@77..77
+      MODIFIERS@77..77
+      FUNCTION@77..85 "function"
+      WHITESPACE@85..86 " "
+      FUNC_NAME@86..89
+        IDENT@86..89 "bar"
+      FUNC_ARGS@89..91
+        L_PAREN@89..90 "("
+        R_PAREN@90..91 ")"
+      WHITESPACE@91..92 " "
+      BLOCK@92..94
+        L_CURLY@92..93 "{"
+        R_CURLY@93..94 "}"
+      WHITESPACE@94..95 "\n"

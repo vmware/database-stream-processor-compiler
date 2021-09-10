@@ -1,0 +1,9 @@
+// kind:item validate:false
+function foo(
+    #[by_val]
+    bar: Baz,
+) {}
+relation Bar(
+    #[by_val]
+    bar: Baz,
+)

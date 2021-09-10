@@ -1,8 +1,9 @@
 use crate::{
     parser::{CompletedMarker, Marker, Parser},
     SyntaxKind::{
-        self, ATTRIBUTE, ATTRIBUTES, ATTR_PAIR, FUNC_ARG, FUNC_ARGS, FUNC_DEF, FUNC_NAME, IDENT,
-        ITEM, MODIFIERS, RELATION_DEF, REL_COL, REL_COLS, REL_KW, REL_NAME,
+        self, ATTRIBUTE, ATTRIBUTES, ATTR_PAIR, FUNC_ARG, FUNC_ARGS, FUNC_DEF, FUNC_NAME, GENERICS,
+        GENERIC_ARG, GENERIC_TYPE, IDENT, ITEM, MODIFIERS, RELATION_DEF, REL_COL, REL_COLS, REL_KW,
+        REL_NAME, TUPLE_TYPE, TUPLE_TYPE_ELEM, TYPE,
     },
     TokenSet,
 };
@@ -30,6 +31,14 @@ const MODIFIER_KEYWORDS: TokenSet = token_set! {
 };
 
 impl Parser<'_, '_> {
+    // test block_comments
+    // - relation Foo()
+    // - /*
+    // -     /*
+    // -         Hello
+    // -     */
+    // - */
+    // - function bar() {}
     pub(crate) fn items(&mut self) {
         let current_set = self.recovery_set;
         self.recovery_set = current_set.union(ITEM_RECOVERY);
@@ -41,6 +50,7 @@ impl Parser<'_, '_> {
         self.recovery_set = current_set;
     }
 
+    // TODO: Abandon attributes & modifiers if an error occurs in parsing the item
     fn item(&mut self) -> Option<CompletedMarker> {
         let item = self.start();
         let inner_item = self.start();
@@ -175,9 +185,19 @@ impl Parser<'_, '_> {
         Some(columns.complete(self, REL_COLS))
     }
 
+    // test argument_attributes
+    // - function foo(
+    // -     #[by_val]
+    // -     bar: Baz,
+    // - ) {}
+    // - relation Bar(
+    // -     #[by_val]
+    // -     bar: Baz,
+    // - )
     fn argument(&mut self, kind: SyntaxKind) -> Option<CompletedMarker> {
         let column = self.start();
 
+        self.attributes();
         self.pattern();
         self.expect(T![:]);
         self.ty();
@@ -188,8 +208,70 @@ impl Parser<'_, '_> {
     }
 
     // TODO: Extend to full types
-    fn ty(&mut self) -> bool {
-        self.expect(IDENT)
+    fn ty(&mut self) -> Option<CompletedMarker> {
+        let _frame = self.stack_frame();
+        let ty = self.start();
+
+        match self.current() {
+            IDENT => self.type_name(),
+            T!['('] => self.tuple_type(),
+
+            // FIXME: Error
+            _ => {
+                ty.abandon(self);
+                return None;
+            }
+        };
+
+        Some(ty.complete(self, TYPE))
+    }
+
+    // TODO: Wrapper kind
+    // test generic_types
+    // - function foo(bar: Bar<Baz>) {}
+    // - relation Foo(bar: Bar<Baz>)
+    fn type_name(&mut self) -> Option<CompletedMarker> {
+        let generic = self.start();
+
+        if self.expect(IDENT) && self.at(T![<]) {
+            let generics = self.start();
+
+            self.expect(T![<]);
+            while !self.at(T![>]) {
+                let generic_arg = self.start();
+
+                self.ty();
+                while self.try_expect(T![,]) {}
+
+                generic_arg.complete(self, GENERIC_ARG);
+            }
+
+            self.expect(T![>]);
+            generics.complete(self, GENERICS);
+        }
+
+        Some(generic.complete(self, GENERIC_TYPE))
+    }
+
+    // TODO: Wrapper kind
+    // test tuple_types
+    // - function foo(bar: (Bar, Baz)) {}
+    // - relation Foo(bar: (Bar, Baz,))
+    fn tuple_type(&mut self) -> Option<CompletedMarker> {
+        let tuple = self.start();
+        self.expect(T!['(']);
+
+        while !self.at(T![')']) {
+            let elem = self.start();
+
+            self.ty();
+            while self.try_expect(T![,]) {}
+
+            elem.complete(self, TUPLE_TYPE_ELEM);
+        }
+
+        self.expect(T![')']);
+        Some(tuple.complete(self, TUPLE_TYPE))
     }
 
     // TODO: Extend to full patterns
@@ -212,6 +294,11 @@ impl Parser<'_, '_> {
         modifiers.complete(self, MODIFIERS)
     }
 
+    // test attributes
+    // - #[something = 10,,,]
+    // - #[something_else = 10,,,]
+    // - #[something_again = wheee,,,]
+    // - function foobaz() {}
     fn attributes(&mut self) -> CompletedMarker {
         let attributes = self.start();
 
@@ -225,9 +312,11 @@ impl Parser<'_, '_> {
         attributes.complete(self, ATTRIBUTES)
     }
 
-    // test attributes
+    // test attribute
     // - #[something = something_else] function foo() {}
-    // - #[something = 10,,,] function foo() {}
+    // - #[something = 10,,,] function foobar() {}
+    // - #[by_val] function foobar() {}
+    // - #[by_val, from_val] function foobar() {}
     fn attribute(&mut self) -> Option<CompletedMarker> {
         let attribute = self.start();
 
@@ -236,8 +325,10 @@ impl Parser<'_, '_> {
             let pair = self.start();
 
             self.expect(IDENT);
-            self.expect(T![=]);
-            self.expr();
+            // FIXME: Error recovery with missing `=` on a key-value pair
+            if self.try_expect(T![=]) {
+                self.expr();
+            }
 
             while self.try_expect(T![,]) {}
 
@@ -249,10 +340,3 @@ impl Parser<'_, '_> {
         Some(attribute.complete(self, ATTRIBUTE))
     }
 }
-
-// test block_comments
-// - /*
-// -     /*
-// -         Hello
-// -     */
-// - */

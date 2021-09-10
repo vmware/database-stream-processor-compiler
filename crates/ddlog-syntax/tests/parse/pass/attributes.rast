@@ -1,62 +1,64 @@
-ROOT@0..115
+ROOT@0..126
   COMMENT@0..27 "// kind:item validate ..."
   WHITESPACE@27..28 "\n"
-  ITEM@28..76
-    FUNC_DEF@28..76
-      ATTRIBUTES@28..58
-        ATTRIBUTE@28..57
+  ITEM@28..126
+    FUNC_DEF@28..126
+      ATTRIBUTES@28..105
+        ATTRIBUTE@28..48
           HASH_BRACK@28..30 "#["
-          ATTR_PAIR@30..56
+          ATTR_PAIR@30..47
             IDENT@30..39 "something"
             WHITESPACE@39..40 " "
             EQ@40..41 "="
             WHITESPACE@41..42 " "
-            EXPR@42..56
-              VAR_REF@42..56
-                IDENT@42..56 "something_else"
-          R_BRACK@56..57 "]"
-        WHITESPACE@57..58 " "
-      MODIFIERS@58..58
-      FUNCTION@58..66 "function"
-      WHITESPACE@66..67 " "
-      FUNC_NAME@67..70
-        IDENT@67..70 "foo"
-      FUNC_ARGS@70..72
-        L_PAREN@70..71 "("
-        R_PAREN@71..72 ")"
-      WHITESPACE@72..73 " "
-      BLOCK@73..75
-        L_CURLY@73..74 "{"
-        R_CURLY@74..75 "}"
-      WHITESPACE@75..76 "\n"
-  ITEM@76..115
-    FUNC_DEF@76..115
-      ATTRIBUTES@76..97
-        ATTRIBUTE@76..96
-          HASH_BRACK@76..78 "#["
-          ATTR_PAIR@78..95
-            IDENT@78..87 "something"
-            WHITESPACE@87..88 " "
-            EQ@88..89 "="
-            WHITESPACE@89..90 " "
-            EXPR@90..92
-              LITERAL@90..92
-                NUMBER@90..92 "10"
-            COMMA@92..93 ","
-            COMMA@93..94 ","
-            COMMA@94..95 ","
-          R_BRACK@95..96 "]"
-        WHITESPACE@96..97 " "
-      MODIFIERS@97..97
-      FUNCTION@97..105 "function"
-      WHITESPACE@105..106 " "
-      FUNC_NAME@106..109
-        IDENT@106..109 "foo"
-      FUNC_ARGS@109..111
-        L_PAREN@109..110 "("
-        R_PAREN@110..111 ")"
-      WHITESPACE@111..112 " "
-      BLOCK@112..114
-        L_CURLY@112..113 "{"
-        R_CURLY@113..114 "}"
-      WHITESPACE@114..115 "\n"
+            EXPR@42..44
+              LITERAL@42..44
+                NUMBER@42..44 "10"
+            COMMA@44..45 ","
+            COMMA@45..46 ","
+            COMMA@46..47 ","
+          R_BRACK@47..48 "]"
+        WHITESPACE@48..49 "\n"
+        ATTRIBUTE@49..74
+          HASH_BRACK@49..51 "#["
+          ATTR_PAIR@51..73
+            IDENT@51..65 "something_else"
+            WHITESPACE@65..66 " "
+            EQ@66..67 "="
+            WHITESPACE@67..68 " "
+            EXPR@68..70
+              LITERAL@68..70
+                NUMBER@68..70 "10"
+            COMMA@70..71 ","
+            COMMA@71..72 ","
+            COMMA@72..73 ","
+          R_BRACK@73..74 "]"
+        WHITESPACE@74..75 "\n"
+        ATTRIBUTE@75..104
+          HASH_BRACK@75..77 "#["
+          ATTR_PAIR@77..103
+            IDENT@77..92 "something_again"
+            WHITESPACE@92..93 " "
+            EQ@93..94 "="
+            WHITESPACE@94..95 " "
+            EXPR@95..100
+              VAR_REF@95..100
+                IDENT@95..100 "wheee"
+            COMMA@100..101 ","
+            COMMA@101..102 ","
+            COMMA@102..103 ","
+          R_BRACK@103..104 "]"
+        WHITESPACE@104..105 "\n"
+      MODIFIERS@105..105
+      FUNCTION@105..113 "function"
+      WHITESPACE@113..114 " "
+      FUNC_NAME@114..120
+        IDENT@114..120 "foobaz"
+      FUNC_ARGS@120..122
+        L_PAREN@120..121 "("
+        R_PAREN@121..122 ")"
+      WHITESPACE@122..123 " "
+      BLOCK@123..125
+        L_CURLY@123..124 "{"
+        R_CURLY@124..125 "}"
+      WHITESPACE@125..126 "\n"

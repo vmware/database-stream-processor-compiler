@@ -13,18 +13,24 @@ ROOT@0..127
       REL_COLS@39..60
         L_PAREN@39..40 "("
         REL_COL@40..50
+          ATTRIBUTES@40..40
           IDENT@40..43 "foo"
           COLON@43..44 ":"
           WHITESPACE@44..45 " "
-          IDENT@45..48 "Bar"
+          TYPE@45..48
+            GENERIC_TYPE@45..48
+              IDENT@45..48 "Bar"
           COMMA@48..49 ","
           COMMA@49..50 ","
         WHITESPACE@50..51 " "
         REL_COL@51..59
+          ATTRIBUTES@51..51
           IDENT@51..54 "bar"
           COLON@54..55 ":"
           WHITESPACE@55..56 " "
-          IDENT@56..59 "Baz"
+          TYPE@56..59
+            GENERIC_TYPE@56..59
+              IDENT@56..59 "Baz"
         R_PAREN@59..60 ")"
       WHITESPACE@60..61 "\n"
   ITEM@61..95
@@ -39,18 +45,24 @@ ROOT@0..127
       REL_COLS@73..94
         L_PAREN@73..74 "("
         REL_COL@74..84
+          ATTRIBUTES@74..74
           IDENT@74..77 "foo"
           COLON@77..78 ":"
           WHITESPACE@78..79 " "
-          IDENT@79..82 "Bar"
+          TYPE@79..82
+            GENERIC_TYPE@79..82
+              IDENT@79..82 "Bar"
           COMMA@82..83 ","
           COMMA@83..84 ","
         WHITESPACE@84..85 " "
         REL_COL@85..93
+          ATTRIBUTES@85..85
           IDENT@85..88 "bar"
           COLON@88..89 ":"
           WHITESPACE@89..90 " "
-          IDENT@90..93 "Baz"
+          TYPE@90..93
+            GENERIC_TYPE@90..93
+              IDENT@90..93 "Baz"
         R_PAREN@93..94 ")"
       WHITESPACE@94..95 "\n"
   ITEM@95..127
@@ -65,18 +77,24 @@ ROOT@0..127
       REL_COLS@105..126
         L_PAREN@105..106 "("
         REL_COL@106..116
+          ATTRIBUTES@106..106
           IDENT@106..109 "foo"
           COLON@109..110 ":"
           WHITESPACE@110..111 " "
-          IDENT@111..114 "Bar"
+          TYPE@111..114
+            GENERIC_TYPE@111..114
+              IDENT@111..114 "Bar"
           COMMA@114..115 ","
           COMMA@115..116 ","
         WHITESPACE@116..117 " "
         REL_COL@117..125
+          ATTRIBUTES@117..117
           IDENT@117..120 "bar"
           COLON@120..121 ":"
           WHITESPACE@121..122 " "
-          IDENT@122..125 "Baz"
+          TYPE@122..125
+            GENERIC_TYPE@122..125
+              IDENT@122..125 "Baz"
         R_PAREN@125..126 ")"
       WHITESPACE@126..127 "\n"
 --

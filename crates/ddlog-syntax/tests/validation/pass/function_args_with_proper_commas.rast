@@ -12,10 +12,13 @@ ROOT@0..175
       FUNC_ARGS@39..49
         L_PAREN@39..40 "("
         FUNC_ARG@40..48
+          ATTRIBUTES@40..40
           IDENT@40..43 "bar"
           COLON@43..44 ":"
           WHITESPACE@44..45 " "
-          IDENT@45..48 "Baz"
+          TYPE@45..48
+            GENERIC_TYPE@45..48
+              IDENT@45..48 "Baz"
         R_PAREN@48..49 ")"
       WHITESPACE@49..50 " "
       BLOCK@50..52
@@ -33,10 +36,13 @@ ROOT@0..175
       FUNC_ARGS@65..76
         L_PAREN@65..66 "("
         FUNC_ARG@66..75
+          ATTRIBUTES@66..66
           IDENT@66..69 "bar"
           COLON@69..70 ":"
           WHITESPACE@70..71 " "
-          IDENT@71..74 "Baz"
+          TYPE@71..74
+            GENERIC_TYPE@71..74
+              IDENT@71..74 "Baz"
           COMMA@74..75 ","
         R_PAREN@75..76 ")"
       WHITESPACE@76..77 " "
@@ -55,24 +61,33 @@ ROOT@0..175
       FUNC_ARGS@92..123
         L_PAREN@92..93 "("
         FUNC_ARG@93..102
+          ATTRIBUTES@93..93
           IDENT@93..96 "bar"
           COLON@96..97 ":"
           WHITESPACE@97..98 " "
-          IDENT@98..101 "Baz"
+          TYPE@98..101
+            GENERIC_TYPE@98..101
+              IDENT@98..101 "Baz"
           COMMA@101..102 ","
         WHITESPACE@102..103 " "
         FUNC_ARG@103..112
+          ATTRIBUTES@103..103
           IDENT@103..106 "foo"
           COLON@106..107 ":"
           WHITESPACE@107..108 " "
-          IDENT@108..111 "Bar"
+          TYPE@108..111
+            GENERIC_TYPE@108..111
+              IDENT@108..111 "Bar"
           COMMA@111..112 ","
         WHITESPACE@112..113 " "
         FUNC_ARG@113..122
+          ATTRIBUTES@113..113
           IDENT@113..117 "bing"
           COLON@117..118 ":"
           WHITESPACE@118..119 " "
-          IDENT@119..122 "Bop"
+          TYPE@119..122
+            GENERIC_TYPE@119..122
+              IDENT@119..122 "Bop"
         R_PAREN@122..123 ")"
       WHITESPACE@123..124 " "
       BLOCK@124..126
@@ -90,24 +105,33 @@ ROOT@0..175
       FUNC_ARGS@139..171
         L_PAREN@139..140 "("
         FUNC_ARG@140..149
+          ATTRIBUTES@140..140
           IDENT@140..143 "bar"
           COLON@143..144 ":"
           WHITESPACE@144..145 " "
-          IDENT@145..148 "Baz"
+          TYPE@145..148
+            GENERIC_TYPE@145..148
+              IDENT@145..148 "Baz"
           COMMA@148..149 ","
         WHITESPACE@149..150 " "
         FUNC_ARG@150..159
+          ATTRIBUTES@150..150
           IDENT@150..153 "foo"
           COLON@153..154 ":"
           WHITESPACE@154..155 " "
-          IDENT@155..158 "Bar"
+          TYPE@155..158
+            GENERIC_TYPE@155..158
+              IDENT@155..158 "Bar"
           COMMA@158..159 ","
         WHITESPACE@159..160 " "
         FUNC_ARG@160..170
+          ATTRIBUTES@160..160
           IDENT@160..164 "bing"
           COLON@164..165 ":"
           WHITESPACE@165..166 " "
-          IDENT@166..169 "Bop"
+          TYPE@166..169
+            GENERIC_TYPE@166..169
+              IDENT@166..169 "Bop"
           COMMA@169..170 ","
         R_PAREN@170..171 ")"
       WHITESPACE@171..172 " "

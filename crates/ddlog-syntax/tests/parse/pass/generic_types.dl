@@ -1,0 +1,3 @@
+// kind:item validate:false
+function foo(bar: Bar<Baz>) {}
+relation Foo(bar: Bar<Baz>)

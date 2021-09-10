@@ -13,17 +13,23 @@ ROOT@0..131
       REL_COLS@40..62
         L_PAREN@40..41 "("
         REL_COL@41..50
+          ATTRIBUTES@41..41
           IDENT@41..44 "bar"
           COLON@44..45 ":"
           WHITESPACE@45..46 " "
-          IDENT@46..49 "Baz"
+          TYPE@46..49
+            GENERIC_TYPE@46..49
+              IDENT@46..49 "Baz"
           COMMA@49..50 ","
         WHITESPACE@50..51 " "
         REL_COL@51..61
+          ATTRIBUTES@51..51
           IDENT@51..55 "bing"
           COLON@55..56 ":"
           WHITESPACE@56..57 " "
-          IDENT@57..61 "Bang"
+          TYPE@57..61
+            GENERIC_TYPE@57..61
+              IDENT@57..61 "Bang"
         R_PAREN@61..62 ")"
       WHITESPACE@62..63 "\n"
   ITEM@63..98
@@ -38,17 +44,23 @@ ROOT@0..131
       REL_COLS@75..97
         L_PAREN@75..76 "("
         REL_COL@76..85
+          ATTRIBUTES@76..76
           IDENT@76..79 "bar"
           COLON@79..80 ":"
           WHITESPACE@80..81 " "
-          IDENT@81..84 "Baz"
+          TYPE@81..84
+            GENERIC_TYPE@81..84
+              IDENT@81..84 "Baz"
           COMMA@84..85 ","
         WHITESPACE@85..86 " "
         REL_COL@86..96
+          ATTRIBUTES@86..86
           IDENT@86..90 "bing"
           COLON@90..91 ":"
           WHITESPACE@91..92 " "
-          IDENT@92..96 "Bang"
+          TYPE@92..96
+            GENERIC_TYPE@92..96
+              IDENT@92..96 "Bang"
         R_PAREN@96..97 ")"
       WHITESPACE@97..98 "\n"
   ITEM@98..131
@@ -63,16 +75,22 @@ ROOT@0..131
       REL_COLS@108..130
         L_PAREN@108..109 "("
         REL_COL@109..118
+          ATTRIBUTES@109..109
           IDENT@109..112 "bar"
           COLON@112..113 ":"
           WHITESPACE@113..114 " "
-          IDENT@114..117 "Baz"
+          TYPE@114..117
+            GENERIC_TYPE@114..117
+              IDENT@114..117 "Baz"
           COMMA@117..118 ","
         WHITESPACE@118..119 " "
         REL_COL@119..129
+          ATTRIBUTES@119..119
           IDENT@119..123 "bing"
           COLON@123..124 ":"
           WHITESPACE@124..125 " "
-          IDENT@125..129 "Bang"
+          TYPE@125..129
+            GENERIC_TYPE@125..129
+              IDENT@125..129 "Bang"
         R_PAREN@129..130 ")"
       WHITESPACE@130..131 "\n"
