@@ -1,7 +1,8 @@
 use crate::{
     parser::{CompletedMarker, Marker, Parser},
     SyntaxKind::{
-        self, ATTRIBUTE, ATTRIBUTES, ATTR_PAIR, FUNC_ARG, FUNC_ARGS, FUNC_DEF, FUNC_NAME, GENERICS,
+        self, ATTRIBUTE, ATTRIBUTES, ATTR_PAIR, FUNCTION_RETURN_TYPE, FUNCTION_TYPE,
+        FUNCTION_TYPE_ARG, FUNCTION_TYPE_ARGS, FUNC_ARG, FUNC_ARGS, FUNC_DEF, FUNC_NAME, GENERICS,
         GENERIC_ARG, GENERIC_TYPE, IDENT, ITEM, MODIFIERS, RELATION_DEF, REL_COL, REL_COLS, REL_KW,
         REL_NAME, TUPLE_TYPE, TUPLE_TYPE_ELEM, TYPE,
     },
@@ -215,6 +216,7 @@ impl Parser<'_, '_> {
         match self.current() {
             IDENT => self.type_name(),
             T!['('] => self.tuple_type(),
+            T![function] => self.function_type(),
 
             // FIXME: Error
             _ => {
@@ -226,7 +228,6 @@ impl Parser<'_, '_> {
         Some(ty.complete(self, TYPE))
     }
 
-    // TODO: Wrapper kind
     // test generic_types
     // - function foo(bar: Bar<Baz>) {}
     // - relation Foo(bar: Bar<Baz>)
@@ -253,7 +254,6 @@ impl Parser<'_, '_> {
         Some(generic.complete(self, GENERIC_TYPE))
     }
 
-    // TODO: Wrapper kind
     // test tuple_types
     // - function foo(bar: (Bar, Baz)) {}
     // - relation Foo(bar: (Bar, Baz,))
@@ -272,6 +272,45 @@ impl Parser<'_, '_> {
 
         self.expect(T![')']);
         Some(tuple.complete(self, TUPLE_TYPE))
+    }
+
+    // test function_types
+    // - function foo(bar: function(Bar, Baz): Bing) {}
+    // - relation Foo(bar: function(Bar, Baz,): Bing,)
+    fn function_type(&mut self) -> Option<CompletedMarker> {
+        let function = self.start();
+
+        self.expect(T![function]);
+
+        {
+            let args = self.start();
+            self.expect(T!['(']);
+
+            while !self.at(T![')']) {
+                let arg = self.start();
+
+                self.ty();
+                while self.try_expect(T![,]) {}
+
+                arg.complete(self, FUNCTION_TYPE_ARG);
+            }
+
+            self.expect(T![')']);
+            args.complete(self, FUNCTION_TYPE_ARGS);
+        }
+
+        {
+            let ret = self.start();
+
+            // FIXME: Error recovery for missing `:`
+            if self.try_expect(T![:]) {
+                self.ty();
+            }
+
+            ret.complete(self, FUNCTION_RETURN_TYPE);
+        }
+
+        Some(function.complete(self, FUNCTION_TYPE))
     }
 
     // TODO: Extend to full patterns

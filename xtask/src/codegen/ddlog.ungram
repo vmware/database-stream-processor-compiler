@@ -20,7 +20,7 @@ AttrPair = 'ident' '=' Expr ','*
 Modifiers = Modifier*
 Modifier = 'input' | 'output' | 'extern'
 
-Type = GenericType | TupleType
+Type = GenericType | TupleType | FunctionType
 
 GenericType = 'ident' Generics?
 Generics = '<' generics:GenericArg* '>'
@@ -28,6 +28,11 @@ GenericArg = Type ','*
 
 TupleType = '(' elements:TupleTypeElem* ')'
 TupleTypeElem = Type ','*
+
+FunctionType = 'function' args:FunctionTypeArgs ret:FunctionReturnType?
+FunctionTypeArgs = '(' args:FunctionTypeArg* ')'
+FunctionTypeArg = Type ','*
+FunctionReturnType = ':' Type
 
 Block = '{' (Stmt ';'*)* '}'
 Stmt =
