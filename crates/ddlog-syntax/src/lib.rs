@@ -9,7 +9,7 @@ mod lexer;
 mod parser;
 mod syntax;
 pub mod validation;
-mod visitor;
+pub mod visitor;
 
 pub use lexer::Token;
 pub use syntax::{DifferentialDatalog, SyntaxNodeExt, SyntaxTokenExt};

@@ -14,7 +14,8 @@ ROOT@0..127
         L_PAREN@39..40 "("
         REL_COL@40..50
           ATTRIBUTES@40..40
-          IDENT@40..43 "foo"
+          VAR_REF@40..43
+            IDENT@40..43 "foo"
           COLON@43..44 ":"
           WHITESPACE@44..45 " "
           TYPE@45..48
@@ -25,7 +26,8 @@ ROOT@0..127
         WHITESPACE@50..51 " "
         REL_COL@51..59
           ATTRIBUTES@51..51
-          IDENT@51..54 "bar"
+          VAR_REF@51..54
+            IDENT@51..54 "bar"
           COLON@54..55 ":"
           WHITESPACE@55..56 " "
           TYPE@56..59
@@ -46,7 +48,8 @@ ROOT@0..127
         L_PAREN@73..74 "("
         REL_COL@74..84
           ATTRIBUTES@74..74
-          IDENT@74..77 "foo"
+          VAR_REF@74..77
+            IDENT@74..77 "foo"
           COLON@77..78 ":"
           WHITESPACE@78..79 " "
           TYPE@79..82
@@ -57,7 +60,8 @@ ROOT@0..127
         WHITESPACE@84..85 " "
         REL_COL@85..93
           ATTRIBUTES@85..85
-          IDENT@85..88 "bar"
+          VAR_REF@85..88
+            IDENT@85..88 "bar"
           COLON@88..89 ":"
           WHITESPACE@89..90 " "
           TYPE@90..93
@@ -78,7 +82,8 @@ ROOT@0..127
         L_PAREN@105..106 "("
         REL_COL@106..116
           ATTRIBUTES@106..106
-          IDENT@106..109 "foo"
+          VAR_REF@106..109
+            IDENT@106..109 "foo"
           COLON@109..110 ":"
           WHITESPACE@110..111 " "
           TYPE@111..114
@@ -89,7 +94,8 @@ ROOT@0..127
         WHITESPACE@116..117 " "
         REL_COL@117..125
           ATTRIBUTES@117..117
-          IDENT@117..120 "bar"
+          VAR_REF@117..120
+            IDENT@117..120 "bar"
           COLON@120..121 ":"
           WHITESPACE@121..122 " "
           TYPE@122..125

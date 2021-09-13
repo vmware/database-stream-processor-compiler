@@ -33,7 +33,7 @@ ROOT@0..290
         R_PAREN@98..99 ")"
       WHITESPACE@99..100 "\n"
   ITEM@100..175
-    FUNC_DEF@100..175
+    FUNCTION_DEF@100..175
       ATTRIBUTES@100..100
       MODIFIERS@100..156
         INPUT@100..105 "input"
@@ -56,9 +56,9 @@ ROOT@0..290
       WHITESPACE@156..157 " "
       FUNCTION@157..165 "function"
       WHITESPACE@165..166 " "
-      FUNC_NAME@166..169
+      FUNCTION_NAME@166..169
         IDENT@166..169 "foo"
-      FUNC_ARGS@169..171
+      FUNCTION_ARGS@169..171
         L_PAREN@169..170 "("
         R_PAREN@170..171 ")"
       WHITESPACE@171..172 " "
@@ -107,7 +107,7 @@ ROOT@0..290
         R_PAREN@249..250 ")"
       WHITESPACE@250..251 "\n"
   ITEM@251..290
-    FUNC_DEF@251..290
+    FUNCTION_DEF@251..290
       ATTRIBUTES@251..251
       MODIFIERS@251..271
         EXTERN@251..257 "extern"
@@ -118,9 +118,9 @@ ROOT@0..290
       WHITESPACE@271..272 " "
       FUNCTION@272..280 "function"
       WHITESPACE@280..281 " "
-      FUNC_NAME@281..284
+      FUNCTION_NAME@281..284
         IDENT@281..284 "foo"
-      FUNC_ARGS@284..286
+      FUNCTION_ARGS@284..286
         L_PAREN@284..285 "("
         R_PAREN@285..286 ")"
       WHITESPACE@286..287 " "

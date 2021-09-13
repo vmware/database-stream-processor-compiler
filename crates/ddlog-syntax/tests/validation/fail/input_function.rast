@@ -2,7 +2,7 @@ ROOT@0..58
   COMMENT@0..26 "// kind:item validate ..."
   WHITESPACE@26..27 "\n"
   ITEM@27..58
-    FUNC_DEF@27..58
+    FUNCTION_DEF@27..58
       ATTRIBUTES@27..27
       MODIFIERS@27..39
         EXTERN@27..33 "extern"
@@ -11,9 +11,9 @@ ROOT@0..58
       WHITESPACE@39..40 " "
       FUNCTION@40..48 "function"
       WHITESPACE@48..49 " "
-      FUNC_NAME@49..52
+      FUNCTION_NAME@49..52
         IDENT@49..52 "foo"
-      FUNC_ARGS@52..54
+      FUNCTION_ARGS@52..54
         L_PAREN@52..53 "("
         R_PAREN@53..54 ")"
       WHITESPACE@54..55 " "

@@ -1,4 +1,4 @@
-use crate::{SyntaxKind, SyntaxToken};
+use crate::{SyntaxKind, SyntaxToken, SyntaxTokenExt};
 use cstree::TextRange;
 use ddlog_diagnostics::{FileId, Interner, Span};
 use std::borrow::Cow;
@@ -16,11 +16,6 @@ pub trait AstToken {
     fn syntax(&self) -> &SyntaxToken;
 
     #[inline]
-    fn text<'intern>(&self, interner: &'intern Interner) -> &'intern str {
-        self.syntax().resolve_text(interner)
-    }
-
-    #[inline]
     fn text_range(&self) -> TextRange {
         self.syntax().text_range()
     }
@@ -28,7 +23,16 @@ pub trait AstToken {
     // FIXME: I don't like having to give the `FileId` here
     #[inline]
     fn span(&self, file: FileId) -> Span {
-        let range = self.syntax().text_range();
-        Span::new(range.start().into(), range.end().into(), file)
+        Span::from_text_range(self.text_range(), file)
+    }
+
+    #[inline]
+    fn text<'intern>(&self, interner: &'intern Interner) -> &'intern str {
+        self.syntax().text(interner)
+    }
+
+    #[inline]
+    fn lexical_eq(&self, text: &str, interner: &Interner) -> bool {
+        self.syntax().lexical_eq(text, interner)
     }
 }

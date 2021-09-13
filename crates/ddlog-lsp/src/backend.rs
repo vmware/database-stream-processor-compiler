@@ -1,5 +1,5 @@
 use crate::{
-    database::{DDlogDatabase, Source, Validation},
+    database::{DDlogDatabase, Session as _, Source, Validation},
     providers::{
         self,
         semantic_tokens::tokens::{SUPPORTED_MODIFIERS, SUPPORTED_TYPES},
@@ -14,8 +14,9 @@ use lspower::{
     jsonrpc::Result,
     lsp::{
         Diagnostic as LspDiagnostic, DiagnosticRelatedInformation, DiagnosticSeverity,
-        DidChangeTextDocumentParams, DidOpenTextDocumentParams, InitializeParams, InitializeResult,
-        Location, MessageType, NumberOrString, SemanticTokensFullOptions, SemanticTokensLegend,
+        DidChangeTextDocumentParams, DidOpenTextDocumentParams, DocumentSymbolParams,
+        DocumentSymbolResponse, InitializeParams, InitializeResult, Location, MessageType,
+        NumberOrString, OneOf, SemanticTokensFullOptions, SemanticTokensLegend,
         SemanticTokensOptions, SemanticTokensParams, SemanticTokensResult,
         SemanticTokensServerCapabilities, ServerCapabilities, TextDocumentSyncCapability,
         TextDocumentSyncKind, TextDocumentSyncOptions, Url,
@@ -161,6 +162,7 @@ impl LanguageServer for Backend {
                     ..Default::default()
                 },
             )),
+            document_symbol_provider: Some(OneOf::Left(true)),
             semantic_tokens_provider: Some(
                 SemanticTokensServerCapabilities::SemanticTokensOptions(SemanticTokensOptions {
                     legend: SemanticTokensLegend {
@@ -174,12 +176,12 @@ impl LanguageServer for Backend {
             ..Default::default()
         };
 
-        /*
         self.database
             .lock()
             .unwrap()
             .set_session(self.session.clone());
 
+        /*
         if let Ok(ddlog_home) = env::var("DDLOG_HOME") {
             let ddlog_home = PathBuf::from(ddlog_home);
 
@@ -294,8 +296,8 @@ impl LanguageServer for Backend {
                 database.snapshot()
             };
 
-            let mut diagnostics = (*snapshot.parse_diagnostics(file)).clone();
-            diagnostics.extend((*snapshot.validation_diagnostics(file)).clone());
+            let mut diagnostics = snapshot.parse_diagnostics(file).to_vec();
+            diagnostics.extend(snapshot.validation_diagnostics(file).iter().cloned());
 
             if !diagnostics.is_empty() {
                 self.publish_diagnostics_for(
@@ -333,8 +335,8 @@ impl LanguageServer for Backend {
             database.snapshot()
         };
 
-        let mut diagnostics = (*snapshot.parse_diagnostics(file)).clone();
-        diagnostics.extend((*snapshot.validation_diagnostics(file)).clone());
+        let mut diagnostics = snapshot.parse_diagnostics(file).to_vec();
+        diagnostics.extend(snapshot.validation_diagnostics(file).iter().cloned());
 
         if !diagnostics.is_empty() {
             self.publish_diagnostics_for(
@@ -362,6 +364,20 @@ impl LanguageServer for Backend {
                 file_name,
             )
             .unwrap(),
+        )))
+    }
+
+    async fn document_symbol(
+        &self,
+        params: DocumentSymbolParams,
+    ) -> Result<Option<DocumentSymbolResponse>> {
+        let file = &params.text_document.uri;
+        self.info(format!("document symbols: {}", file)).await;
+
+        let snapshot = self.database.lock().unwrap().snapshot();
+
+        Ok(dbg!(providers::document_symbols::nested_symbols(
+            snapshot, file
         )))
     }
 }

@@ -2,7 +2,7 @@ ROOT@0..145
   COMMENT@0..26 "// kind:item validate ..."
   WHITESPACE@26..27 "\n"
   ITEM@27..145
-    FUNC_DEF@27..145
+    FUNCTION_DEF@27..145
       ATTRIBUTES@27..127
         ATTRIBUTE@27..39
           HASH_BRACK@27..29 "#["
@@ -97,9 +97,9 @@ ROOT@0..145
       MODIFIERS@127..127
       FUNCTION@127..135 "function"
       WHITESPACE@135..136 " "
-      FUNC_NAME@136..139
+      FUNCTION_NAME@136..139
         IDENT@136..139 "foo"
-      FUNC_ARGS@139..141
+      FUNCTION_ARGS@139..141
         L_PAREN@139..140 "("
         R_PAREN@140..141 ")"
       WHITESPACE@141..142 " "

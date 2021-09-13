@@ -1,5 +1,8 @@
-use crate::{SyntaxNode, SyntaxToken};
+use crate::{
+    ast::nodes::Root, SyntaxElementRef, SyntaxKind, SyntaxNode, SyntaxNodeExt, SyntaxToken,
+};
 use ddlog_diagnostics::{Diagnostic, FileId, Interner, Rope};
+use std::ops::DerefMut;
 
 /// Context given to a rule when running it.
 #[derive(Debug, Clone)]
@@ -25,6 +28,33 @@ impl RuleCtx {
     pub const fn interner(&self) -> &Interner {
         &self.interner
     }
+}
+
+pub fn apply_visitor<V>(node: &SyntaxNode, visitor: &mut V, ctx: &mut RuleCtx)
+where
+    V: AstVisitor,
+{
+    if node.is::<Root>() {
+        visitor.check_root(node, ctx);
+    }
+
+    node.descendants_with_tokens_with(|elem| {
+        match elem {
+            SyntaxElementRef::Node(node) => {
+                if node.kind() == SyntaxKind::ERROR {
+                    return false;
+                }
+
+                visitor.check_node(node, ctx);
+            }
+
+            SyntaxElementRef::Token(token) => {
+                visitor.check_token(token, ctx);
+            }
+        }
+
+        true
+    });
 }
 
 pub trait AstVisitor {
@@ -55,5 +85,22 @@ pub trait AstVisitor {
     #[inline]
     fn check_root(&mut self, _root: &SyntaxNode, _ctx: &mut RuleCtx) -> Option<()> {
         None
+    }
+}
+
+impl AstVisitor for Box<dyn AstVisitor> {
+    #[inline]
+    fn check_node(&mut self, node: &SyntaxNode, ctx: &mut RuleCtx) -> Option<()> {
+        self.deref_mut().check_node(node, ctx)
+    }
+
+    #[inline]
+    fn check_token(&mut self, token: &SyntaxToken, ctx: &mut RuleCtx) -> Option<()> {
+        self.deref_mut().check_token(token, ctx)
+    }
+
+    #[inline]
+    fn check_root(&mut self, root: &SyntaxNode, ctx: &mut RuleCtx) -> Option<()> {
+        self.deref_mut().check_root(root, ctx)
     }
 }

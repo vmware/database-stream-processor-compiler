@@ -2,17 +2,17 @@ ROOT@0..119
   COMMENT@0..27 "// kind:item validate ..."
   WHITESPACE@27..28 "\n"
   ITEM@28..75
-    FUNC_DEF@28..75
+    FUNCTION_DEF@28..75
       ATTRIBUTES@28..28
       MODIFIERS@28..28
       FUNCTION@28..36 "function"
       WHITESPACE@36..37 " "
-      FUNC_NAME@37..40
+      FUNCTION_NAME@37..40
         IDENT@37..40 "foo"
-      FUNC_ARGS@40..71
+      FUNCTION_ARGS@40..71
         L_PAREN@40..41 "("
         WHITESPACE@41..46 "\n    "
-        FUNC_ARG@46..69
+        FUNCTION_ARG@46..69
           ATTRIBUTES@46..60
             ATTRIBUTE@46..55
               HASH_BRACK@46..48 "#["
@@ -20,7 +20,8 @@ ROOT@0..119
                 IDENT@48..54 "by_val"
               R_BRACK@54..55 "]"
             WHITESPACE@55..60 "\n    "
-          IDENT@60..63 "bar"
+          VAR_REF@60..63
+            IDENT@60..63 "bar"
           COLON@63..64 ":"
           WHITESPACE@64..65 " "
           TYPE@65..68
@@ -54,7 +55,8 @@ ROOT@0..119
                 IDENT@95..101 "by_val"
               R_BRACK@101..102 "]"
             WHITESPACE@102..107 "\n    "
-          IDENT@107..110 "bar"
+          VAR_REF@107..110
+            IDENT@107..110 "bar"
           COLON@110..111 ":"
           WHITESPACE@111..112 " "
           TYPE@112..115

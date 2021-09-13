@@ -1,17 +1,18 @@
-Root = Item
+Root = Item*
 
-Item = FuncDef | RelationDef | TypeDef
+Item = FunctionDef | RelationDef | TypeDef
 
 RelationDef = Attributes Modifiers keyword:RelKw name:RelName columns:RelCols
 RelKw = 'relation' | 'multiset' | 'stream'
 RelName = 'ident'
 RelCols = '(' columns:RelCol* ')'
-RelCol = Attributes binding:Pat ':' ty:Type ','*
+RelCol = Attributes binding:Pattern ':' ty:Type ','*
 
-FuncDef = Attributes Modifiers keyword:'function' name:FuncName args:FuncArgs (':' return_ty:Type)? body:Block
-FuncName = 'ident'
-FuncArgs = '(' args:FuncArg* ')'
-FuncArg = Attributes binding:Pat ':' ty:Type ','*
+FunctionDef = Attributes Modifiers keyword:'function' name:FunctionName Generics args:FunctionArgs ret:FunctionReturn? body:Block
+FunctionName = 'ident'
+FunctionArgs = '(' args:FunctionArg* ')'
+FunctionArg = Attributes binding:Pattern ':' ty:Type ','*
+FunctionReturn = ':' return_ty:Type
 
 TypeDef = Attributes Modifiers keyword:'typedef' name:TypeName '=' body:TypeBody
 TypeName = 'ident'
@@ -19,7 +20,7 @@ TypeName = 'ident'
 TypeBody = RecordType | SumType
 RecordType = constructor:RecordName ('{' fields:RecordField* '}')?
 RecordName = 'ident'
-RecordField = Attributes name:Pat ':' ty:Type ','*
+RecordField = Attributes name:Pattern ':' ty:Type ','*
 SumType = ('|' RecordType)*
 
 Attributes = Attribute*
@@ -43,21 +44,22 @@ FunctionTypeArgs = '(' args:FunctionTypeArg* ')'
 FunctionTypeArg = Type ','*
 FunctionReturnType = ':' Type
 
-Block = '{' (Stmt ';'*)* '}'
+Block = '{' statements:Stmt* '}'
 Stmt =
     ExprStmt
     | VarDecl
     | IfStmt
 
 ExprStmt = Expr ';'
-VarDecl = 'var' binding:Pat '=' value:Expr ';'
+VarDecl = 'var' binding:Pattern '=' value:Expr ';'
 
 IfStmt = IfBlock* ElseBlock?
 IfBlock = leading_else:'else' 'if' cond:Expr Block
 ElseBlock = 'else' Block
 
-Pat = VarRef | TuplePat
-TuplePat = '(' (Pat ','?)* ')'
+Pattern = VarRef | TuplePattern
+TuplePattern = '(' elements:TuplePatternElem* ')'
+TuplePatternElem = Pattern ','*
 
 Expr =
     Literal
@@ -72,7 +74,7 @@ Expr =
 
 VarRef = 'ident'
 
-Assign = binding:Pat '=' value:Expr
+Assign = binding:Pattern '=' value:Expr
 
 ParenExpr = '(' inner:Expr ')'
 

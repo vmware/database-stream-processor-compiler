@@ -1,11 +1,11 @@
 use crate::{
     parser::{CompletedMarker, Marker, Parser},
     SyntaxKind::{
-        self, ATTRIBUTE, ATTRIBUTES, ATTR_PAIR, FUNCTION_RETURN_TYPE, FUNCTION_TYPE,
-        FUNCTION_TYPE_ARG, FUNCTION_TYPE_ARGS, FUNC_ARG, FUNC_ARGS, FUNC_DEF, FUNC_NAME, GENERICS,
-        GENERIC_ARG, GENERIC_TYPE, IDENT, ITEM, MODIFIERS, RECORD_FIELD, RECORD_NAME, RECORD_TYPE,
-        RELATION_DEF, REL_COL, REL_COLS, REL_KW, REL_NAME, TUPLE_TYPE, TUPLE_TYPE_ELEM, TYPE,
-        TYPE_BODY, TYPE_DEF, TYPE_NAME,
+        self, ATTRIBUTE, ATTRIBUTES, ATTR_PAIR, FUNCTION_ARG, FUNCTION_ARGS, FUNCTION_DEF,
+        FUNCTION_NAME, FUNCTION_RETURN, FUNCTION_RETURN_TYPE, FUNCTION_TYPE, FUNCTION_TYPE_ARG,
+        FUNCTION_TYPE_ARGS, GENERICS, GENERIC_ARG, GENERIC_TYPE, IDENT, ITEM, MODIFIERS,
+        RECORD_FIELD, RECORD_NAME, RECORD_TYPE, RELATION_DEF, REL_COL, REL_COLS, REL_KW, REL_NAME,
+        TUPLE_TYPE, TUPLE_TYPE_ELEM, TYPE, TYPE_BODY, TYPE_DEF, TYPE_NAME, VAR_REF,
     },
     TokenSet,
 };
@@ -103,7 +103,7 @@ impl Parser<'_, '_> {
 
         let current_set = self.recovery_set;
         self.recovery_set = current_set.add(T!['(']);
-        self.identifier(FUNC_NAME);
+        self.identifier(FUNCTION_NAME);
         self.recovery_set = current_set;
 
         self.function_args();
@@ -111,13 +111,17 @@ impl Parser<'_, '_> {
         // test function_ret_ty
         // - function foo(): Bar {}
         if self.at(T![:]) {
+            let ret = self.start();
+
             self.expect(T![:]);
             self.ty();
+
+            ret.complete(self, FUNCTION_RETURN);
         }
 
         self.block(ITEM_RECOVERY);
 
-        Some(function.complete(self, FUNC_DEF))
+        Some(function.complete(self, FUNCTION_DEF))
     }
 
     // test function_args
@@ -127,12 +131,12 @@ impl Parser<'_, '_> {
         self.expect(T!['(']);
 
         while !self.at(T![')']) && !self.at_end() {
-            self.argument(FUNC_ARG);
+            self.argument(FUNCTION_ARG);
         }
 
         self.expect(T![')']);
 
-        Some(args.complete(self, FUNC_ARGS))
+        Some(args.complete(self, FUNCTION_ARGS))
     }
 
     // test basic_relation
@@ -357,8 +361,11 @@ impl Parser<'_, '_> {
     }
 
     // TODO: Extend to full patterns
-    fn pattern(&mut self) -> bool {
-        self.expect(IDENT)
+    fn pattern(&mut self) -> Option<CompletedMarker> {
+        let pattern = self.start();
+        self.expect(IDENT);
+
+        Some(pattern.complete(self, VAR_REF))
     }
 
     // test indiscriminantly_modify

@@ -2,7 +2,7 @@ ROOT@0..190
   COMMENT@0..27 "// kind:item validate ..."
   WHITESPACE@27..28 "\n"
   ITEM@28..76
-    FUNC_DEF@28..76
+    FUNCTION_DEF@28..76
       ATTRIBUTES@28..58
         ATTRIBUTE@28..57
           HASH_BRACK@28..30 "#["
@@ -19,9 +19,9 @@ ROOT@0..190
       MODIFIERS@58..58
       FUNCTION@58..66 "function"
       WHITESPACE@66..67 " "
-      FUNC_NAME@67..70
+      FUNCTION_NAME@67..70
         IDENT@67..70 "foo"
-      FUNC_ARGS@70..72
+      FUNCTION_ARGS@70..72
         L_PAREN@70..71 "("
         R_PAREN@71..72 ")"
       WHITESPACE@72..73 " "
@@ -30,7 +30,7 @@ ROOT@0..190
         R_CURLY@74..75 "}"
       WHITESPACE@75..76 "\n"
   ITEM@76..118
-    FUNC_DEF@76..118
+    FUNCTION_DEF@76..118
       ATTRIBUTES@76..97
         ATTRIBUTE@76..96
           HASH_BRACK@76..78 "#["
@@ -50,9 +50,9 @@ ROOT@0..190
       MODIFIERS@97..97
       FUNCTION@97..105 "function"
       WHITESPACE@105..106 " "
-      FUNC_NAME@106..112
+      FUNCTION_NAME@106..112
         IDENT@106..112 "foobar"
-      FUNC_ARGS@112..114
+      FUNCTION_ARGS@112..114
         L_PAREN@112..113 "("
         R_PAREN@113..114 ")"
       WHITESPACE@114..115 " "
@@ -61,7 +61,7 @@ ROOT@0..190
         R_CURLY@116..117 "}"
       WHITESPACE@117..118 "\n"
   ITEM@118..149
-    FUNC_DEF@118..149
+    FUNCTION_DEF@118..149
       ATTRIBUTES@118..128
         ATTRIBUTE@118..127
           HASH_BRACK@118..120 "#["
@@ -72,9 +72,9 @@ ROOT@0..190
       MODIFIERS@128..128
       FUNCTION@128..136 "function"
       WHITESPACE@136..137 " "
-      FUNC_NAME@137..143
+      FUNCTION_NAME@137..143
         IDENT@137..143 "foobar"
-      FUNC_ARGS@143..145
+      FUNCTION_ARGS@143..145
         L_PAREN@143..144 "("
         R_PAREN@144..145 ")"
       WHITESPACE@145..146 " "
@@ -83,7 +83,7 @@ ROOT@0..190
         R_CURLY@147..148 "}"
       WHITESPACE@148..149 "\n"
   ITEM@149..190
-    FUNC_DEF@149..190
+    FUNCTION_DEF@149..190
       ATTRIBUTES@149..169
         ATTRIBUTE@149..168
           HASH_BRACK@149..151 "#["
@@ -98,9 +98,9 @@ ROOT@0..190
       MODIFIERS@169..169
       FUNCTION@169..177 "function"
       WHITESPACE@177..178 " "
-      FUNC_NAME@178..184
+      FUNCTION_NAME@178..184
         IDENT@178..184 "foobar"
-      FUNC_ARGS@184..186
+      FUNCTION_ARGS@184..186
         L_PAREN@184..185 "("
         R_PAREN@185..186 ")"
       WHITESPACE@186..187 " "

@@ -6,7 +6,7 @@ use cstree::NodeOrToken;
 use ddlog_diagnostics::Interner;
 use ddlog_syntax::{
     ast::{
-        nodes::{FuncName, RelName, Root},
+        nodes::{FunctionName, RelName, Root},
         tokens::Number,
         AstNode,
     },
@@ -58,7 +58,7 @@ impl SemanticHighlighter {
                         ));
 
                         false
-                    } else if node.is::<FuncName>() {
+                    } else if node.is::<FunctionName>() {
                         tracing::trace!(
                             "highlighting function name: {}",
                             node.debug(interner, true),
@@ -114,7 +114,8 @@ impl SemanticHighlighter {
                         | T![false]
                         | T![var]
                         | T![multiset]
-                        | T![stream] => {
+                        | T![stream]
+                        | T![typedef] => {
                             tracing::trace!("highlighting keyword: {}", token.debug(interner));
 
                             tokens.push((

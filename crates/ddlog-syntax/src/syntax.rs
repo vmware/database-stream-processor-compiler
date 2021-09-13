@@ -126,7 +126,7 @@ pub trait SyntaxNodeExt {
     }
 
     /// Get the text range of this node, not including any leading or trailing whitespace.
-    ///
+    //
     // # Examples
     //
     // ```
@@ -173,6 +173,7 @@ pub trait SyntaxNodeExt {
     /// Get the text of this node, not including leading or trailing whitespace
     ///
     // # Examples
+    //
     // ```
     // use ddlog_syntax::{SyntaxNodeExt, parse_expr, TextRange};
     //
@@ -423,6 +424,16 @@ pub trait SyntaxTokenExt {
     fn span(&self, file: FileId) -> Span {
         let range = self.to_token().text_range();
         Span::new(range.start().into(), range.end().into(), file)
+    }
+
+    #[inline]
+    fn text<'intern>(&self, interner: &'intern Interner) -> &'intern str {
+        self.to_token().resolve_text(interner)
+    }
+
+    #[inline]
+    fn lexical_eq(&self, text: &str, interner: &Interner) -> bool {
+        self.text(interner) == text
     }
 }
 

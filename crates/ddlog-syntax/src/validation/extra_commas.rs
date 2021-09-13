@@ -1,6 +1,6 @@
 use crate::{
     ast::{
-        nodes::{Attributes, FuncArgs, RelationDef},
+        nodes::{Attributes, FunctionArgs, RelationDef},
         tokens::RelKw,
         AstNode, AstToken,
     },
@@ -79,7 +79,7 @@ impl ExtraCommas {
     // - function foo(bar: Baz,) {}
     // - function foo(bar: Baz, foo: Bar, bing: Bop) {}
     // - function foo(bar: Baz, foo: Bar, bing: Bop,) {}
-    fn check_function_args(&mut self, args: &FuncArgs, ctx: &mut RuleCtx) -> Option<()> {
+    fn check_function_args(&mut self, args: &FunctionArgs, ctx: &mut RuleCtx) -> Option<()> {
         let total_args = args.args().count();
         for (pair_idx, arg) in args.args().enumerate() {
             let total_commas = arg.commas().count();
@@ -205,7 +205,7 @@ impl AstVisitor for ExtraCommas {
         match_ast! {
             match node {
                 Attributes(attributes) => self.check_attributes(&*attributes, ctx),
-                FuncArgs(args) => self.check_function_args(&*args, ctx),
+                FunctionArgs(args) => self.check_function_args(&*args, ctx),
                 RelationDef(relation) => self.check_relation_columns(&*relation, ctx),
 
                 _ => Some(()),

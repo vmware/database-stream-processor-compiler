@@ -1,4 +1,5 @@
 use crate::FileId;
+use cstree::TextRange;
 use std::{
     convert::TryFrom,
     fmt::{self, Debug, Display},
@@ -67,6 +68,11 @@ impl Span {
             self.end.max(other.end),
             self.file,
         )
+    }
+
+    #[inline]
+    pub fn from_text_range(range: TextRange, file: FileId) -> Self {
+        Self::new(range.start().into(), range.end().into(), file)
     }
 
     #[inline]

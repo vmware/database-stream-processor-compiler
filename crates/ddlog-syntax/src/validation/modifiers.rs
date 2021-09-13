@@ -1,6 +1,6 @@
 use crate::{
     ast::{
-        nodes::{FuncDef, RelationDef},
+        nodes::{FunctionDef, RelationDef},
         tokens::{Modifier, RelKw},
         AstToken,
     },
@@ -27,7 +27,7 @@ impl ModifierValidator {
     // - extern extern function foo() {}
     // test_err output_function
     // - extern output function foo() {}
-    fn check_function(&mut self, function: &FuncDef, ctx: &mut RuleCtx) -> Option<()> {
+    fn check_function(&mut self, function: &FunctionDef, ctx: &mut RuleCtx) -> Option<()> {
         let mut first_extern = None;
 
         let modifiers = function.modifiers()?;
@@ -210,7 +210,7 @@ impl AstVisitor for ModifierValidator {
     fn check_node(&mut self, node: &SyntaxNode, ctx: &mut RuleCtx) -> Option<()> {
         match_ast! {
             match node {
-                FuncDef(function) => self.check_function(&*function, ctx),
+                FunctionDef(function) => self.check_function(&*function, ctx),
                 RelationDef(relation) => self.check_relation(&*relation, ctx),
 
                 _ => Some(()),

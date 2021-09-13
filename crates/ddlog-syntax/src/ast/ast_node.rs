@@ -1,4 +1,5 @@
-use crate::{SyntaxKind, SyntaxNode, SyntaxText};
+use crate::{SyntaxKind, SyntaxNode, SyntaxNodeExt, SyntaxText};
+use cstree::TextRange;
 use ddlog_diagnostics::{FileId, Interner, Span};
 use std::borrow::Cow;
 
@@ -26,7 +27,27 @@ pub trait AstNode {
     // FIXME: I don't like having to give the `FileId` here
     #[inline]
     fn span(&self, file: FileId) -> Span {
-        let range = self.syntax().text_range();
-        Span::new(range.start().into(), range.end().into(), file)
+        Span::from_text_range(self.text_range(), file)
+    }
+
+    /// Get the text of this node, not including leading or trailing whitespace
+    #[inline]
+    fn trimmed_text<'node, 'intern>(
+        &'node self,
+        interner: &'intern Interner,
+    ) -> SyntaxText<'node, 'intern> {
+        self.syntax().trimmed_text(interner)
+    }
+
+    /// Get the text range of this node
+    #[inline]
+    fn text_range(&self) -> TextRange {
+        self.syntax().text_range()
+    }
+
+    /// Get the text range of this node, not including any leading or trailing whitespace
+    #[inline]
+    fn trimmed_range(&self) -> TextRange {
+        self.syntax().trimmed_range()
     }
 }
