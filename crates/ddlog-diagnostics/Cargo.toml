@@ -9,10 +9,7 @@ ropey = "1.3.1"
 cstree = "0.8.1"
 ariadne = "0.1.2"
 triomphe = "0.1.3"
-
-    [dependencies.xxhash-rust]
-    version = "0.8.2"
-    features = ["xxh3", "const_xxh3"]
+ddlog-utils = { path = "../ddlog-utils" }
 
     [dependencies.lasso]
     version = "0.6.0"

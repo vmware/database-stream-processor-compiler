@@ -34,6 +34,10 @@ export async function launch(
 
     const clientOptions: LanguageClientOptions = {
         diagnosticCollectionName: "ddlog-lsp",
+        // Note: At one point I attempted to do `ddlog.dl` and `ddlog.dat` as the
+        //       respective language ids, but VSCode has a bug in it somewhere
+        //       that causes incredibly strange behavior with language ids that
+        //       contain `.` within them
         documentSelector: [
             { language: "ddlog", scheme: "file" },
             { language: "ddlog", scheme: "untitled" },
@@ -44,6 +48,9 @@ export async function launch(
             fileEvents: [
                 workspace.createFileSystemWatcher("**/*.dl"),
                 workspace.createFileSystemWatcher("**/*.dat"),
+                // TODO: Once we have a ddlog config file we want to watch that as well,
+                //       and we probably want to provide completions and/or schemas for it
+                //       as well
             ],
         },
         middleware: {} as Middleware,

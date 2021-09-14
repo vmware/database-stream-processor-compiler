@@ -1,3 +1,9 @@
+mod database;
+
+pub(crate) use database::{
+    declarations, document_function, document_function_arg, document_symbols,
+};
+
 use crate::database::{DDlogDatabase, Session, Symbols};
 use lspower::lsp::{DocumentSymbolResponse, Url};
 use salsa::Snapshot;

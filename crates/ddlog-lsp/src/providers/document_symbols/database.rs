@@ -1,146 +1,16 @@
-use crate::providers::utils;
-use ddlog_diagnostics::{Diagnostic, FileId, Interner, Rope};
+use crate::{database::Symbols, providers::utils};
+use ddlog_diagnostics::{FileId, Interner, Rope};
 use ddlog_syntax::{
     ast::{
         nodes::{FunctionArg, FunctionDef, Pattern, Type},
         AstNode, AstToken,
     },
-    match_ast, validation, visitor, AstVisitor, RuleCtx, SyntaxNode,
+    match_ast, visitor, AstVisitor, RuleCtx, SyntaxNode,
 };
-use lspower::lsp::{DocumentSymbol, Position, Range, SymbolKind, SymbolTag, Url};
-use salsa::{Database, ParallelDatabase, Snapshot, Storage};
-use std::{
-    fmt::{self, Debug},
-    ops::Deref,
-};
-use triomphe::{Arc, ThinArc};
+use ddlog_utils::ArcSlice;
+use lspower::lsp::{DocumentSymbol, Position, Range, SymbolKind, SymbolTag};
 
-#[derive(PartialEq, Eq, Hash)]
-#[repr(transparent)]
-pub struct ArcSlice<T> {
-    slice: ThinArc<(), T>,
-}
-
-impl<T> ArcSlice<T> {
-    pub fn new<I>(slice: I) -> Self
-    where
-        I: IntoIterator<Item = T>,
-        I::IntoIter: ExactSizeIterator,
-    {
-        Self {
-            slice: ThinArc::from_header_and_iter((), slice.into_iter()),
-        }
-    }
-}
-
-impl<T> Deref for ArcSlice<T> {
-    type Target = [T];
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        &self.slice.slice
-    }
-}
-
-impl<T> Clone for ArcSlice<T> {
-    #[inline]
-    fn clone(&self) -> Self {
-        Self {
-            slice: self.slice.clone(),
-        }
-    }
-}
-
-impl<T> Debug for ArcSlice<T>
-where
-    T: Debug,
-{
-    #[inline]
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_list().entries(&self.slice.slice).finish()
-    }
-}
-
-#[salsa::query_group(SessionDatabase)]
-pub trait Session {
-    #[salsa::input]
-    fn session(&self) -> Arc<crate::Session>;
-
-    #[salsa::transparent]
-    fn file_id(&self, url: &Url) -> FileId;
-}
-
-fn file_id(session: &dyn Session, url: &Url) -> FileId {
-    FileId::new(session.session().interner().get_or_intern(url.as_str()))
-}
-
-#[salsa::query_group(SourceDatabase)]
-pub trait Source: Session {
-    #[salsa::input]
-    fn file_source(&self, file: FileId) -> Rope;
-
-    fn parsed(&self, file: FileId) -> (SyntaxNode, ArcSlice<Diagnostic>);
-
-    fn parse_diagnostics(&self, file: FileId) -> ArcSlice<Diagnostic>;
-
-    fn syntax(&self, file: FileId) -> SyntaxNode;
-}
-
-fn parsed(source: &dyn Source, file: FileId) -> (SyntaxNode, ArcSlice<Diagnostic>) {
-    let source_text = source.file_source(file);
-    let session = source.session();
-
-    let (parsed, cache) = ddlog_syntax::parse(file, &source_text.to_string(), session.node_cache());
-    session.give_node_cache(cache);
-
-    let (root, mut diagnostics) = parsed.into_parts();
-    diagnostics.shrink_to_fit();
-
-    (root, ArcSlice::new(diagnostics))
-}
-
-fn syntax(source: &dyn Source, file: FileId) -> SyntaxNode {
-    source.parsed(file).0
-}
-
-fn parse_diagnostics(source: &dyn Source, file: FileId) -> ArcSlice<Diagnostic> {
-    source.parsed(file).1
-}
-
-#[salsa::query_group(ValidationDatabase)]
-pub trait Validation: Source {
-    fn validation_diagnostics(&self, file: FileId) -> ArcSlice<Diagnostic>;
-}
-
-fn validation_diagnostics(validation: &dyn Validation, file: FileId) -> ArcSlice<Diagnostic> {
-    let mut ctx = RuleCtx::new(
-        file,
-        validation.file_source(file),
-        validation.session().interner().clone(),
-    );
-
-    validation::run_validators(&validation.syntax(file), &mut ctx);
-    ctx.diagnostics.shrink_to_fit();
-
-    ArcSlice::new(ctx.diagnostics)
-}
-
-#[salsa::query_group(SymbolsDatabase)]
-pub trait Symbols: Source {
-    fn document_symbols(&self, file: FileId) -> ArcSlice<DocumentSymbol>;
-
-    fn declarations(&self, file: FileId) -> ArcSlice<SyntaxNode>;
-
-    fn document_function(&self, file: FileId, function: FunctionDef) -> DocumentSymbol;
-
-    fn document_function_arg(
-        &self,
-        file: FileId,
-        arg: FunctionArg,
-    ) -> Option<ArcSlice<DocumentSymbol>>;
-}
-
-fn document_symbols(symbols: &dyn Symbols, file: FileId) -> ArcSlice<DocumentSymbol> {
+pub(crate) fn document_symbols(symbols: &dyn Symbols, file: FileId) -> ArcSlice<DocumentSymbol> {
     let declarations = symbols.declarations(file);
 
     for decl in declarations.iter() {
@@ -169,7 +39,7 @@ fn document_symbols(symbols: &dyn Symbols, file: FileId) -> ArcSlice<DocumentSym
     ArcSlice::new(document_symbols)
 }
 
-fn declarations(symbols: &dyn Symbols, file: FileId) -> ArcSlice<SyntaxNode> {
+pub(crate) fn declarations(symbols: &dyn Symbols, file: FileId) -> ArcSlice<SyntaxNode> {
     #[derive(Debug, Default)]
     struct DeclarationCollector(Vec<SyntaxNode>);
 
@@ -205,7 +75,11 @@ fn declarations(symbols: &dyn Symbols, file: FileId) -> ArcSlice<SyntaxNode> {
     ArcSlice::new(collector.0)
 }
 
-fn document_function(symbols: &dyn Symbols, file: FileId, function: FunctionDef) -> DocumentSymbol {
+pub(crate) fn document_function(
+    symbols: &dyn Symbols,
+    file: FileId,
+    function: FunctionDef,
+) -> DocumentSymbol {
     let session = symbols.session();
     let interner = session.interner();
     let source = symbols.file_source(file);
@@ -310,7 +184,7 @@ fn document_function(symbols: &dyn Symbols, file: FileId, function: FunctionDef)
     }
 }
 
-fn document_function_arg(
+pub(crate) fn document_function_arg(
     symbols: &dyn Symbols,
     file: FileId,
     arg: FunctionArg,
@@ -405,27 +279,5 @@ const fn default_document_symbol() -> DocumentSymbol {
         selection_range: range,
         children: None,
         deprecated: None,
-    }
-}
-
-#[salsa::database(SessionDatabase, SourceDatabase, ValidationDatabase, SymbolsDatabase)]
-#[derive(Default)]
-pub struct DDlogDatabase {
-    storage: Storage<Self>,
-}
-
-impl Debug for DDlogDatabase {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("DDlogDatabase").finish()
-    }
-}
-
-impl Database for DDlogDatabase {}
-
-impl ParallelDatabase for DDlogDatabase {
-    fn snapshot(&self) -> Snapshot<Self> {
-        Snapshot::new(Self {
-            storage: self.storage.snapshot(),
-        })
     }
 }

@@ -1,4 +1,4 @@
-use crate::hasher::ConsistentHasher;
+use ddlog_utils::ConsistentHasher;
 use lasso::{Capacity, LassoResult, Spur, ThreadedRodeo};
 use std::{mem::size_of, num::NonZeroUsize};
 use triomphe::Arc;

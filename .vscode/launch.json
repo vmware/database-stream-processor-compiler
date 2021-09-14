@@ -3,13 +3,28 @@
     "configurations": [
         {
             "name": "Debug LSP Server",
-            "type": "lldb",
+            "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/target/debug/ddlog-driver.exe",
-            "args": [],
+            "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "RUST_BACKTRACE",
+                    "value": "1",
+                },
+                {
+                    "name": "DDLOG_LSP_LOG",
+                    "value": "trace",
+                },
+            ],
+            // TODO: Probably want to do the same for unix, just not sure what the path is
+            "windows": {
+                "sourceFileMap": {
+                    "/rustc/cb75ad5db02783e8b0222fee363c5f63f7e2cf5b": "${env:USERPROFILE}\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\lib\\rustlib\\src\\rust",
+                },
+            },
             "preLaunchTask": "build ddlog-driver",
-            "terminal": "external",
         },
         {
             "name": "Launch Client",
@@ -25,7 +40,7 @@
                 "${workspaceRoot}/editors/vscode/out/src/**/*.js",
             ],
             "preLaunchTask": "build vsix",
-        }
+        },
     ],
     "compounds": [
         {
@@ -35,5 +50,5 @@
                 "Debug LSP Server",
             ],
         },
-    ]
+    ],
 }

@@ -1,5 +1,6 @@
-use crate::{ConsistentHasher, FileId, Interner};
+use crate::{FileId, Interner};
 use ariadne::{Cache, Source};
+use ddlog_utils::ConsistentHasher;
 use ropey::Rope;
 use std::{
     borrow::Cow,

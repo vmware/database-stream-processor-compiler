@@ -9,6 +9,7 @@ use crate::{
 };
 use cstree::TextRange;
 use ddlog_diagnostics::{Diagnostic, FileId, Interner, Level, Rope};
+use ddlog_utils::Arc;
 use lsp_text::RopeExt;
 use lspower::{
     jsonrpc::Result,
@@ -25,7 +26,6 @@ use lspower::{
 };
 use salsa::{ParallelDatabase, Snapshot};
 use std::{fmt::Display, str::FromStr, sync::Mutex};
-use triomphe::Arc;
 
 const DDLOG_LANG: &str = "ddlog";
 const DDLOG_DAT_LANG: &str = "ddlog-command";
@@ -103,6 +103,10 @@ impl Backend {
         interner: &Interner,
         client: &Client,
     ) -> Snapshot<DDlogDatabase> {
+        if diagnostics.is_empty() {
+            return snapshot;
+        }
+
         let uri = Url::from_str(file.to_str(interner)).unwrap();
         let source = snapshot.file_source(file);
 
@@ -299,15 +303,13 @@ impl LanguageServer for Backend {
             let mut diagnostics = snapshot.parse_diagnostics(file).to_vec();
             diagnostics.extend(snapshot.validation_diagnostics(file).iter().cloned());
 
-            if !diagnostics.is_empty() {
-                self.publish_diagnostics_for(
-                    file,
-                    diagnostics,
-                    Some(opened.text_document.version),
-                    snapshot,
-                )
-                .await;
-            }
+            self.publish_diagnostics_for(
+                file,
+                diagnostics,
+                Some(opened.text_document.version),
+                snapshot,
+            )
+            .await;
         }
     }
 
@@ -338,15 +340,13 @@ impl LanguageServer for Backend {
         let mut diagnostics = snapshot.parse_diagnostics(file).to_vec();
         diagnostics.extend(snapshot.validation_diagnostics(file).iter().cloned());
 
-        if !diagnostics.is_empty() {
-            self.publish_diagnostics_for(
-                file,
-                diagnostics,
-                Some(changes.text_document.version),
-                snapshot,
-            )
-            .await;
-        }
+        self.publish_diagnostics_for(
+            file,
+            diagnostics,
+            Some(changes.text_document.version),
+            snapshot,
+        )
+        .await;
     }
 
     async fn semantic_tokens_full(
