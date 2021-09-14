@@ -207,6 +207,7 @@ pub mod fs2 {
                 "--edition",
                 "2018",
                 "--config",
+                // TODO: Use `blank_lines_upper_bound=1` once it's stable
                 "newline_style=Unix,normalize_doc_attributes=true",
             ])
             .stdin(Stdio::piped())

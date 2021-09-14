@@ -946,7 +946,6 @@ fn generate_syntax_kind(tokens: &[&str], mode: CodegenMode) -> Result<()> {
         #[allow(
             non_camel_case_types,
             clippy::upper_case_acronyms,
-            clippy::manual_non_exhaustive,
         )]
         #[repr(u16)]
         pub enum SyntaxKind {

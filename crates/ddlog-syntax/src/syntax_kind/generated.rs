@@ -1,9 +1,5 @@
 #[derive(logos :: Logos)]
-#[allow(
-    non_camel_case_types,
-    clippy::upper_case_acronyms,
-    clippy::manual_non_exhaustive
-)]
+#[allow(non_camel_case_types, clippy::upper_case_acronyms)]
 #[repr(u16)]
 pub enum SyntaxKind {
     #[token("!")]
