@@ -1,7 +1,7 @@
 use crate::providers::document_symbols;
 use ddlog_diagnostics::{Diagnostic, FileId, Rope};
 use ddlog_syntax::{
-    ast::nodes::{FunctionArg, FunctionDef},
+    ast::nodes::{FunctionArg, FunctionDef, RelCol, RelationDef},
     validation, RuleCtx, SyntaxNode,
 };
 use ddlog_utils::{Arc, ArcSlice};
@@ -40,8 +40,7 @@ fn parsed(source: &dyn Source, file: FileId) -> (SyntaxNode, ArcSlice<Diagnostic
     let (parsed, cache) = ddlog_syntax::parse(file, &source_text.to_string(), session.node_cache());
     session.give_node_cache(cache);
 
-    let (root, mut diagnostics) = parsed.into_parts();
-    diagnostics.shrink_to_fit();
+    let (root, diagnostics) = parsed.into_parts();
 
     (root, ArcSlice::new(diagnostics))
 }
@@ -67,7 +66,6 @@ fn validation_diagnostics(validation: &dyn Validation, file: FileId) -> ArcSlice
     );
 
     validation::run_validators(&validation.syntax(file), &mut ctx);
-    ctx.diagnostics.shrink_to_fit();
 
     ArcSlice::new(ctx.diagnostics)
 }
@@ -89,4 +87,36 @@ pub trait Symbols: Source {
         file: FileId,
         arg: FunctionArg,
     ) -> Option<ArcSlice<DocumentSymbol>>;
+
+    #[salsa::invoke(document_symbols::document_relation)]
+    fn document_relation(&self, file: FileId, relation: RelationDef) -> DocumentSymbol;
+
+    #[salsa::invoke(document_symbols::document_relation_column)]
+    fn document_relation_column(
+        &self,
+        file: FileId,
+        column: RelCol,
+    ) -> Option<ArcSlice<DocumentSymbol>>;
+}
+
+#[salsa::query_group(DiagnosticsDatabase)]
+pub trait Diagnostics: Source + Validation {
+    fn diagnostics(&self, file: FileId) -> ArcSlice<Diagnostic>;
+}
+
+fn diagnostics(diagnostics: &dyn Diagnostics, file: FileId) -> ArcSlice<Diagnostic> {
+    let (parse_diagnostics, validation_diagnostics) = (
+        diagnostics.parse_diagnostics(file),
+        diagnostics.validation_diagnostics(file),
+    );
+
+    let mut diagnostics =
+        Vec::with_capacity(parse_diagnostics.len() + validation_diagnostics.len());
+    diagnostics.extend(parse_diagnostics.iter().cloned());
+    diagnostics.extend(validation_diagnostics.iter().cloned());
+
+    diagnostics.sort_by_key(|diagnostic| diagnostic.primary_span());
+    diagnostics.dedup();
+
+    ArcSlice::new(diagnostics)
 }

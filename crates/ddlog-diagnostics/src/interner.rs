@@ -1,17 +1,10 @@
-use ddlog_utils::ConsistentHasher;
+use ddlog_utils::{Arc, ConsistentHasher};
 use lasso::{Capacity, LassoResult, Spur, ThreadedRodeo};
-use std::{mem::size_of, num::NonZeroUsize};
-use triomphe::Arc;
-
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[repr(transparent)]
-pub struct IStr(Spur);
-
-impl IStr {
-    pub(crate) const fn new(spur: Spur) -> Self {
-        Self(spur)
-    }
-}
+use std::{
+    fmt::{self, Debug, Write},
+    mem::size_of,
+    num::NonZeroUsize,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[repr(transparent)]
@@ -25,7 +18,7 @@ impl Interner {
         const PAGE_SIZE: NonZeroUsize = unsafe { NonZeroUsize::new_unchecked(4096) };
         const STRINGS: usize = PAGE_SIZE.get() / size_of::<&str>();
 
-        // We use `4096` as the default size and from there we find the number
+        // We use 4096 as the default size and from there we find the number
         // of `&str`s that will fit within a single page and set that as the
         // initial capacity of `strings`. Then we allocate a single page for `bytes`.
         // This starts us off with a relatively high memory usage (8 kilobytes, to
@@ -166,5 +159,28 @@ impl lasso::Resolver<Spur> for Interner {
     #[inline]
     fn len(&self) -> usize {
         self.0.len()
+    }
+}
+
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[repr(transparent)]
+pub struct IStr(Spur);
+
+impl IStr {
+    pub(crate) const fn new(spur: Spur) -> Self {
+        Self(spur)
+    }
+
+    pub(crate) const fn into_inner(self) -> Spur {
+        self.0
+    }
+}
+
+impl Debug for IStr {
+    #[inline]
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("FileId(")?;
+        Debug::fmt(&self.into_inner().into_inner(), f)?;
+        f.write_char(')')
     }
 }

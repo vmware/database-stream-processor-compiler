@@ -86,6 +86,16 @@ impl Diagnostic {
     }
 
     #[inline]
+    pub fn primary_span(&self) -> Span {
+        self.message_span.or_else(|| {
+            self.labels
+                .iter()
+                .find_map(|label| label.is_primary.then(|| label.span))
+        })
+        .expect("expected a primary label or a message span within a diagnostic but failed to get one")
+    }
+
+    #[inline]
     #[track_caller]
     pub fn emit_to<W>(
         self,
@@ -104,12 +114,7 @@ impl Diagnostic {
 
     #[track_caller]
     fn into_report(self, config: &DiagnosticConfig) -> Report<Span> {
-        let primary_span = self.message_span.or_else(|| {
-            self.labels
-                .iter()
-                .find_map(|label| label.is_primary.then(|| label.span))
-        })
-        .expect("expected a primary label or a message span within a diagnostic but failed to get one");
+        let primary_span = self.primary_span();
 
         let mut diagnostic: ReportBuilder<Span> = Report::build(
             self.level.report_kind(),

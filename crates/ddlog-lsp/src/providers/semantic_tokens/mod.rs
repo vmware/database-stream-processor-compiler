@@ -8,29 +8,35 @@ use crate::{
     database::{DDlogDatabase, Session, Source},
     providers::semantic_tokens::highlighter::SemanticHighlighter,
 };
-use anyhow::Result;
 use ddlog_syntax::{ast::nodes::Root, SyntaxNodeExt};
-use lspower::lsp::{SemanticTokens, Url};
+use lspower::lsp::{SemanticTokensResult, Url};
 use salsa::Snapshot;
 
-pub(crate) fn handle_semantic_tokens_full(
+pub(crate) fn semantic_tokens_full(
     snapshot: Snapshot<DDlogDatabase>,
     url: &Url,
-) -> Result<SemanticTokens> {
+) -> Option<SemanticTokensResult> {
     let session = snapshot.session();
     let file = session.file_id(url);
 
     let text = snapshot.file_source(file);
     let root = snapshot.syntax(file);
 
-    let semantic_tokens =
-        SemanticHighlighter::highlight(&text, &*root.to::<Root>(), session.interner());
+    let tokens = SemanticHighlighter::highlight(&text, &*root.to::<Root>(), session.interner());
+    if tokens.data.is_empty() {
+        tracing::trace!(
+            file = %url,
+            "didn't generate any semantic tokens, returning `None` to the client",
+        );
 
-    Ok(semantic_tokens)
+        None
+    } else {
+        Some(SemanticTokensResult::Tokens(tokens))
+    }
 }
 
 /*
-pub(crate) fn handle_semantic_tokens_full_delta(
+pub(crate) fn semantic_tokens_full_delta(
     params: SemanticTokensDeltaParams,
 ) -> Result<Option<SemanticTokensFullDeltaResult>> {
     let file_id = from_proto::file_id(&snap, &params.text_document.uri)?;
@@ -58,7 +64,7 @@ pub(crate) fn handle_semantic_tokens_full_delta(
     Ok(Some(semantic_tokens.into()))
 }
 
-pub(crate) fn handle_semantic_tokens_range(
+pub(crate) fn semantic_tokens_range(
     params: SemanticTokensDeltaParams,
 ) -> Result<Option<SemanticTokensRangeResult>> {
     let frange = from_proto::file_range(&snap, params.text_document, params.range)?;

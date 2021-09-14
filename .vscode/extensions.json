@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        // Reccomend the extension we use for debugging the server
+        "ms-vscode.cpptools",
+    ],
+    "unwantedRecommendations": [],
+}

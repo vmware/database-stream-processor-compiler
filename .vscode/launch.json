@@ -10,12 +10,15 @@
             "cwd": "${workspaceFolder}",
             "environment": [
                 {
+                    // We want backtraces while we're debugging
                     "name": "RUST_BACKTRACE",
-                    "value": "1",
+                    "value": "full",
                 },
                 {
                     "name": "DDLOG_LSP_LOG",
-                    "value": "trace",
+                    // Set the log level to trace for everything, but then filter
+                    // out some of the extraneous stuff from libraries we use
+                    "value": "trace,salsa=info,mio=info,tokio_util=info,lspower=info",
                 },
             ],
             // TODO: Probably want to do the same for unix, just not sure what the path is

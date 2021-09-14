@@ -1,7 +1,8 @@
 mod database;
 
 pub(crate) use database::{
-    declarations, document_function, document_function_arg, document_symbols,
+    declarations, document_function, document_function_arg, document_relation,
+    document_relation_column, document_symbols,
 };
 
 use crate::database::{DDlogDatabase, Session, Symbols};
@@ -17,6 +18,11 @@ pub(crate) fn nested_symbols(
 
     let symbols = snapshot.document_symbols(file);
     if symbols.is_empty() {
+        tracing::trace!(
+            file = %url,
+            "didn't generate any symbols, returning `None` to the client",
+        );
+
         None
     } else {
         Some(DocumentSymbolResponse::Nested(symbols.to_vec()))

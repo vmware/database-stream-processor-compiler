@@ -16,7 +16,7 @@ COMMANDS:
 ";
 
 fn main() -> io::Result<()> {
-    tracing_subscriber::fmt::init();
+    ddlog_driver::set_logger();
 
     let (stdin, mut stdout) = (io::stdin(), io::stdout());
     let mut input = String::new();

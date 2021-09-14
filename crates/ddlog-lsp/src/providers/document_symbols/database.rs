@@ -2,7 +2,7 @@ use crate::{database::Symbols, providers::utils};
 use ddlog_diagnostics::{FileId, Interner, Rope};
 use ddlog_syntax::{
     ast::{
-        nodes::{FunctionArg, FunctionDef, Pattern, Type},
+        nodes::{FunctionArg, FunctionDef, Pattern, RelCol, RelationDef, Type},
         AstNode, AstToken,
     },
     match_ast, visitor, AstVisitor, RuleCtx, SyntaxNode,
@@ -11,24 +11,28 @@ use ddlog_utils::ArcSlice;
 use lspower::lsp::{DocumentSymbol, Position, Range, SymbolKind, SymbolTag};
 
 pub(crate) fn document_symbols(symbols: &dyn Symbols, file: FileId) -> ArcSlice<DocumentSymbol> {
+    let session = symbols.session();
+    let interner = session.interner();
+    let uri = file.to_str(interner);
+
     let declarations = symbols.declarations(file);
-
-    for decl in declarations.iter() {
-        println!(
-            "declaration: {}",
-            decl.debug(symbols.session().interner(), true),
-        );
-    }
-
     let document_symbols = declarations.iter().map(|node| {
+        tracing::debug!(
+            file = uri,
+            "visiting declaration: {}",
+            node.debug(symbols.session().interner(), true),
+        );
+
         match_ast! {
             match node {
                 FunctionDef(function) => {
-                    println!("documenting function");
+                    tracing::debug!("documenting function");
                     symbols.document_function(file, function.into_owned())
                 },
-                // TODO: Relation symbols
-                RelationDef(relation) => default_document_symbol(),
+                RelationDef(relation) => {
+                    tracing::debug!("documenting relation");
+                    symbols.document_relation(file, relation.into_owned())
+                },
                 // TODO: Type definitions
 
                 _ => unreachable!(),
@@ -36,43 +40,58 @@ pub(crate) fn document_symbols(symbols: &dyn Symbols, file: FileId) -> ArcSlice<
         }
     });
 
-    ArcSlice::new(document_symbols)
+    let symbols = ArcSlice::new(document_symbols);
+    tracing::trace!(file = uri, "produced {} document symbols", symbols.len());
+
+    symbols
+}
+
+#[derive(Debug, Default)]
+struct DeclarationCollector(Vec<SyntaxNode>);
+
+impl AstVisitor for DeclarationCollector {
+    fn check_node(&mut self, node: &SyntaxNode, _ctx: &mut RuleCtx) -> Option<()> {
+        match_ast! {
+            match node {
+                FunctionDef(_function) => {
+                    tracing::trace!("collected function declaration");
+                    self.0.push(node.clone());
+                },
+                RelationDef(_relation) => {
+                    tracing::trace!("collected relation declaration");
+                    self.0.push(node.clone());
+                },
+                // TODO: Type definitions
+
+                _ => {},
+            }
+        }
+
+        None
+    }
 }
 
 pub(crate) fn declarations(symbols: &dyn Symbols, file: FileId) -> ArcSlice<SyntaxNode> {
-    #[derive(Debug, Default)]
-    struct DeclarationCollector(Vec<SyntaxNode>);
-
-    impl AstVisitor for DeclarationCollector {
-        fn check_node(&mut self, node: &SyntaxNode, _ctx: &mut RuleCtx) -> Option<()> {
-            println!("checking node: {}", node.debug(_ctx.interner(), true));
-
-            match_ast! {
-                match node {
-                    FunctionDef(_function) => {
-                        println!("pushed function");
-                        self.0.push(node.clone());
-                    },
-                    RelationDef(_relation) => self.0.push(node.clone()),
-                    // TODO: Type definitions
-
-                    _ => {},
-                }
-            }
-
-            None
-        }
-    }
-
     let session = symbols.session();
+    let interner = session.interner();
+    let uri = file.to_str(interner);
+
+    tracing::debug!(file = uri, "collecting declarations for a file");
+
     let root = symbols.syntax(file);
-    let mut ctx = RuleCtx::new(file, symbols.file_source(file), session.interner().clone());
+    let mut ctx = RuleCtx::new(file, symbols.file_source(file), interner.clone());
 
     let mut collector = DeclarationCollector::default();
     visitor::apply_visitor(&root, &mut collector, &mut ctx);
-    collector.0.shrink_to_fit();
 
-    ArcSlice::new(collector.0)
+    let declarations = collector.0;
+    tracing::debug!(
+        file = uri,
+        "collected {} total declarations for",
+        declarations.len(),
+    );
+
+    ArcSlice::new(declarations)
 }
 
 pub(crate) fn document_function(
@@ -84,7 +103,12 @@ pub(crate) fn document_function(
     let interner = session.interner();
     let source = symbols.file_source(file);
 
-    let range = utils::ide_range(&source, function.signature_span(true));
+    tracing::debug!(
+        file = file.to_str(interner),
+        "collecting symbols for function declaration",
+    );
+
+    let range = utils::ide_range(&source, function.trimmed_range());
     let (name, selection_range) = function
         .name()
         .as_ref()
@@ -148,8 +172,6 @@ pub(crate) fn document_function(
     if let Some(args) = function.args() {
         for arg in args.args() {
             if let Some(arg) = symbols.document_function_arg(file, arg.into_owned()) {
-                println!("got bindings: {:?}", arg);
-
                 children.extend(arg.iter().cloned());
             }
         }
@@ -167,7 +189,6 @@ pub(crate) fn document_function(
     let children = if children.is_empty() {
         None
     } else {
-        children.shrink_to_fit();
         Some(children)
     };
 
@@ -189,49 +210,6 @@ pub(crate) fn document_function_arg(
     file: FileId,
     arg: FunctionArg,
 ) -> Option<ArcSlice<DocumentSymbol>> {
-    println!("function arg");
-
-    // Each function argument is a pattern, which means that it can bind multiple variables.
-    // Ergo, we use this function to recursively walk through the bound patterns, adding to
-    // the list of symbols as we go
-    fn process_pattern(
-        binding: &Pattern,
-        bindings: &mut Vec<DocumentSymbol>,
-        source: &Rope,
-        interner: &Interner,
-        is_deprecated: bool,
-    ) {
-        println!("process pattern");
-
-        match binding {
-            Pattern::TuplePattern(tuple) => {
-                for element in tuple.elements() {
-                    if let Some(pattern) = element.pattern() {
-                        process_pattern(&*pattern, bindings, source, interner, is_deprecated);
-                    }
-                }
-            }
-
-            Pattern::VarRef(var) => {
-                if let Some(ident) = var.ident() {
-                    let tags = is_deprecated.then(|| vec![SymbolTag::Deprecated]);
-                    let range = utils::ide_range(source, ident.text_range());
-
-                    bindings.push(DocumentSymbol {
-                        name: ident.text(interner).to_owned(),
-                        detail: None,
-                        kind: SymbolKind::Variable,
-                        tags,
-                        range,
-                        selection_range: range,
-                        children: None,
-                        ..default_document_symbol()
-                    });
-                }
-            }
-        }
-    }
-
     let session = symbols.session();
     let interner = session.interner();
     let source = symbols.file_source(file);
@@ -249,8 +227,142 @@ pub(crate) fn document_function_arg(
     if bindings.is_empty() {
         None
     } else {
-        bindings.shrink_to_fit();
         Some(ArcSlice::new(bindings))
+    }
+}
+
+pub(crate) fn document_relation(
+    symbols: &dyn Symbols,
+    file: FileId,
+    relation: RelationDef,
+) -> DocumentSymbol {
+    let session = symbols.session();
+    let interner = session.interner();
+    let source = symbols.file_source(file);
+
+    tracing::debug!(
+        file = file.to_str(interner),
+        "collecting symbols for relation declaration",
+    );
+
+    let range = utils::ide_range(&source, relation.trimmed_range());
+    let (name, selection_range) = relation
+        .name()
+        .as_ref()
+        .and_then(|name| name.ident())
+        .map(|name| {
+            (
+                name.text(interner),
+                utils::ide_range(&source, name.text_range()),
+            )
+        })
+        .unwrap_or(("???", range));
+    let name = name.to_owned();
+
+    // Look for a `#[deprecated]` attribute on the relation
+    let tags = relation
+        .attributes()
+        .map(|attrs| attrs.any_are_deprecated(interner))
+        .unwrap_or(false)
+        .then(|| vec![SymbolTag::Deprecated]);
+
+    let total_columns = relation
+        .columns()
+        .map(|args| args.columns().count())
+        .unwrap_or(0);
+    let mut children = Vec::with_capacity(total_columns);
+
+    if let Some(columns) = relation.columns() {
+        for column in columns.columns() {
+            if let Some(column) = symbols.document_relation_column(file, column.into_owned()) {
+                children.extend(column.iter().cloned());
+            }
+        }
+    }
+
+    let children = if children.is_empty() {
+        None
+    } else {
+        Some(children)
+    };
+
+    DocumentSymbol {
+        name,
+        // TODO: Get the relation's documentation if there's any
+        detail: None,
+        // I can't figure out if there's custom symbol kinds, so
+        // saying that relations are classes is my best guess for now
+        kind: SymbolKind::Class,
+        tags,
+        range,
+        selection_range,
+        children,
+        ..default_document_symbol()
+    }
+}
+
+pub(crate) fn document_relation_column(
+    symbols: &dyn Symbols,
+    file: FileId,
+    column: RelCol,
+) -> Option<ArcSlice<DocumentSymbol>> {
+    let session = symbols.session();
+    let interner = session.interner();
+    let source = symbols.file_source(file);
+
+    let is_deprecated = column
+        .attributes()
+        .map(|attrs| attrs.any_are_deprecated(interner))
+        .unwrap_or(false);
+
+    let mut bindings = Vec::with_capacity(column.binding().is_some() as usize);
+    if let Some(binding) = column.binding() {
+        process_pattern(&*binding, &mut bindings, &source, interner, is_deprecated);
+    }
+
+    if bindings.is_empty() {
+        None
+    } else {
+        Some(ArcSlice::new(bindings))
+    }
+}
+
+// Each function argument is a pattern, which means that it can bind multiple variables.
+// Ergo, we use this function to recursively walk through the bound patterns, adding to
+// the list of symbols as we go
+fn process_pattern(
+    binding: &Pattern,
+    bindings: &mut Vec<DocumentSymbol>,
+    source: &Rope,
+    interner: &Interner,
+    is_deprecated: bool,
+) {
+    match binding {
+        Pattern::TuplePattern(tuple) => {
+            for element in tuple.elements() {
+                if let Some(pattern) = element.pattern() {
+                    process_pattern(&*pattern, bindings, source, interner, is_deprecated);
+                }
+            }
+        }
+
+        Pattern::VarRef(var) => {
+            if let Some(ident) = var.ident() {
+                let tags = is_deprecated.then(|| vec![SymbolTag::Deprecated]);
+                let range = utils::ide_range(source, ident.text_range());
+
+                bindings.push(DocumentSymbol {
+                    name: ident.text(interner).to_owned(),
+                    detail: None,
+                    kind: SymbolKind::Variable,
+                    tags,
+                    range,
+                    selection_range: range,
+                    children: None,
+                    ..default_document_symbol()
+                });
+            }
+        }
     }
 }
 

@@ -2,6 +2,7 @@ use cstree::TextRange;
 use ddlog_diagnostics::Rope;
 use lspower::lsp::{Position, Range};
 
+// TODO: Maybe this should be cached somehow?
 pub fn ide_range(source: &Rope, text_range: TextRange) -> Range {
     let (start, end) = (text_range.start().into(), text_range.end().into());
 
