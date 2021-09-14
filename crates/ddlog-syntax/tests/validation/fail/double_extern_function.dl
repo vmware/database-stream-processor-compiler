@@ -1,2 +1,2 @@
 // kind:item validate:true
-extern extern function foo(bar: u8) {}
+extern extern function foo() {}

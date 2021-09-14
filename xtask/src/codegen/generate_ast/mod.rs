@@ -126,7 +126,7 @@ impl<'a> AstGenerator<'a> {
             .collect();
 
         let ast_module = "pub mod nodes;\npub mod tokens;\n";
-        fs2::update(&ast_module_path, ast_module, mode)?;
+        fs2::update_formatted(&ast_module_path, ast_module, mode)?;
 
         Ok(Self {
             grammar,
@@ -176,7 +176,7 @@ impl<'a> AstGenerator<'a> {
         }
 
         let token_ast = token_ast.to_string();
-        fs2::update(&self.ast_token_path, &token_ast, self.mode)?;
+        fs2::update_formatted(&self.ast_token_path, &token_ast, self.mode)?;
 
         Ok(())
     }
@@ -347,7 +347,7 @@ impl<'a> AstGenerator<'a> {
         }
 
         let node_ast = node_ast.to_string();
-        fs2::update(&self.ast_node_path, &node_ast, self.mode)?;
+        fs2::update_formatted(&self.ast_node_path, &node_ast, self.mode)?;
 
         Ok(token_ast)
     }
@@ -980,7 +980,7 @@ fn generate_syntax_kind(tokens: &[&str], mode: CodegenMode) -> Result<()> {
     }
     .to_string();
 
-    fs2::update(target_path, &code, mode)?;
+    fs2::update_formatted(target_path, &code, mode)?;
 
     Ok(())
 }

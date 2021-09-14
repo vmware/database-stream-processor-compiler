@@ -107,11 +107,14 @@ pub fn project_root() -> PathBuf {
 
 pub mod fs2 {
     use crate::utils::{normalize_line_endings, normalize_path_slashes, project_root, CodegenMode};
+    use ::std::process::Stdio;
     use anyhow::{Context, Result};
     use std::{
         env, fs,
+        io::{Read, Write},
         panic::{self, UnwindSafe},
         path::Path,
+        process::Command,
     };
 
     pub fn with_working_dir<P, F, T>(path: P, with: F) -> Result<T>
@@ -194,22 +197,68 @@ pub mod fs2 {
         fs::remove_file(path).with_context(|| format!("failed to remove '{}'", path.display()))
     }
 
+    /// Update a file after running `contents` through `rustfmt`
+    pub fn update_formatted<P>(path: P, contents: &str, mode: CodegenMode) -> Result<()>
+    where
+        P: AsRef<Path>,
+    {
+        let mut child = Command::new("rustfmt")
+            .args(&[
+                "--edition",
+                "2018",
+                "--config",
+                "newline_style=Unix,normalize_doc_attributes=true",
+            ])
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .spawn()
+            .context("failed to spawn rustfmt")?;
+
+        {
+            let mut stdin = child.stdin.take().context("failed to take rustfmt stdin")?;
+            stdin
+                .write_all(contents.as_bytes())
+                .context("failed to write to rustfmt stdin")?;
+            stdin.flush().context("failed to flush rustfmt stdin")?;
+        }
+
+        let formatted = {
+            let mut stdout = child
+                .stdout
+                .take()
+                .context("failed to take rustfmt stdout")?;
+
+            let mut buffer = String::with_capacity(contents.len());
+            stdout
+                .read_to_string(&mut buffer)
+                .context("failed to read from rustfmt stdout")?;
+
+            buffer
+        };
+
+        let status = child.wait().context("failed to wait for rustfmt")?;
+        if !status.success() {
+            anyhow::bail!("rustfmt failed to run");
+        }
+
+        update(path, &formatted, mode)?;
+
+        Ok(())
+    }
+
     /// A helper to update file on disk if it has changed
     pub fn update<P>(path: P, contents: &str, mode: CodegenMode) -> Result<()>
     where
         P: AsRef<Path>,
     {
         let path = path.as_ref();
+
+        let mut contents = contents.to_owned();
+        normalize_line_endings(&mut contents);
+
         let needs_update = if path.exists() {
             read_to_string(path)
-                .map(|mut disk_contents| {
-                    normalize_line_endings(&mut disk_contents);
-
-                    let mut contents = contents.to_owned();
-                    normalize_line_endings(&mut contents);
-
-                    disk_contents != contents
-                })
+                .map(|disk_contents| disk_contents != contents)
                 .unwrap_or(true)
         } else {
             true
