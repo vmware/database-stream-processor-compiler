@@ -450,27 +450,43 @@ impl<'a> AstGenerator<'a> {
                 .iter()
                 .map(|(variant, _)| {
                     let variant_kind = self.syntax_kind_variant(&variant.to_string())?;
+                    let starts_with_vowel = node_name
+                        .to_string()
+                        .chars()
+                        .next()
+                        .map(|first| ['a', 'e', 'i', 'o', 'u'].contains(&first))
+                        .unwrap_or(false);
+
+                    // Statically format the panic message
+                    let panic_message = format!(
+                        "malformed codegen for casting SyntaxKind::{} into a{} {}::{}",
+                        variant_kind,
+                        if starts_with_vowel { "n" } else { "" },
+                        node_name,
+                        variant,
+                    );
 
                     Ok(quote! {
                         crate::SyntaxKind::#variant_kind => {
+                            let node = match #variant::cast(syntax) {
+                                Some(node) => node,
+                                None => {
+                                    if ::core::cfg!(debug_assertions) {
+                                        ::core::panic!(#panic_message)
+                                    } else {
+                                        // Safety: The match guard validates the inner syntax kind
+                                        unsafe { ::core::hint::unreachable_unchecked() }
+                                    }
+                                }
+                            };
+
                             ::core::option::Option::Some(
                                 ::std::borrow::Cow::Owned(
                                     Self::#variant(
-                                        ::std::borrow::Cow::into_owned(
-                                            #variant::cast(syntax).unwrap_or_else(|| {
-                                                if ::core::cfg!(debug_assertions) {
-                                                    ::core::panic!(
-                                                        "malformed codegen for casting {} into a {}::{}",
-                                                        crate::SyntaxKind::#variant_kind,
-                                                        ::core::stringify!(#node_name),
-                                                        ::core::stringify!(#variant),
-                                                    )
-                                                } else {
-                                                    // Safety: The match guard validates the inner syntax kind
-                                                    unsafe { ::core::hint::unreachable_unchecked() }
-                                                }
-                                            })
-                                        ),
+                                        match node {
+                                            ::std::borrow::Cow::Owned(owned) => owned,
+                                            ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                                        }
                                     ),
                                 ),
                             )

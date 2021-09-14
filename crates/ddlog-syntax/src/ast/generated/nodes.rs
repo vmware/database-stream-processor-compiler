@@ -621,308 +621,340 @@ impl crate::ast::AstNode for BinOp {
     fn cast(syntax: &crate::SyntaxNode) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
         match crate::SyntaxNode::kind(syntax) {
             crate::SyntaxKind::AMPERSAND => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Ampersand(
-                    ::std::borrow::Cow::into_owned(Ampersand::cast(syntax).unwrap_or_else(|| {
+                let node = match Ampersand::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::AMPERSAND,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(Ampersand),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::AMPERSAND into a BinOp::Ampersand")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Ampersand(
+                    match node {
+                        ::std::borrow::Cow::Owned(owned) => owned,
+                        ::std::borrow::Cow::Borrowed(borrowed) => {
+                            ::core::clone::Clone::clone(borrowed)
+                        }
+                    },
                 )))
             }
             crate::SyntaxKind::AND => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::And(
-                    ::std::borrow::Cow::into_owned(And::cast(syntax).unwrap_or_else(|| {
+                let node = match And::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
                             ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::AND,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(And),
+                                "malformed codegen for casting SyntaxKind::AND into a BinOp::And"
                             )
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::And(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::CARET => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Caret(
-                    ::std::borrow::Cow::into_owned(Caret::cast(syntax).unwrap_or_else(|| {
+                let node = match Caret::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::CARET,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(Caret),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::CARET into a BinOp::Caret")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Caret(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::EQ_EQ => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::EqEq(
-                    ::std::borrow::Cow::into_owned(EqEq::cast(syntax).unwrap_or_else(|| {
+                let node = match EqEq::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::EQ_EQ,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(EqEq),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::EQ_EQ into a BinOp::EqEq")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::EqEq(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::L_ANGLE => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::LAngle(
-                    ::std::borrow::Cow::into_owned(LAngle::cast(syntax).unwrap_or_else(|| {
+                let node = match LAngle::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::L_ANGLE,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(LAngle),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::L_ANGLE into a BinOp::LAngle")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::LAngle(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::L_ANGLE_EQ => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::LAngleEq(
-                    ::std::borrow::Cow::into_owned(LAngleEq::cast(syntax).unwrap_or_else(|| {
+                let node = match LAngleEq::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::L_ANGLE_EQ,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(LAngleEq),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::L_ANGLE_EQ into a BinOp::LAngleEq")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::LAngleEq(
+                    match node {
+                        ::std::borrow::Cow::Owned(owned) => owned,
+                        ::std::borrow::Cow::Borrowed(borrowed) => {
+                            ::core::clone::Clone::clone(borrowed)
+                        }
+                    },
                 )))
             }
             crate::SyntaxKind::MINUS => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Minus(
-                    ::std::borrow::Cow::into_owned(Minus::cast(syntax).unwrap_or_else(|| {
+                let node = match Minus::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::MINUS,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(Minus),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::MINUS into a BinOp::Minus")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Minus(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::NEQ => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Neq(
-                    ::std::borrow::Cow::into_owned(Neq::cast(syntax).unwrap_or_else(|| {
+                let node = match Neq::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
                             ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::NEQ,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(Neq),
+                                "malformed codegen for casting SyntaxKind::NEQ into a BinOp::Neq"
                             )
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Neq(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::OR => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Or(
-                    ::std::borrow::Cow::into_owned(Or::cast(syntax).unwrap_or_else(|| {
+                let node = match Or::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
                             ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::OR,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(Or),
+                                "malformed codegen for casting SyntaxKind::OR into a BinOp::Or"
                             )
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Or(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::PERCENT => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Percent(
-                    ::std::borrow::Cow::into_owned(Percent::cast(syntax).unwrap_or_else(|| {
+                let node = match Percent::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::PERCENT,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(Percent),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::PERCENT into a BinOp::Percent")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Percent(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::PIPE => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Pipe(
-                    ::std::borrow::Cow::into_owned(Pipe::cast(syntax).unwrap_or_else(|| {
+                let node = match Pipe::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
                             ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::PIPE,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(Pipe),
+                                "malformed codegen for casting SyntaxKind::PIPE into a BinOp::Pipe"
                             )
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Pipe(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::PLUS => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Plus(
-                    ::std::borrow::Cow::into_owned(Plus::cast(syntax).unwrap_or_else(|| {
+                let node = match Plus::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
                             ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::PLUS,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(Plus),
+                                "malformed codegen for casting SyntaxKind::PLUS into a BinOp::Plus"
                             )
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Plus(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::R_ANGLE => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::RAngle(
-                    ::std::borrow::Cow::into_owned(RAngle::cast(syntax).unwrap_or_else(|| {
+                let node = match RAngle::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::R_ANGLE,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(RAngle),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::R_ANGLE into a BinOp::RAngle")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::RAngle(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::R_ANGLE_EQ => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::RAngleEq(
-                    ::std::borrow::Cow::into_owned(RAngleEq::cast(syntax).unwrap_or_else(|| {
+                let node = match RAngleEq::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::R_ANGLE_EQ,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(RAngleEq),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::R_ANGLE_EQ into a BinOp::RAngleEq")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::RAngleEq(
+                    match node {
+                        ::std::borrow::Cow::Owned(owned) => owned,
+                        ::std::borrow::Cow::Borrowed(borrowed) => {
+                            ::core::clone::Clone::clone(borrowed)
+                        }
+                    },
                 )))
             }
-            crate::SyntaxKind::RIGHT_ROCKET => ::core::option::Option::Some(
-                ::std::borrow::Cow::Owned(Self::RightRocket(::std::borrow::Cow::into_owned(
-                    RightRocket::cast(syntax).unwrap_or_else(|| {
+            crate::SyntaxKind::RIGHT_ROCKET => {
+                let node = match RightRocket::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::RIGHT_ROCKET,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(RightRocket),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::RIGHT_ROCKET into a BinOp::RightRocket")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    }),
-                ))),
-            ),
-            crate::SyntaxKind::SHL => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Shl(
-                    ::std::borrow::Cow::into_owned(Shl::cast(syntax).unwrap_or_else(|| {
-                        if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::SHL,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(Shl),
-                            )
-                        } else {
-                            unsafe { ::core::hint::unreachable_unchecked() }
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::RightRocket(
+                    match node {
+                        ::std::borrow::Cow::Owned(owned) => owned,
+                        ::std::borrow::Cow::Borrowed(borrowed) => {
+                            ::core::clone::Clone::clone(borrowed)
                         }
-                    })),
+                    },
                 )))
+            }
+            crate::SyntaxKind::SHL => {
+                let node = match Shl::cast(syntax) {
+                    Some(node) => node,
+                    None => {
+                        if ::core::cfg!(debug_assertions) {
+                            ::core::panic!(
+                                "malformed codegen for casting SyntaxKind::SHL into a BinOp::Shl"
+                            )
+                        } else {
+                            unsafe { ::core::hint::unreachable_unchecked() }
+                        }
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Shl(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::SHR => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Shr(
-                    ::std::borrow::Cow::into_owned(Shr::cast(syntax).unwrap_or_else(|| {
+                let node = match Shr::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
                             ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::SHR,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(Shr),
+                                "malformed codegen for casting SyntaxKind::SHR into a BinOp::Shr"
                             )
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Shr(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::SLASH => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Slash(
-                    ::std::borrow::Cow::into_owned(Slash::cast(syntax).unwrap_or_else(|| {
+                let node = match Slash::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::SLASH,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(Slash),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::SLASH into a BinOp::Slash")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Slash(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::STAR => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Star(
-                    ::std::borrow::Cow::into_owned(Star::cast(syntax).unwrap_or_else(|| {
+                let node = match Star::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
                             ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::STAR,
-                                ::core::stringify!(BinOp),
-                                ::core::stringify!(Star),
+                                "malformed codegen for casting SyntaxKind::STAR into a BinOp::Star"
                             )
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Star(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             _ => ::core::option::Option::None,
         }
@@ -1047,36 +1079,38 @@ impl crate::ast::AstNode for Bool {
     fn cast(syntax: &crate::SyntaxNode) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
         match crate::SyntaxNode::kind(syntax) {
             crate::SyntaxKind::FALSE => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::False(
-                    ::std::borrow::Cow::into_owned(False::cast(syntax).unwrap_or_else(|| {
+                let node = match False::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::FALSE,
-                                ::core::stringify!(Bool),
-                                ::core::stringify!(False),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::FALSE into a Bool::False")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::False(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::TRUE => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::True(
-                    ::std::borrow::Cow::into_owned(True::cast(syntax).unwrap_or_else(|| {
+                let node = match True::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
                             ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::TRUE,
-                                ::core::stringify!(Bool),
-                                ::core::stringify!(True),
+                                "malformed codegen for casting SyntaxKind::TRUE into a Bool::True"
                             )
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::True(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             _ => ::core::option::Option::None,
         }
@@ -1468,148 +1502,156 @@ impl crate::ast::AstNode for Expr {
     fn cast(syntax: &crate::SyntaxNode) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
         match crate::SyntaxNode::kind(syntax) {
             crate::SyntaxKind::ASSIGN => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Assign(
-                    ::std::borrow::Cow::into_owned(Assign::cast(syntax).unwrap_or_else(|| {
+                let node = match Assign::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::ASSIGN,
-                                ::core::stringify!(Expr),
-                                ::core::stringify!(Assign),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::ASSIGN into a Expr::Assign")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Assign(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::BIN_EXPR => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::BinExpr(
-                    ::std::borrow::Cow::into_owned(BinExpr::cast(syntax).unwrap_or_else(|| {
+                let node = match BinExpr::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::BIN_EXPR,
-                                ::core::stringify!(Expr),
-                                ::core::stringify!(BinExpr),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::BIN_EXPR into a Expr::BinExpr")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::BinExpr(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::BLOCK => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Block(
-                    ::std::borrow::Cow::into_owned(Block::cast(syntax).unwrap_or_else(|| {
+                let node = match Block::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::BLOCK,
-                                ::core::stringify!(Expr),
-                                ::core::stringify!(Block),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::BLOCK into a Expr::Block")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Block(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::IF_STMT => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::IfStmt(
-                    ::std::borrow::Cow::into_owned(IfStmt::cast(syntax).unwrap_or_else(|| {
+                let node = match IfStmt::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::IF_STMT,
-                                ::core::stringify!(Expr),
-                                ::core::stringify!(IfStmt),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::IF_STMT into a Expr::IfStmt")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::IfStmt(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::LITERAL => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Literal(
-                    ::std::borrow::Cow::into_owned(Literal::cast(syntax).unwrap_or_else(|| {
+                let node = match Literal::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::LITERAL,
-                                ::core::stringify!(Expr),
-                                ::core::stringify!(Literal),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::LITERAL into a Expr::Literal")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Literal(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::PAREN_EXPR => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::ParenExpr(
-                    ::std::borrow::Cow::into_owned(ParenExpr::cast(syntax).unwrap_or_else(|| {
+                let node = match ParenExpr::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::PAREN_EXPR,
-                                ::core::stringify!(Expr),
-                                ::core::stringify!(ParenExpr),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::PAREN_EXPR into a Expr::ParenExpr")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::ParenExpr(
+                    match node {
+                        ::std::borrow::Cow::Owned(owned) => owned,
+                        ::std::borrow::Cow::Borrowed(borrowed) => {
+                            ::core::clone::Clone::clone(borrowed)
+                        }
+                    },
                 )))
             }
             crate::SyntaxKind::RET_EXPR => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::RetExpr(
-                    ::std::borrow::Cow::into_owned(RetExpr::cast(syntax).unwrap_or_else(|| {
+                let node = match RetExpr::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::RET_EXPR,
-                                ::core::stringify!(Expr),
-                                ::core::stringify!(RetExpr),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::RET_EXPR into a Expr::RetExpr")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::RetExpr(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::UNARY_EXPR => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::UnaryExpr(
-                    ::std::borrow::Cow::into_owned(UnaryExpr::cast(syntax).unwrap_or_else(|| {
+                let node = match UnaryExpr::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::UNARY_EXPR,
-                                ::core::stringify!(Expr),
-                                ::core::stringify!(UnaryExpr),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::UNARY_EXPR into a Expr::UnaryExpr")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::UnaryExpr(
+                    match node {
+                        ::std::borrow::Cow::Owned(owned) => owned,
+                        ::std::borrow::Cow::Borrowed(borrowed) => {
+                            ::core::clone::Clone::clone(borrowed)
+                        }
+                    },
                 )))
             }
             crate::SyntaxKind::VAR_REF => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::VarRef(
-                    ::std::borrow::Cow::into_owned(VarRef::cast(syntax).unwrap_or_else(|| {
+                let node = match VarRef::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::VAR_REF,
-                                ::core::stringify!(Expr),
-                                ::core::stringify!(VarRef),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::VAR_REF into a Expr::VarRef")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::VarRef(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             _ => ::core::option::Option::None,
         }
@@ -2453,53 +2495,61 @@ impl crate::ast::AstNode for Item {
     #[inline]
     fn cast(syntax: &crate::SyntaxNode) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
         match crate::SyntaxNode::kind(syntax) {
-            crate::SyntaxKind::FUNCTION_DEF => ::core::option::Option::Some(
-                ::std::borrow::Cow::Owned(Self::FunctionDef(::std::borrow::Cow::into_owned(
-                    FunctionDef::cast(syntax).unwrap_or_else(|| {
+            crate::SyntaxKind::FUNCTION_DEF => {
+                let node = match FunctionDef::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::FUNCTION_DEF,
-                                ::core::stringify!(Item),
-                                ::core::stringify!(FunctionDef),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::FUNCTION_DEF into a Item::FunctionDef")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    }),
-                ))),
-            ),
-            crate::SyntaxKind::RELATION_DEF => ::core::option::Option::Some(
-                ::std::borrow::Cow::Owned(Self::RelationDef(::std::borrow::Cow::into_owned(
-                    RelationDef::cast(syntax).unwrap_or_else(|| {
-                        if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::RELATION_DEF,
-                                ::core::stringify!(Item),
-                                ::core::stringify!(RelationDef),
-                            )
-                        } else {
-                            unsafe { ::core::hint::unreachable_unchecked() }
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::FunctionDef(
+                    match node {
+                        ::std::borrow::Cow::Owned(owned) => owned,
+                        ::std::borrow::Cow::Borrowed(borrowed) => {
+                            ::core::clone::Clone::clone(borrowed)
                         }
-                    }),
-                ))),
-            ),
-            crate::SyntaxKind::TYPE_DEF => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::TypeDef(
-                    ::std::borrow::Cow::into_owned(TypeDef::cast(syntax).unwrap_or_else(|| {
-                        if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::TYPE_DEF,
-                                ::core::stringify!(Item),
-                                ::core::stringify!(TypeDef),
-                            )
-                        } else {
-                            unsafe { ::core::hint::unreachable_unchecked() }
-                        }
-                    })),
+                    },
                 )))
+            }
+            crate::SyntaxKind::RELATION_DEF => {
+                let node = match RelationDef::cast(syntax) {
+                    Some(node) => node,
+                    None => {
+                        if ::core::cfg!(debug_assertions) {
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::RELATION_DEF into a Item::RelationDef")
+                        } else {
+                            unsafe { ::core::hint::unreachable_unchecked() }
+                        }
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::RelationDef(
+                    match node {
+                        ::std::borrow::Cow::Owned(owned) => owned,
+                        ::std::borrow::Cow::Borrowed(borrowed) => {
+                            ::core::clone::Clone::clone(borrowed)
+                        }
+                    },
+                )))
+            }
+            crate::SyntaxKind::TYPE_DEF => {
+                let node = match TypeDef::cast(syntax) {
+                    Some(node) => node,
+                    None => {
+                        if ::core::cfg!(debug_assertions) {
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::TYPE_DEF into a Item::TypeDef")
+                        } else {
+                            unsafe { ::core::hint::unreachable_unchecked() }
+                        }
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::TypeDef(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             _ => ::core::option::Option::None,
         }
@@ -2766,52 +2816,52 @@ impl crate::ast::AstNode for Literal {
     fn cast(syntax: &crate::SyntaxNode) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
         match crate::SyntaxNode::kind(syntax) {
             crate::SyntaxKind::BOOL => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Bool(
-                    ::std::borrow::Cow::into_owned(Bool::cast(syntax).unwrap_or_else(|| {
+                let node = match Bool::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::BOOL,
-                                ::core::stringify!(Literal),
-                                ::core::stringify!(Bool),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::BOOL into a Literal::Bool")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Bool(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::NUMBER => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Number(
-                    ::std::borrow::Cow::into_owned(Number::cast(syntax).unwrap_or_else(|| {
+                let node = match Number::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::NUMBER,
-                                ::core::stringify!(Literal),
-                                ::core::stringify!(Number),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::NUMBER into a Literal::Number")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Number(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::STRING => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::String(
-                    ::std::borrow::Cow::into_owned(String::cast(syntax).unwrap_or_else(|| {
+                let node = match String::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::STRING,
-                                ::core::stringify!(Literal),
-                                ::core::stringify!(String),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::STRING into a Literal::String")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::String(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             _ => ::core::option::Option::None,
         }
@@ -3108,37 +3158,41 @@ impl crate::ast::AstNode for Pattern {
     #[inline]
     fn cast(syntax: &crate::SyntaxNode) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
         match crate::SyntaxNode::kind(syntax) {
-            crate::SyntaxKind::TUPLE_PATTERN => ::core::option::Option::Some(
-                ::std::borrow::Cow::Owned(Self::TuplePattern(::std::borrow::Cow::into_owned(
-                    TuplePattern::cast(syntax).unwrap_or_else(|| {
+            crate::SyntaxKind::TUPLE_PATTERN => {
+                let node = match TuplePattern::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::TUPLE_PATTERN,
-                                ::core::stringify!(Pattern),
-                                ::core::stringify!(TuplePattern),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::TUPLE_PATTERN into a Pattern::TuplePattern")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    }),
-                ))),
-            ),
-            crate::SyntaxKind::VAR_REF => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::VarRef(
-                    ::std::borrow::Cow::into_owned(VarRef::cast(syntax).unwrap_or_else(|| {
-                        if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::VAR_REF,
-                                ::core::stringify!(Pattern),
-                                ::core::stringify!(VarRef),
-                            )
-                        } else {
-                            unsafe { ::core::hint::unreachable_unchecked() }
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::TuplePattern(
+                    match node {
+                        ::std::borrow::Cow::Owned(owned) => owned,
+                        ::std::borrow::Cow::Borrowed(borrowed) => {
+                            ::core::clone::Clone::clone(borrowed)
                         }
-                    })),
+                    },
                 )))
+            }
+            crate::SyntaxKind::VAR_REF => {
+                let node = match VarRef::cast(syntax) {
+                    Some(node) => node,
+                    None => {
+                        if ::core::cfg!(debug_assertions) {
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::VAR_REF into a Pattern::VarRef")
+                        } else {
+                            unsafe { ::core::hint::unreachable_unchecked() }
+                        }
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::VarRef(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             _ => ::core::option::Option::None,
         }
@@ -4170,52 +4224,56 @@ impl crate::ast::AstNode for Stmt {
     fn cast(syntax: &crate::SyntaxNode) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
         match crate::SyntaxNode::kind(syntax) {
             crate::SyntaxKind::EXPR_STMT => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::ExprStmt(
-                    ::std::borrow::Cow::into_owned(ExprStmt::cast(syntax).unwrap_or_else(|| {
+                let node = match ExprStmt::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::EXPR_STMT,
-                                ::core::stringify!(Stmt),
-                                ::core::stringify!(ExprStmt),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::EXPR_STMT into a Stmt::ExprStmt")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::ExprStmt(
+                    match node {
+                        ::std::borrow::Cow::Owned(owned) => owned,
+                        ::std::borrow::Cow::Borrowed(borrowed) => {
+                            ::core::clone::Clone::clone(borrowed)
+                        }
+                    },
                 )))
             }
             crate::SyntaxKind::IF_STMT => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::IfStmt(
-                    ::std::borrow::Cow::into_owned(IfStmt::cast(syntax).unwrap_or_else(|| {
+                let node = match IfStmt::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::IF_STMT,
-                                ::core::stringify!(Stmt),
-                                ::core::stringify!(IfStmt),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::IF_STMT into a Stmt::IfStmt")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::IfStmt(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::VAR_DECL => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::VarDecl(
-                    ::std::borrow::Cow::into_owned(VarDecl::cast(syntax).unwrap_or_else(|| {
+                let node = match VarDecl::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::VAR_DECL,
-                                ::core::stringify!(Stmt),
-                                ::core::stringify!(VarDecl),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::VAR_DECL into a Stmt::VarDecl")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::VarDecl(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             _ => ::core::option::Option::None,
         }
@@ -4595,52 +4653,64 @@ impl crate::ast::AstNode for Type {
     #[inline]
     fn cast(syntax: &crate::SyntaxNode) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
         match crate::SyntaxNode::kind(syntax) {
-            crate::SyntaxKind::FUNCTION_TYPE => ::core::option::Option::Some(
-                ::std::borrow::Cow::Owned(Self::FunctionType(::std::borrow::Cow::into_owned(
-                    FunctionType::cast(syntax).unwrap_or_else(|| {
+            crate::SyntaxKind::FUNCTION_TYPE => {
+                let node = match FunctionType::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::FUNCTION_TYPE,
-                                ::core::stringify!(Type),
-                                ::core::stringify!(FunctionType),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::FUNCTION_TYPE into a Type::FunctionType")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    }),
-                ))),
-            ),
-            crate::SyntaxKind::GENERIC_TYPE => ::core::option::Option::Some(
-                ::std::borrow::Cow::Owned(Self::GenericType(::std::borrow::Cow::into_owned(
-                    GenericType::cast(syntax).unwrap_or_else(|| {
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::FunctionType(
+                    match node {
+                        ::std::borrow::Cow::Owned(owned) => owned,
+                        ::std::borrow::Cow::Borrowed(borrowed) => {
+                            ::core::clone::Clone::clone(borrowed)
+                        }
+                    },
+                )))
+            }
+            crate::SyntaxKind::GENERIC_TYPE => {
+                let node = match GenericType::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::GENERIC_TYPE,
-                                ::core::stringify!(Type),
-                                ::core::stringify!(GenericType),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::GENERIC_TYPE into a Type::GenericType")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    }),
-                ))),
-            ),
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::GenericType(
+                    match node {
+                        ::std::borrow::Cow::Owned(owned) => owned,
+                        ::std::borrow::Cow::Borrowed(borrowed) => {
+                            ::core::clone::Clone::clone(borrowed)
+                        }
+                    },
+                )))
+            }
             crate::SyntaxKind::TUPLE_TYPE => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::TupleType(
-                    ::std::borrow::Cow::into_owned(TupleType::cast(syntax).unwrap_or_else(|| {
+                let node = match TupleType::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::TUPLE_TYPE,
-                                ::core::stringify!(Type),
-                                ::core::stringify!(TupleType),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::TUPLE_TYPE into a Type::TupleType")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::TupleType(
+                    match node {
+                        ::std::borrow::Cow::Owned(owned) => owned,
+                        ::std::borrow::Cow::Borrowed(borrowed) => {
+                            ::core::clone::Clone::clone(borrowed)
+                        }
+                    },
                 )))
             }
             _ => ::core::option::Option::None,
@@ -4705,36 +4775,40 @@ impl crate::ast::AstNode for TypeBody {
     fn cast(syntax: &crate::SyntaxNode) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
         match crate::SyntaxNode::kind(syntax) {
             crate::SyntaxKind::RECORD_TYPE => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::RecordType(
-                    ::std::borrow::Cow::into_owned(RecordType::cast(syntax).unwrap_or_else(|| {
+                let node = match RecordType::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::RECORD_TYPE,
-                                ::core::stringify!(TypeBody),
-                                ::core::stringify!(RecordType),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::RECORD_TYPE into a TypeBody::RecordType")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::RecordType(
+                    match node {
+                        ::std::borrow::Cow::Owned(owned) => owned,
+                        ::std::borrow::Cow::Borrowed(borrowed) => {
+                            ::core::clone::Clone::clone(borrowed)
+                        }
+                    },
                 )))
             }
             crate::SyntaxKind::SUM_TYPE => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::SumType(
-                    ::std::borrow::Cow::into_owned(SumType::cast(syntax).unwrap_or_else(|| {
+                let node = match SumType::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::SUM_TYPE,
-                                ::core::stringify!(TypeBody),
-                                ::core::stringify!(SumType),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::SUM_TYPE into a TypeBody::SumType")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::SumType(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             _ => ::core::option::Option::None,
         }
@@ -4938,36 +5012,36 @@ impl crate::ast::AstNode for UnaryOp {
     fn cast(syntax: &crate::SyntaxNode) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
         match crate::SyntaxNode::kind(syntax) {
             crate::SyntaxKind::BANG => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Bang(
-                    ::std::borrow::Cow::into_owned(Bang::cast(syntax).unwrap_or_else(|| {
+                let node = match Bang::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::BANG,
-                                ::core::stringify!(UnaryOp),
-                                ::core::stringify!(Bang),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::BANG into a UnaryOp::Bang")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Bang(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             crate::SyntaxKind::MINUS => {
-                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Minus(
-                    ::std::borrow::Cow::into_owned(Minus::cast(syntax).unwrap_or_else(|| {
+                let node = match Minus::cast(syntax) {
+                    Some(node) => node,
+                    None => {
                         if ::core::cfg!(debug_assertions) {
-                            ::core::panic!(
-                                "malformed codegen for casting {} into a {}::{}",
-                                crate::SyntaxKind::MINUS,
-                                ::core::stringify!(UnaryOp),
-                                ::core::stringify!(Minus),
-                            )
+                            :: core :: panic ! ("malformed codegen for casting SyntaxKind::MINUS into a UnaryOp::Minus")
                         } else {
                             unsafe { ::core::hint::unreachable_unchecked() }
                         }
-                    })),
-                )))
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Minus(match node {
+                    ::std::borrow::Cow::Owned(owned) => owned,
+                    ::std::borrow::Cow::Borrowed(borrowed) => ::core::clone::Clone::clone(borrowed),
+                })))
             }
             _ => ::core::option::Option::None,
         }
