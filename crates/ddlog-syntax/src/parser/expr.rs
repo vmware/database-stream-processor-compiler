@@ -36,6 +36,8 @@ impl Parser<'_, '_> {
     /// Utilizes [pratt parsing](https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html)
     /// to parse operator precedence
     // FIXME: Make this iterative instead of recursive
+    // FIXME: This needs to be totally restructured, this fundamentally
+    //        mis-structured
     fn expr_inner(&mut self, mut current_precedence: u8) -> Option<CompletedMarker> {
         let _frame = self.stack_frame();
         let mut lhs = match self.peek() {
