@@ -1,4 +1,4 @@
-ROOT@0..46
+ROOT@0..112
   COMMENT@0..27 "// kind:item validate ..."
   WHITESPACE@27..28 "\n"
   ITEM@28..46
@@ -17,3 +17,64 @@ ROOT@0..46
         L_CURLY@43..44 "{"
         R_CURLY@44..45 "}"
       WHITESPACE@45..46 "\n"
+  ITEM@46..73
+    FUNCTION_DEF@46..73
+      ATTRIBUTES@46..46
+      MODIFIERS@46..46
+      FUNCTION@46..54 "function"
+      WHITESPACE@54..55 " "
+      FUNCTION_NAME@55..59
+        IDENT@55..59 "foo1"
+      FUNCTION_ARGS@59..69
+        L_PAREN@59..60 "("
+        FUNCTION_ARG@60..68
+          ATTRIBUTES@60..60
+          VAR_REF@60..63
+            IDENT@60..63 "bar"
+          COLON@63..64 ":"
+          WHITESPACE@64..65 " "
+          TYPE@65..68
+            GENERIC_TYPE@65..68
+              IDENT@65..68 "Baz"
+        R_PAREN@68..69 ")"
+      WHITESPACE@69..70 " "
+      BLOCK@70..72
+        L_CURLY@70..71 "{"
+        R_CURLY@71..72 "}"
+      WHITESPACE@72..73 "\n"
+  ITEM@73..112
+    FUNCTION_DEF@73..112
+      ATTRIBUTES@73..73
+      MODIFIERS@73..73
+      FUNCTION@73..81 "function"
+      WHITESPACE@81..82 " "
+      FUNCTION_NAME@82..86
+        IDENT@82..86 "foo2"
+      FUNCTION_ARGS@86..108
+        L_PAREN@86..87 "("
+        FUNCTION_ARG@87..96
+          ATTRIBUTES@87..87
+          VAR_REF@87..90
+            IDENT@87..90 "bar"
+          COLON@90..91 ":"
+          WHITESPACE@91..92 " "
+          TYPE@92..95
+            GENERIC_TYPE@92..95
+              IDENT@92..95 "Baz"
+          COMMA@95..96 ","
+        WHITESPACE@96..97 " "
+        FUNCTION_ARG@97..107
+          ATTRIBUTES@97..97
+          VAR_REF@97..101
+            IDENT@97..101 "bing"
+          COLON@101..102 ":"
+          WHITESPACE@102..103 " "
+          TYPE@103..107
+            GENERIC_TYPE@103..107
+              IDENT@103..107 "Bang"
+        R_PAREN@107..108 ")"
+      WHITESPACE@108..109 " "
+      BLOCK@109..111
+        L_CURLY@109..110 "{"
+        R_CURLY@110..111 "}"
+      WHITESPACE@111..112 "\n"

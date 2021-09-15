@@ -1,6 +1,6 @@
 use crate::{
     parser::{CompletedMarker, Marker, Parser},
-    SyntaxKind::{BLOCK, ELSE_BLOCK, IF_BLOCK, IF_STMT, STMT, VAR_DECL},
+    SyntaxKind::{BLOCK, ELSE_BLOCK, IF_BLOCK, IF_STMT, RET_EXPR, STMT, VAR_DECL},
 };
 use ddlog_diagnostics::{Diagnostic, Label};
 
@@ -9,25 +9,22 @@ impl<'src, 'token> Parser<'src, 'token> {
         let _frame = self.stack_frame();
         let stmt = self.start();
 
-        dbg!();
         match self.peek() {
             T![if] => {
-                dbg!();
                 self.parse_if();
             }
             T![var] => {
-                dbg!();
                 self.var_decl();
             }
             T!['{'] => {
-                dbg!();
                 self.block();
+            }
+            T![return] => {
+                self.ret();
             }
 
             _ => {
-                dbg!();
                 if self.expr().is_none() {
-                    dbg!();
                     // TODO: Get full span text
                     let source = self.current_text();
                     let span = self
@@ -47,13 +44,10 @@ impl<'src, 'token> Parser<'src, 'token> {
 
                 // Otherwise, eat trailing semicolons
                 } else {
-                    dbg!();
                     self.eat_semicolons();
                 }
-                dbg!();
             }
         }
-        dbg!();
 
         Some(stmt.complete(self, STMT))
     }
@@ -92,18 +86,14 @@ impl<'src, 'token> Parser<'src, 'token> {
             } else {
                 self.else_block(Some(block));
             }
-
-            dbg!();
         }
 
-        dbg!();
         if self.at(T![else]) {
             let block = self.start();
             self.expect(T![else]);
 
             self.else_block(Some(block));
         }
-        dbg!();
 
         Some(if_stmt.complete(self, IF_STMT))
     }
@@ -111,11 +101,9 @@ impl<'src, 'token> Parser<'src, 'token> {
     fn if_block(&mut self, block: Option<Marker>) -> Option<CompletedMarker> {
         let block = block.unwrap_or_else(|| self.start());
 
-        dbg!();
         self.expect(T![if]);
         self.expr();
         self.block();
-        dbg!();
 
         Some(block.complete(self, IF_BLOCK))
     }
@@ -123,9 +111,7 @@ impl<'src, 'token> Parser<'src, 'token> {
     fn else_block(&mut self, block: Option<Marker>) -> Option<CompletedMarker> {
         let block = block.unwrap_or_else(|| self.start());
 
-        dbg!();
         self.block();
-        dbg!();
 
         Some(block.complete(self, ELSE_BLOCK))
     }
@@ -155,12 +141,10 @@ impl<'src, 'token> Parser<'src, 'token> {
             block.abandon(self);
             return None;
         }
-        dbg!();
 
         // FIXME: Statements, not expressions
         let mut did_error = false;
         while !self.at(T!['}']) && !self.at_end() {
-            dbg!(self.current());
             if self.stmt().is_none() {
                 // Bump so we don't loop forever
                 self.error_eat_until(token_set! { T!['}'], T![;] });
@@ -170,15 +154,22 @@ impl<'src, 'token> Parser<'src, 'token> {
             }
         }
 
-        dbg!();
         self.expect(T!['}']);
         let marker = block.complete(self, BLOCK);
-        dbg!();
 
         if did_error {
             None
         } else {
             Some(marker)
         }
+    }
+
+    pub(super) fn ret(&mut self) -> Option<CompletedMarker> {
+        let ret = self.start();
+
+        self.expect(T![return]);
+        self.expr();
+
+        Some(ret.complete(self, RET_EXPR))
     }
 }

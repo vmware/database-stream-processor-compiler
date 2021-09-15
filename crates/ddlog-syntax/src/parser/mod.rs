@@ -38,6 +38,15 @@ impl<'src, 'token> Parser<'src, 'token> {
         }
     }
 
+    // test fibonacci
+    // - function fibonacci(n: usize): usize {
+    // -     if n == 0 or n == 1 {
+    // -         return n;
+    // -     } else {
+    // -         // TODO: Function calls
+    // -         fibonacci
+    // -     }
+    // - }
     pub(crate) fn parse(mut self) -> (Vec<Event>, Vec<Diagnostic>) {
         self.root();
 

@@ -100,18 +100,17 @@ impl Parser<'_, '_> {
 
     // test function_definitions
     // - function foo() {}
+    // - function foo1(bar: Baz) {}
+    // - function foo2(bar: Baz, bing: Bang) {}
     fn function_def(&mut self, function: Marker) -> Option<CompletedMarker> {
         self.expect(T![function]);
-        dbg!(self.current());
 
         let current_set = self.recovery_set;
         self.recovery_set = current_set.add(T!['(']);
         self.identifier(FUNCTION_NAME);
         self.recovery_set = current_set;
-        dbg!(self.current());
 
         self.function_args();
-        dbg!(self.current());
 
         // test function_ret_ty
         // - function foo(): Bar {}
@@ -124,9 +123,7 @@ impl Parser<'_, '_> {
             ret.complete(self, FUNCTION_RETURN);
         }
 
-        dbg!(self.current());
         self.block();
-        dbg!(self.current());
 
         Some(function.complete(self, FUNCTION_DEF))
     }

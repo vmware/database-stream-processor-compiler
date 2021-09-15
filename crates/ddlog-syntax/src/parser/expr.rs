@@ -49,6 +49,8 @@ impl Parser<'_, '_> {
 
             T!['{'] => self.block()?,
 
+            T![return] => self.ret()?,
+
             _ => return None,
         };
 

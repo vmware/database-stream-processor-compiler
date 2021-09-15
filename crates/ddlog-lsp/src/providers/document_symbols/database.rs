@@ -2,7 +2,7 @@ use crate::{database::DocumentSymbols, providers::utils};
 use ddlog_diagnostics::{FileId, Interner, Rope};
 use ddlog_syntax::{
     ast::{
-        nodes::{FunctionArg, FunctionDef, Pattern, RelCol, RelationDef, Type},
+        nodes::{FunctionArg, FunctionDef, Pattern, RelCol, RelationDef, Stmt, Type},
         AstNode, AstToken,
     },
     match_ast, visitor, AstVisitor, RuleCtx, SyntaxNode,
@@ -180,7 +180,20 @@ pub(crate) fn document_function(
         }
     }
 
-    // TODO: Declarations within the function body
+    if let Some(block) = function.body() {
+        for stmt in block.statements() {
+            if let Stmt::VarDecl(decl) = &*stmt {
+                let mut bindings = Vec::with_capacity(decl.binding().is_some() as usize);
+                if let Some(binding) = decl.binding() {
+                    process_pattern(&*binding, &mut bindings, &source, interner, false);
+                }
+
+                children.extend(bindings);
+            }
+
+            // TODO: Nested variable declarations :(
+        }
+    }
 
     // Look for a `#[deprecated]` attribute on the function
     let tags = function

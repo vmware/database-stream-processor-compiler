@@ -1,0 +1,9 @@
+// kind:item validate:false
+function fibonacci(n: usize): usize {
+    if n == 0 or n == 1 {
+        return n;
+    } else {
+        // TODO: Function calls
+        fibonacci
+    }
+}
