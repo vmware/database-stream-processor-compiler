@@ -63,6 +63,21 @@
                 "language": "ddlog",
                 "scopes": {}
             }
-        ]
+        ],
+        "commands": [
+            {
+                "command": "ddlog-lsp.syntaxTree",
+                "title": "Show Syntax Tree",
+                "category": "Differential Datalog"
+            }
+        ],
+        "menus": {
+            "commandPalette": [
+                {
+                    "command": "ddlog-lsp.syntaxTree",
+                    "when": "inDDlogProject"
+                }
+            ]
+        }
     }
 }

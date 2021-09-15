@@ -94,4 +94,3 @@ Error: missing comma between attribute pairs
 function foo() {}
 #[foo = bar bar = baz]
 relation Foo()
-

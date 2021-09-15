@@ -101,4 +101,3 @@ Error: too many commas between attribute pairs
 function foo() {}
 #[foo = bar,,,,, bar = baz]
 relation Foo()
-

@@ -54,7 +54,7 @@ ExprStmt = Expr ';'
 VarDecl = 'var' binding:Pattern '=' value:Expr ';'
 
 IfStmt = IfBlock* ElseBlock?
-IfBlock = leading_else:'else' 'if' cond:Expr Block
+IfBlock = leading_else:'else'? 'if' cond:Expr Block
 ElseBlock = 'else' Block
 
 Pattern = VarRef | TuplePattern

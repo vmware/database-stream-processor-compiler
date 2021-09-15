@@ -32,4 +32,3 @@ Error: received an 'output' modifier on a function definition
 --
 // kind:item validate:true
 extern output function foo() {}
-

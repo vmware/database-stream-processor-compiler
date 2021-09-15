@@ -14,12 +14,16 @@ pub(crate) struct SemanticTokensBuilder {
 }
 
 impl SemanticTokensBuilder {
-    pub(crate) fn new(id: Option<String>) -> Self {
-        SemanticTokensBuilder {
+    // pub(crate) fn new(id: Option<String>) -> Self {
+    //     Self::with_capacity(id, 0)
+    // }
+
+    pub(crate) fn with_capacity(id: Option<String>, capacity: usize) -> Self {
+        Self {
             id,
             prev_line: 0,
             prev_char: 0,
-            data: Default::default(),
+            data: Vec::with_capacity(capacity),
         }
     }
 
@@ -83,7 +87,7 @@ pub(crate) fn diff_tokens(old: &[SemanticToken], new: &[SemanticToken]) -> Vec<S
     let (new, _) = new.split_at(new.len() - offset_from_end);
 
     if old.is_empty() && new.is_empty() {
-        vec![]
+        Vec::new()
     } else {
         // The lsp data field is actually a byte-diff but we
         // travel in tokens so `start` and `delete_count` are in multiples of the
@@ -91,7 +95,7 @@ pub(crate) fn diff_tokens(old: &[SemanticToken], new: &[SemanticToken]) -> Vec<S
         vec![SemanticTokensEdit {
             start: 5 * offset as u32,
             delete_count: 5 * old.len() as u32,
-            data: Some(new.into()),
+            data: Some(new.to_vec()),
         }]
     }
 }

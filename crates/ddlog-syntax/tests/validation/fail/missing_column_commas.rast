@@ -126,4 +126,3 @@ Error: missing comma between relation columns
 relation Foo(foo: Bar bar: Baz)
 multiset Foo(foo: Bar bar: Baz)
 stream Foo(foo: Bar bar: Baz)
-

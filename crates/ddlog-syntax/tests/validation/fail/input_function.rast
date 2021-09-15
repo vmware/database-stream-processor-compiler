@@ -32,4 +32,3 @@ Error: received an 'input' modifier on a function definition
 --
 // kind:item validate:true
 extern input function foo() {}
-

@@ -5,7 +5,7 @@ pub(crate) use database::{
     document_relation_column, document_symbols,
 };
 
-use crate::database::{DDlogDatabase, Session, Symbols};
+use crate::database::{DDlogDatabase, DocumentSymbols, Session};
 use lspower::lsp::{DocumentSymbolResponse, Url};
 use salsa::Snapshot;
 

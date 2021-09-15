@@ -54,6 +54,23 @@ pub fn parse<'interner>(
 }
 
 #[inline]
+pub fn parse_stmt<'interner>(
+    file: FileId,
+    source: &str,
+    cache: NodeCache<'interner>,
+) -> (Parsed, NodeCache<'interner>) {
+    let interner = cache.interner().clone();
+    let tokens: Vec<_> = Lexer::new(source, file).collect();
+    let span = Span::single(source.len() as u32, file);
+
+    let (events, errors) = Parser::new(&tokens, span).parse_stmt();
+    let (root, node_cache) = Sink::new(source, tokens, events, cache).finish();
+
+    let parsed = Parsed::new(SyntaxNode::new_root(root), interner, errors);
+    (parsed, node_cache.unwrap())
+}
+
+#[inline]
 pub fn parse_expr<'interner>(
     file: FileId,
     source: &str,

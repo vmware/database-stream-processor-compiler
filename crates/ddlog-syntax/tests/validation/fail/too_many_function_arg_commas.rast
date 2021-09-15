@@ -49,4 +49,3 @@ Error: too many commas between function arguments
 --
 // kind:item validate:true
 function foo(foo: Bar,, bar: Baz) {}
-

@@ -1,8 +1,8 @@
-ROOT@0..66
+ROOT@0..59
   COMMENT@0..26 "// kind:item validate ..."
   WHITESPACE@26..27 "\n"
-  ITEM@27..66
-    FUNCTION_DEF@27..66
+  ITEM@27..59
+    FUNCTION_DEF@27..59
       ATTRIBUTES@27..27
       MODIFIERS@27..40
         EXTERN@27..33 "extern"
@@ -13,28 +13,19 @@ ROOT@0..66
       WHITESPACE@49..50 " "
       FUNCTION_NAME@50..53
         IDENT@50..53 "foo"
-      FUNCTION_ARGS@53..62
+      FUNCTION_ARGS@53..55
         L_PAREN@53..54 "("
-        FUNCTION_ARG@54..61
-          ATTRIBUTES@54..54
-          VAR_REF@54..57
-            IDENT@54..57 "bar"
-          COLON@57..58 ":"
-          WHITESPACE@58..59 " "
-          TYPE@59..61
-            GENERIC_TYPE@59..61
-              IDENT@59..61 "u8"
-        R_PAREN@61..62 ")"
-      WHITESPACE@62..63 " "
-      BLOCK@63..65
-        L_CURLY@63..64 "{"
-        R_CURLY@64..65 "}"
-      WHITESPACE@65..66 "\n"
+        R_PAREN@54..55 ")"
+      WHITESPACE@55..56 " "
+      BLOCK@56..58
+        L_CURLY@56..57 "{"
+        R_CURLY@57..58 "}"
+      WHITESPACE@58..59 "\n"
 --
 Error: received multiple 'extern' modifiers where one was expected
    ,-[validation/fail/double_extern_function.dl:2:8]
    |
- 2 | extern extern function foo(bar: u8) {}
+ 2 | extern extern function foo() {}
    : ^^^|^^ ^^^|^^  
    :    `----------- first 'extern' given here
    :           |    
@@ -42,5 +33,4 @@ Error: received multiple 'extern' modifiers where one was expected
 ---'
 --
 // kind:item validate:true
-extern extern function foo(bar: u8) {}
-
+extern extern function foo() {}

@@ -1,4 +1,4 @@
-use crate::{database::Symbols, providers::utils};
+use crate::{database::DocumentSymbols, providers::utils};
 use ddlog_diagnostics::{FileId, Interner, Rope};
 use ddlog_syntax::{
     ast::{
@@ -10,7 +10,10 @@ use ddlog_syntax::{
 use ddlog_utils::ArcSlice;
 use lspower::lsp::{DocumentSymbol, Position, Range, SymbolKind, SymbolTag};
 
-pub(crate) fn document_symbols(symbols: &dyn Symbols, file: FileId) -> ArcSlice<DocumentSymbol> {
+pub(crate) fn document_symbols(
+    symbols: &dyn DocumentSymbols,
+    file: FileId,
+) -> ArcSlice<DocumentSymbol> {
     let session = symbols.session();
     let interner = session.interner();
     let uri = file.to_str(interner);
@@ -71,7 +74,7 @@ impl AstVisitor for DeclarationCollector {
     }
 }
 
-pub(crate) fn declarations(symbols: &dyn Symbols, file: FileId) -> ArcSlice<SyntaxNode> {
+pub(crate) fn declarations(symbols: &dyn DocumentSymbols, file: FileId) -> ArcSlice<SyntaxNode> {
     let session = symbols.session();
     let interner = session.interner();
     let uri = file.to_str(interner);
@@ -95,7 +98,7 @@ pub(crate) fn declarations(symbols: &dyn Symbols, file: FileId) -> ArcSlice<Synt
 }
 
 pub(crate) fn document_function(
-    symbols: &dyn Symbols,
+    symbols: &dyn DocumentSymbols,
     file: FileId,
     function: FunctionDef,
 ) -> DocumentSymbol {
@@ -206,7 +209,7 @@ pub(crate) fn document_function(
 }
 
 pub(crate) fn document_function_arg(
-    symbols: &dyn Symbols,
+    symbols: &dyn DocumentSymbols,
     file: FileId,
     arg: FunctionArg,
 ) -> Option<ArcSlice<DocumentSymbol>> {
@@ -232,7 +235,7 @@ pub(crate) fn document_function_arg(
 }
 
 pub(crate) fn document_relation(
-    symbols: &dyn Symbols,
+    symbols: &dyn DocumentSymbols,
     file: FileId,
     relation: RelationDef,
 ) -> DocumentSymbol {
@@ -302,7 +305,7 @@ pub(crate) fn document_relation(
 }
 
 pub(crate) fn document_relation_column(
-    symbols: &dyn Symbols,
+    symbols: &dyn DocumentSymbols,
     file: FileId,
     column: RelCol,
 ) -> Option<ArcSlice<DocumentSymbol>> {

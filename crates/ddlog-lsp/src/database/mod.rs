@@ -1,9 +1,10 @@
 mod queries;
 
-pub use queries::{Diagnostics, Session, Source, Symbols, Validation};
+pub use queries::{Diagnostics, DocumentSymbols, Session, Source, Validation};
 
 use queries::{
-    DiagnosticsDatabase, SessionDatabase, SourceDatabase, SymbolsDatabase, ValidationDatabase,
+    DiagnosticsDatabase, DocumentSymbolsDatabase, SessionDatabase, SourceDatabase,
+    ValidationDatabase,
 };
 use salsa::{Database, ParallelDatabase, Snapshot, Storage};
 use std::fmt::{self, Debug};
@@ -12,7 +13,7 @@ use std::fmt::{self, Debug};
     SessionDatabase,
     SourceDatabase,
     ValidationDatabase,
-    SymbolsDatabase,
+    DocumentSymbolsDatabase,
     DiagnosticsDatabase
 )]
 #[derive(Default)]

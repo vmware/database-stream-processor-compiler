@@ -9,6 +9,7 @@ use once_cell::sync::Lazy;
 use std::{
     env,
     ffi::OsStr,
+    fmt::Debug,
     fs,
     io::{self, Write},
     panic::{self, AssertUnwindSafe},
@@ -24,7 +25,7 @@ static INTERNER: Lazy<Interner> = Lazy::new(Interner::new);
 fn test_logger() {
     let _ = subscriber::set_global_default(
         tracing_subscriber::fmt()
-            .with_env_filter(EnvFilter::from_default_env())
+            .with_env_filter(EnvFilter::from_env("DDLOG_LOG"))
             .with_test_writer()
             .finish(),
     );
@@ -195,7 +196,6 @@ fn parser_tests() {
                 buffer.clear();
             }
             result.push_str(&format!("--\n{}", text));
-            result.push('\n');
             result
         },
     );
@@ -225,7 +225,7 @@ fn try_parse(
 ) -> (Parsed, NodeCache<'static>) {
     let result = panic::catch_unwind(AssertUnwindSafe(|| match kind {
         TestKind::Item => crate::parse(file, text, cache),
-        TestKind::Stmt => todo!("implement statement tests"),
+        TestKind::Stmt => crate::parse_stmt(file, text, cache),
         TestKind::Expr => crate::parse_expr(file, text, cache),
     }));
 

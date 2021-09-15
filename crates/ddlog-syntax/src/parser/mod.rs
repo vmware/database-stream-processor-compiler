@@ -3,6 +3,7 @@ mod expr;
 mod item;
 pub(crate) mod sink;
 pub(crate) mod source;
+mod stmt;
 mod tests;
 
 use crate::{
@@ -12,7 +13,7 @@ use crate::{
     Token, TokenSet,
 };
 use ddlog_diagnostics::{Diagnostic, Label};
-use std::{cell::Cell, fmt::Debug, num::NonZeroUsize, rc::Rc, thread};
+use std::{cell::Cell, fmt::Debug, num::NonZeroUsize, panic::Location, rc::Rc, thread};
 
 // FIXME: Add recursion checks
 pub(crate) struct Parser<'src, 'token> {
@@ -48,14 +49,43 @@ impl<'src, 'token> Parser<'src, 'token> {
 
         while !self.at_end() {
             if self.expr().is_none() {
+                // TODO: Get full span text
+                let source = self.current_text();
+                let span = self.error_eat_until(EXPR_RECOVERY_SET);
+
                 let error = Diagnostic::error()
                     .with_message("expected an expression")
-                    .with_label(Label::primary(self.current_span()).with_message(format!(
+                    .with_label(Label::primary(span).with_message(format!(
                         "expected an ident, literal, '-', '!', '(' or '{{', got '{}'",
-                        self.current_text(),
+                        source
                     )));
 
-                self.error_eat_until(EXPR_RECOVERY_SET);
+                self.push_error(error);
+                break;
+            }
+        }
+
+        root.complete(&mut self, ROOT);
+        (self.events, self.errors)
+    }
+
+    pub(crate) fn parse_stmt(mut self) -> (Vec<Event>, Vec<Diagnostic>) {
+        let root = self.start();
+
+        while !self.at_end() {
+            if self.stmt().is_none() {
+                // TODO: Get full span text
+                let source = self.current_text();
+                // TODO: Statement recovery set
+                let span = self.error_eat_until(EXPR_RECOVERY_SET);
+
+                let error = Diagnostic::error()
+                    .with_message("expected a statement")
+                    .with_label(Label::primary(span).with_message(format!(
+                        "expected an ident, literal, '-', '!', '(' or '{{', got '{}'",
+                        source,
+                    )));
+
                 self.push_error(error);
                 break;
             }
@@ -77,6 +107,14 @@ impl<'src, 'token> Parser<'src, 'token> {
 
     fn stack_frame(&self) -> StackFrame {
         StackFrame::new(self.steps.clone())
+    }
+
+    fn eat_semicolons(&mut self) {
+        while self.try_expect(T![;]) {}
+    }
+
+    fn eat_commas(&mut self) {
+        while self.try_expect(T![,]) {}
     }
 
     #[track_caller]
@@ -136,10 +174,28 @@ impl<'src, 'token> Parser<'src, 'token> {
         self.errors.push(error);
     }
 
+    #[track_caller]
     fn error_eat_until(&mut self, set: TokenSet) -> Span {
+        let caller = Location::caller();
+        tracing::trace!(
+            %set,
+            "eating until error set @ {}:{}:{}",
+            caller.file(),
+            caller.line(),
+            caller.column(),
+        );
+
         let marker = self.start();
         let span = self.eat_until_set(set);
         marker.complete(self, ERROR);
+
+        tracing::trace!(
+            %set,
+            "finished eating until error set @ {}:{}:{}",
+            caller.file(),
+            caller.line(),
+            caller.column(),
+        );
 
         span
     }
@@ -215,15 +271,27 @@ impl<'src, 'token> Parser<'src, 'token> {
     }
 
     /// Try to eat a token of the given kind or add an error to the events stack
+    #[track_caller]
     fn expect(&mut self, kind: SyntaxKind) -> bool {
         self.expect_span(kind).is_some()
     }
 
     /// Try to eat a token of the given kind or add an error to the events stack
+    #[track_caller]
     fn expect_span(&mut self, kind: SyntaxKind) -> Option<Span> {
         if let Some(span) = self.eat_span(kind) {
             Some(span)
         } else {
+            let caller = Location::caller();
+            tracing::trace!(
+                "expected '{}', got '{}' @ {}:{}:{}",
+                kind,
+                self.current(),
+                caller.file(),
+                caller.line(),
+                caller.column(),
+            );
+
             let error = if self.current() == EOF {
                 Diagnostic::error()
                     .with_message(format!("expected '{}' but instead the file ends", kind))

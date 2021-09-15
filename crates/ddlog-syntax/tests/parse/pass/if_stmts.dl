@@ -1,0 +1,10 @@
+// kind:stmt validate:false
+if x {
+    x + y;
+} else if y {
+    x + y;
+} else if z {
+    x + y;
+} else {
+    x + y;
+}

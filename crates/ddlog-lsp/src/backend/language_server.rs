@@ -17,7 +17,7 @@ use lspower::{
     jsonrpc::Result,
     lsp::{
         DidChangeTextDocumentParams, DidOpenTextDocumentParams, DocumentSymbolParams,
-        DocumentSymbolResponse, InitializeParams, InitializeResult, OneOf,
+        DocumentSymbolResponse, ExecuteCommandParams, InitializeParams, InitializeResult, OneOf,
         SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions,
         SemanticTokensParams, SemanticTokensResult, SemanticTokensServerCapabilities,
         ServerCapabilities, TextDocumentSyncCapability, TextDocumentSyncKind,
@@ -26,6 +26,7 @@ use lspower::{
     LanguageServer,
 };
 use salsa::ParallelDatabase;
+use serde_json::Value;
 
 #[lspower::async_trait]
 impl LanguageServer for Backend {
@@ -273,4 +274,50 @@ impl LanguageServer for Backend {
         let snapshot = self.snapshot();
         Ok(document_symbols::nested_symbols(snapshot, uri))
     }
+
+    async fn execute_command(&self, params: ExecuteCommandParams) -> Result<Option<Value>> {
+        tracing::info!(?params, "received execute command request");
+
+        Ok(None)
+    }
+
+    // These requests require symbol resolution:
+    // - completion
+    // - completion_resolve
+    // - hover
+    // - goto_declaration
+    // - goto_definition
+    // - goto_type_definition
+    // - goto_implementation
+    // - references
+    // - rename
+    // - prepare_rename
+    // - incoming_calls
+    // - outgoing_calls
+    // - prepare_call_hierarchy
+    // - signature_help
+    // - symbol
+    //
+    // These requests haven't been gotten around to yet:
+    // - semantic_tokens_full_delta
+    // - semantic_tokens_range
+    // - semantic_tokens_refresh
+    //
+    // These need to be implemented as well:
+    // - did_close, we probably need to react to the closing of documents somehow
+    // - did_change_configuration
+    // - did_change_watched_files
+    // - did_change_workspace_folders
+    // - did_save, this could be important?
+    //
+    // Other features:
+    // - code_lens
+    // - code_lens_resolve
+    // - code_action
+    // - code_action_resolve
+    // - document_link
+    // - document_link_resolve
+    // - folding_range
+    // - formatting, this is very complex so it's a low priority (use will_save_wait_until to format on save)
+    // - execute_command, I'm sure there's some commands we can provide
 }

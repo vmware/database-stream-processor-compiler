@@ -57,6 +57,32 @@ where
     });
 }
 
+/// The same as [`apply_visitor()`] except if a [`AstVisitor::check_node()`] implementation
+/// returns [`Some`] it will skip all descendants
+pub fn apply_visitor_short_circuiting<V>(node: &SyntaxNode, visitor: &mut V, ctx: &mut RuleCtx)
+where
+    V: AstVisitor,
+{
+    if node.is::<Root>() {
+        visitor.check_root(node, ctx);
+    }
+
+    node.descendants_with_tokens_with(|elem| match elem {
+        SyntaxElementRef::Node(node) => {
+            if node.kind() == SyntaxKind::ERROR {
+                return false;
+            }
+
+            visitor.check_node(node, ctx).is_none()
+        }
+
+        SyntaxElementRef::Token(token) => {
+            visitor.check_token(token, ctx);
+            true
+        }
+    });
+}
+
 pub trait AstVisitor {
     /// Check an individual node in the syntax tree.
     /// You can use the `match_ast` macro to make matching a node to an ast node easier.

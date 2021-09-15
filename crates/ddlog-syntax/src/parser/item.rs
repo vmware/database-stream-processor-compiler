@@ -74,7 +74,9 @@ impl Parser<'_, '_> {
             // TODO: `import`
 
             // TODO: Errors
-            _ => {
+            kind => {
+                tracing::trace!("unexpected token for item '{}'", kind);
+
                 let error_start = self.current_span();
                 let error_end = self.error_eat_until(ITEM_RECOVERY);
                 let error_span = error_start.merge(error_end);
@@ -100,13 +102,16 @@ impl Parser<'_, '_> {
     // - function foo() {}
     fn function_def(&mut self, function: Marker) -> Option<CompletedMarker> {
         self.expect(T![function]);
+        dbg!(self.current());
 
         let current_set = self.recovery_set;
         self.recovery_set = current_set.add(T!['(']);
         self.identifier(FUNCTION_NAME);
         self.recovery_set = current_set;
+        dbg!(self.current());
 
         self.function_args();
+        dbg!(self.current());
 
         // test function_ret_ty
         // - function foo(): Bar {}
@@ -119,7 +124,9 @@ impl Parser<'_, '_> {
             ret.complete(self, FUNCTION_RETURN);
         }
 
-        self.block(ITEM_RECOVERY);
+        dbg!(self.current());
+        self.block();
+        dbg!(self.current());
 
         Some(function.complete(self, FUNCTION_DEF))
     }
@@ -220,8 +227,7 @@ impl Parser<'_, '_> {
                 self.pattern();
                 self.expect(T![:]);
                 self.ty();
-
-                while self.try_expect(T![,]) {}
+                self.eat_commas();
 
                 field.complete(self, RECORD_FIELD);
             }
@@ -247,8 +253,7 @@ impl Parser<'_, '_> {
         self.pattern();
         self.expect(T![:]);
         self.ty();
-
-        while self.try_expect(T![,]) {}
+        self.eat_commas();
 
         Some(column.complete(self, kind))
     }
@@ -287,7 +292,7 @@ impl Parser<'_, '_> {
                 let generic_arg = self.start();
 
                 self.ty();
-                while self.try_expect(T![,]) {}
+                self.eat_commas();
 
                 generic_arg.complete(self, GENERIC_ARG);
             }
@@ -310,7 +315,7 @@ impl Parser<'_, '_> {
             let elem = self.start();
 
             self.ty();
-            while self.try_expect(T![,]) {}
+            self.eat_commas();
 
             elem.complete(self, TUPLE_TYPE_ELEM);
         }
@@ -337,7 +342,7 @@ impl Parser<'_, '_> {
                 let arg = self.start();
 
                 self.ty();
-                while self.try_expect(T![,]) {}
+                self.eat_commas();
 
                 arg.complete(self, FUNCTION_TYPE_ARG);
             }
@@ -361,8 +366,10 @@ impl Parser<'_, '_> {
     }
 
     // TODO: Extend to full patterns
-    fn pattern(&mut self) -> Option<CompletedMarker> {
+    pub(super) fn pattern(&mut self) -> Option<CompletedMarker> {
+        let _frame = self.stack_frame();
         let pattern = self.start();
+
         self.expect(IDENT);
 
         Some(pattern.complete(self, VAR_REF))
@@ -419,7 +426,7 @@ impl Parser<'_, '_> {
                 self.expr();
             }
 
-            while self.try_expect(T![,]) {}
+            self.eat_commas();
 
             pair.complete(self, ATTR_PAIR);
         }

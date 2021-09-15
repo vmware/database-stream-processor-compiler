@@ -70,8 +70,8 @@ fn validation_diagnostics(validation: &dyn Validation, file: FileId) -> ArcSlice
     ArcSlice::new(ctx.diagnostics)
 }
 
-#[salsa::query_group(SymbolsDatabase)]
-pub trait Symbols: Source {
+#[salsa::query_group(DocumentSymbolsDatabase)]
+pub trait DocumentSymbols: Source {
     #[salsa::invoke(document_symbols::document_symbols)]
     fn document_symbols(&self, file: FileId) -> ArcSlice<DocumentSymbol>;
 

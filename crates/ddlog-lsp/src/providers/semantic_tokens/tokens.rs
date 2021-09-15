@@ -49,7 +49,7 @@ macro_rules! define_semantic_token_types {
             SemanticTokenType::MACRO,
             SemanticTokenType::VARIABLE,
             SemanticTokenType::PARAMETER,
-            $($ident),*
+            $($ident,)*
         ];
     };
 }
@@ -68,6 +68,7 @@ macro_rules! define_semantic_token_modifiers {
             SemanticTokenModifier::ABSTRACT,
             SemanticTokenModifier::DEPRECATED,
             SemanticTokenModifier::READONLY,
+            SemanticTokenModifier::MODIFICATION,
             $($ident),*
         ];
     };

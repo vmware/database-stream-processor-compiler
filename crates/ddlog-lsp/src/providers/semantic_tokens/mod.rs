@@ -8,7 +8,7 @@ use crate::{
     database::{DDlogDatabase, Session, Source},
     providers::semantic_tokens::highlighter::SemanticHighlighter,
 };
-use ddlog_syntax::{ast::nodes::Root, SyntaxNodeExt};
+use ddlog_syntax::{visitor, RuleCtx};
 use lspower::lsp::{SemanticTokensResult, Url};
 use salsa::Snapshot;
 
@@ -17,20 +17,31 @@ pub(crate) fn semantic_tokens_full(
     url: &Url,
 ) -> Option<SemanticTokensResult> {
     let session = snapshot.session();
+    let interner = session.interner().clone();
     let file = session.file_id(url);
 
-    let text = snapshot.file_source(file);
+    let source = snapshot.file_source(file);
     let root = snapshot.syntax(file);
 
-    let tokens = SemanticHighlighter::highlight(&text, &*root.to::<Root>(), session.interner());
+    let mut highlighter = SemanticHighlighter::new();
+    let mut ctx = RuleCtx::new(file, source, interner);
+    visitor::apply_visitor_short_circuiting(&root, &mut highlighter, &mut ctx);
+
+    let tokens = highlighter.finish(&ctx.source);
     if tokens.data.is_empty() {
-        tracing::trace!(
+        tracing::debug!(
             file = %url,
             "didn't generate any semantic tokens, returning `None` to the client",
         );
 
         None
     } else {
+        tracing::debug!(
+            file = %url,
+            "generated {} semantic tokens",
+            tokens.data.len(),
+        );
+
         Some(SemanticTokensResult::Tokens(tokens))
     }
 }

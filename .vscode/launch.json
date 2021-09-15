@@ -15,7 +15,7 @@
                     "value": "full",
                 },
                 {
-                    "name": "DDLOG_LSP_LOG",
+                    "name": "DDLOG_LOG",
                     // Set the log level to trace for everything, but then filter
                     // out some of the extraneous stuff from libraries we use
                     "value": "trace,salsa=info,mio=info,tokio_util=info,lspower=info",

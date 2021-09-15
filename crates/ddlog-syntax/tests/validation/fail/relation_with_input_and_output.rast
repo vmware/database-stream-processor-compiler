@@ -31,4 +31,3 @@ Error: a relation cannot be marked as both 'input' and 'output'
 --
 // kind:item validate:true
 input output relation Foo()
-

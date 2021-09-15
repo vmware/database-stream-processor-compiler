@@ -1,8 +1,8 @@
 use crate::{
     parser::{CompletedMarker, Parser},
     SyntaxKind::{
-        self, BIN_EXPR, BIN_OP, BLOCK, EXPR, IDENT, LITERAL, NUMBER, PAREN_EXPR, UNARY_EXPR,
-        UNARY_OP, VAR_REF,
+        self, BIN_EXPR, BIN_OP, EXPR, IDENT, LITERAL, NUMBER, PAREN_EXPR, UNARY_EXPR, UNARY_OP,
+        VAR_REF,
     },
     TokenSet,
 };
@@ -25,10 +25,10 @@ impl Parser<'_, '_> {
     pub(super) fn expr(&mut self) -> Option<CompletedMarker> {
         let expr = self.start();
         // TODO: Should we abandon the marker if `.expr_inner()` fails?
-        let inner = self.expr_inner(0);
+        self.expr_inner(0);
         let marker = expr.complete(self, EXPR);
 
-        inner.map(|_| marker)
+        Some(marker)
     }
 
     /// The innards of [`Parser::expr()`], does all of the actual work
@@ -47,7 +47,7 @@ impl Parser<'_, '_> {
 
             T!['('] => self.parentheses()?,
 
-            T!['{'] => self.block(TokenSet::empty())?,
+            T!['{'] => self.block()?,
 
             _ => return None,
         };
@@ -176,44 +176,6 @@ impl Parser<'_, '_> {
         }
 
         Some(marker.complete(self, wrapper))
-    }
-
-    // test(expr) block_exprs
-    // - { 10 } - {{ 5 + ({ 99 }) }}
-    // test_err(expr) unclosed_block
-    // - {{ 10 }
-    pub(super) fn block(&mut self, recovery_set: TokenSet) -> Option<CompletedMarker> {
-        let previous = self.recovery_set;
-        self.recovery_set = previous.union(recovery_set);
-
-        let block = self.start();
-        if !self.expect(T!['{']) {
-            block.abandon(self);
-            return None;
-        }
-
-        // FIXME: Statements, not expressions
-        let mut did_error = false;
-        while !self.at(T!['}']) && !self.at_end() {
-            if self.expr().is_none() {
-                // Bump so we don't loop forever
-                self.error_eat_until(EXPR_RECOVERY_SET);
-                did_error = true;
-
-                break;
-            }
-        }
-
-        self.expect(T!['}']);
-        let marker = block.complete(self, BLOCK);
-
-        self.recovery_set = previous;
-
-        if did_error {
-            None
-        } else {
-            Some(marker)
-        }
     }
 }
 

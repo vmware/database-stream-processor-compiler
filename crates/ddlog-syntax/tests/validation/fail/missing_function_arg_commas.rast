@@ -47,4 +47,3 @@ Error: missing comma between function arguments
 --
 // kind:item validate:true
 function foo(foo: Bar bar: Baz) {}
-
