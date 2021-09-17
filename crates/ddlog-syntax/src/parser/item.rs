@@ -47,7 +47,9 @@ impl Parser<'_, '_> {
         self.recovery_set = current_set.union(ITEM_RECOVERY);
 
         while !self.at_end() {
-            self.item();
+            if self.item().is_none() {
+                break;
+            }
         }
 
         self.recovery_set = current_set;
@@ -67,7 +69,6 @@ impl Parser<'_, '_> {
         // caught during validation
         self.modifiers();
 
-        tracing::trace!(peek = %self.peek(), "parsing item");
         match self.peek() {
             T![function] => self.function_def(inner_item),
             T![relation] | T![multiset] | T![stream] => self.relation_def(inner_item),
@@ -125,7 +126,7 @@ impl Parser<'_, '_> {
             ret.complete(self, FUNCTION_RETURN);
         }
 
-        self.block();
+        self.block(false);
 
         Some(function.complete(self, FUNCTION_DEF))
     }

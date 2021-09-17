@@ -1,0 +1,17 @@
+ROOT@0..60
+  COMMENT@0..50 "// kind:expr validate ..."
+  WHITESPACE@50..51 "\n"
+  EXPR@51..60
+    UNARY_EXPR@51..60
+      UNARY_OP@51..52
+        MINUS@51..52 "-"
+      BIN_EXPR@52..60
+        LITERAL@52..54
+          NUMBER@52..54 "20"
+        WHITESPACE@54..55 " "
+        BIN_OP@55..56
+          PLUS@55..56 "+"
+        WHITESPACE@56..57 " "
+        LITERAL@57..59
+          NUMBER@57..59 "20"
+        WHITESPACE@59..60 "\n"

@@ -1,0 +1,240 @@
+ROOT@0..209
+  COMMENT@0..50 "// kind:stmt validate ..."
+  WHITESPACE@50..51 "\n"
+  STMT@51..58
+    EXPR@51..57
+      BIN_EXPR@51..57
+        LITERAL@51..52
+          NUMBER@51..52 "1"
+        WHITESPACE@52..53 " "
+        BIN_OP@53..55
+          EQEQ@53..55 "=="
+        WHITESPACE@55..56 " "
+        LITERAL@56..57
+          NUMBER@56..57 "2"
+    SEMICOLON@57..58 ";"
+  WHITESPACE@58..59 "\n"
+  STMT@59..70
+    EXPR@59..69
+      BIN_EXPR@59..69
+        VAR_REF@59..62
+          IDENT@59..62 "foo"
+        WHITESPACE@62..63 " "
+        BIN_OP@63..65
+          NEQ@63..65 "!="
+        WHITESPACE@65..66 " "
+        VAR_REF@66..69
+          IDENT@66..69 "bar"
+    SEMICOLON@69..70 ";"
+  WHITESPACE@70..71 "\n"
+  STMT@71..77
+    EXPR@71..76
+      BIN_EXPR@71..76
+        LITERAL@71..72
+          NUMBER@71..72 "1"
+        WHITESPACE@72..73 " "
+        BIN_OP@73..74
+          STAR@73..74 "*"
+        WHITESPACE@74..75 " "
+        LITERAL@75..76
+          NUMBER@75..76 "2"
+    SEMICOLON@76..77 ";"
+  WHITESPACE@77..78 "\n"
+  STMT@78..93
+    EXPR@78..92
+      BIN_EXPR@78..92
+        LITERAL@78..79
+          NUMBER@78..79 "1"
+        WHITESPACE@79..80 " "
+        BIN_OP@80..81
+          STAR@80..81 "*"
+        WHITESPACE@81..82 " "
+        BIN_EXPR@82..92
+          LITERAL@82..83
+            NUMBER@82..83 "3"
+          WHITESPACE@83..84 " "
+          BIN_OP@84..86
+            NEQ@84..86 "!="
+          WHITESPACE@86..87 " "
+          BIN_EXPR@87..92
+            LITERAL@87..88
+              NUMBER@87..88 "3"
+            WHITESPACE@88..89 " "
+            BIN_OP@89..90
+              STAR@89..90 "*"
+            WHITESPACE@90..91 " "
+            LITERAL@91..92
+              NUMBER@91..92 "1"
+    SEMICOLON@92..93 ";"
+  WHITESPACE@93..94 "\n"
+  STMT@94..113
+    EXPR@94..112
+      BIN_EXPR@94..112
+        LITERAL@94..95
+          NUMBER@94..95 "1"
+        WHITESPACE@95..96 " "
+        BIN_OP@96..98
+          EQEQ@96..98 "=="
+        WHITESPACE@98..99 " "
+        BIN_EXPR@99..112
+          LITERAL@99..100
+            NUMBER@99..100 "2"
+          WHITESPACE@100..101 " "
+          BIN_OP@101..104
+            AND@101..104 "and"
+          WHITESPACE@104..105 " "
+          BIN_EXPR@105..112
+            LITERAL@105..106
+              NUMBER@105..106 "5"
+            WHITESPACE@106..107 " "
+            BIN_OP@107..109
+              EQEQ@107..109 "=="
+            WHITESPACE@109..110 " "
+            LITERAL@110..112
+              NUMBER@110..112 "10"
+    SEMICOLON@112..113 ";"
+  WHITESPACE@113..114 "\n"
+  STMT@114..132
+    EXPR@114..131
+      BIN_EXPR@114..131
+        LITERAL@114..115
+          NUMBER@114..115 "1"
+        WHITESPACE@115..116 " "
+        BIN_OP@116..118
+          EQEQ@116..118 "=="
+        WHITESPACE@118..119 " "
+        BIN_EXPR@119..131
+          LITERAL@119..120
+            NUMBER@119..120 "2"
+          WHITESPACE@120..121 " "
+          BIN_OP@121..123
+            OR@121..123 "or"
+          WHITESPACE@123..124 " "
+          BIN_EXPR@124..131
+            LITERAL@124..125
+              NUMBER@124..125 "5"
+            WHITESPACE@125..126 " "
+            BIN_OP@126..128
+              EQEQ@126..128 "=="
+            WHITESPACE@128..129 " "
+            LITERAL@129..131
+              NUMBER@129..131 "10"
+    SEMICOLON@131..132 ";"
+  WHITESPACE@132..133 "\n"
+  STMT@133..178
+    EXPR@133..177
+      BIN_EXPR@133..177
+        PAREN_EXPR@133..152
+          L_PAREN@133..134 "("
+          EXPR@134..151
+            BIN_EXPR@134..151
+              LITERAL@134..135
+                NUMBER@134..135 "1"
+              WHITESPACE@135..136 " "
+              BIN_OP@136..138
+                EQEQ@136..138 "=="
+              WHITESPACE@138..139 " "
+              BIN_EXPR@139..151
+                LITERAL@139..140
+                  NUMBER@139..140 "2"
+                WHITESPACE@140..141 " "
+                BIN_OP@141..143
+                  OR@141..143 "or"
+                WHITESPACE@143..144 " "
+                BIN_EXPR@144..151
+                  LITERAL@144..145
+                    NUMBER@144..145 "5"
+                  WHITESPACE@145..146 " "
+                  BIN_OP@146..148
+                    EQEQ@146..148 "=="
+                  WHITESPACE@148..149 " "
+                  LITERAL@149..151
+                    NUMBER@149..151 "10"
+          R_PAREN@151..152 ")"
+        WHITESPACE@152..153 " "
+        BIN_OP@153..156
+          AND@153..156 "and"
+        WHITESPACE@156..157 " "
+        PAREN_EXPR@157..177
+          L_PAREN@157..158 "("
+          EXPR@158..176
+            BIN_EXPR@158..176
+              LITERAL@158..159
+                NUMBER@158..159 "1"
+              WHITESPACE@159..160 " "
+              BIN_OP@160..162
+                EQEQ@160..162 "=="
+              WHITESPACE@162..163 " "
+              BIN_EXPR@163..176
+                LITERAL@163..164
+                  NUMBER@163..164 "2"
+                WHITESPACE@164..165 " "
+                BIN_OP@165..168
+                  AND@165..168 "and"
+                WHITESPACE@168..169 " "
+                BIN_EXPR@169..176
+                  LITERAL@169..170
+                    NUMBER@169..170 "5"
+                  WHITESPACE@170..171 " "
+                  BIN_OP@171..173
+                    EQEQ@171..173 "=="
+                  WHITESPACE@173..174 " "
+                  LITERAL@174..176
+                    NUMBER@174..176 "10"
+          R_PAREN@176..177 ")"
+    SEMICOLON@177..178 ";"
+  WHITESPACE@178..179 "\n"
+  STMT@179..193
+    EXPR@179..192
+      BIN_EXPR@179..192
+        LITERAL@179..180
+          NUMBER@179..180 "1"
+        WHITESPACE@180..181 " "
+        BIN_OP@181..182
+          PLUS@181..182 "+"
+        WHITESPACE@182..183 " "
+        BIN_EXPR@183..192
+          LITERAL@183..184
+            NUMBER@183..184 "2"
+          WHITESPACE@184..185 " "
+          BIN_OP@185..186
+            PLUS@185..186 "+"
+          WHITESPACE@186..187 " "
+          BIN_EXPR@187..192
+            LITERAL@187..188
+              NUMBER@187..188 "3"
+            WHITESPACE@188..189 " "
+            BIN_OP@189..190
+              PLUS@189..190 "+"
+            WHITESPACE@190..191 " "
+            LITERAL@191..192
+              NUMBER@191..192 "4"
+    SEMICOLON@192..193 ";"
+  WHITESPACE@193..194 "\n"
+  STMT@194..208
+    EXPR@194..207
+      BIN_EXPR@194..207
+        LITERAL@194..195
+          NUMBER@194..195 "1"
+        WHITESPACE@195..196 " "
+        BIN_OP@196..197
+          PLUS@196..197 "+"
+        WHITESPACE@197..198 " "
+        BIN_EXPR@198..207
+          LITERAL@198..199
+            NUMBER@198..199 "2"
+          WHITESPACE@199..200 " "
+          BIN_OP@200..201
+            STAR@200..201 "*"
+          WHITESPACE@201..202 " "
+          BIN_EXPR@202..207
+            LITERAL@202..203
+              NUMBER@202..203 "3"
+            WHITESPACE@203..204 " "
+            BIN_OP@204..205
+              MINUS@204..205 "-"
+            WHITESPACE@205..206 " "
+            LITERAL@206..207
+              NUMBER@206..207 "4"
+    SEMICOLON@207..208 ";"
+  WHITESPACE@208..209 "\n"

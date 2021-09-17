@@ -1,0 +1,25 @@
+ROOT@0..63
+  COMMENT@0..50 "// kind:expr validate ..."
+  WHITESPACE@50..51 "\n"
+  EXPR@51..63
+    BIN_EXPR@51..63
+      LITERAL@51..52
+        NUMBER@51..52 "5"
+      WHITESPACE@52..53 " "
+      BIN_OP@53..54
+        STAR@53..54 "*"
+      WHITESPACE@54..55 " "
+      PAREN_EXPR@55..62
+        L_PAREN@55..56 "("
+        EXPR@56..61
+          BIN_EXPR@56..61
+            LITERAL@56..57
+              NUMBER@56..57 "2"
+            WHITESPACE@57..58 " "
+            BIN_OP@58..59
+              PLUS@58..59 "+"
+            WHITESPACE@59..60 " "
+            LITERAL@60..61
+              NUMBER@60..61 "1"
+        R_PAREN@61..62 ")"
+      WHITESPACE@62..63 "\n"

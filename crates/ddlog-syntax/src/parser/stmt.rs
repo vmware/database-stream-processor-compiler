@@ -17,10 +17,10 @@ impl<'src, 'token> Parser<'src, 'token> {
                 self.var_decl();
             }
             T!['{'] => {
-                self.block();
+                self.block(true);
             }
             T![return] => {
-                self.ret();
+                self.ret(true);
             }
 
             _ => {
@@ -103,7 +103,7 @@ impl<'src, 'token> Parser<'src, 'token> {
 
         self.expect(T![if]);
         self.expr();
-        self.block();
+        self.block(false);
 
         Some(block.complete(self, IF_BLOCK))
     }
@@ -111,7 +111,7 @@ impl<'src, 'token> Parser<'src, 'token> {
     fn else_block(&mut self, block: Option<Marker>) -> Option<CompletedMarker> {
         let block = block.unwrap_or_else(|| self.start());
 
-        self.block();
+        self.block(false);
 
         Some(block.complete(self, ELSE_BLOCK))
     }
@@ -135,7 +135,7 @@ impl<'src, 'token> Parser<'src, 'token> {
     // - { 10 } - {{ 5 + ({ 99 }) }}
     // test_err(expr) unclosed_block
     // - {{ 10 }
-    pub(super) fn block(&mut self) -> Option<CompletedMarker> {
+    pub(super) fn block(&mut self, semicolons: bool) -> Option<CompletedMarker> {
         let block = self.start();
         if !self.expect(T!['{']) {
             block.abandon(self);
@@ -155,6 +155,10 @@ impl<'src, 'token> Parser<'src, 'token> {
         }
 
         self.expect(T!['}']);
+        if semicolons {
+            self.eat_semicolons();
+        }
+
         let marker = block.complete(self, BLOCK);
 
         if did_error {
@@ -164,11 +168,15 @@ impl<'src, 'token> Parser<'src, 'token> {
         }
     }
 
-    pub(super) fn ret(&mut self) -> Option<CompletedMarker> {
+    pub(super) fn ret(&mut self, semicolons: bool) -> Option<CompletedMarker> {
         let ret = self.start();
 
         self.expect(T![return]);
         self.expr();
+
+        if semicolons {
+            self.eat_semicolons();
+        }
 
         Some(ret.complete(self, RET_EXPR))
     }

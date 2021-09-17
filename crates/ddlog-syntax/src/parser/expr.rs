@@ -22,13 +22,31 @@ pub(super) const EXPR_RECOVERY_SET: TokenSet = token_set! {
 };
 
 impl Parser<'_, '_> {
+    // test(stmt) binary_ops
+    // - 1 == 2;
+    // - foo != bar;
+    // - 1 * 2;
+    // - 1 * 3 != 3 * 1;
+    // - 1 == 2 and 5 == 10;
+    // - 1 == 2 or 5 == 10;
+    // - (1 == 2 or 5 == 10) and (1 == 2 and 5 == 10);
+    // - 1 + 2 + 3 + 4;
+    // - 1 + 2 * 3 - 4;
+    // test(expr) infix_negation
+    // - -10
+    // test(expr) negation_has_higher_binding_power_than_infix
+    // - -20 + 20
+    // test(expr) parentheses_affect_precedence
+    // - 5 * (2 + 1)
     pub(super) fn expr(&mut self) -> Option<CompletedMarker> {
         let expr = self.start();
-        // TODO: Should we abandon the marker if `.expr_inner()` fails?
-        self.expr_inner(0);
-        let marker = expr.complete(self, EXPR);
 
-        Some(marker)
+        if self.expr_inner(0).is_some() {
+            Some(expr.complete(self, EXPR))
+        } else {
+            expr.abandon(self);
+            None
+        }
     }
 
     /// The innards of [`Parser::expr()`], does all of the actual work
@@ -42,32 +60,22 @@ impl Parser<'_, '_> {
         let _frame = self.stack_frame();
         let mut lhs = match self.peek() {
             IDENT => self.identifier(VAR_REF).unwrap(),
-
             NUMBER | T![true] | T![false] => self.literal().unwrap(),
-
             operator @ (T![-] | T![!]) => self.unary_expr(operator)?,
-
             T!['('] => self.parentheses()?,
-
-            T!['{'] => self.block()?,
-
-            T![return] => self.ret()?,
+            T!['{'] => self.block(false)?,
+            T![return] => self.ret(false)?,
 
             _ => return None,
         };
 
         // Infix operators
         while !self.at_end() {
-            let precedence = match infix_precedence(self.peek()) {
+            let precedence = match infix_precedence(dbg!(self.peek())) {
                 Some(operand) => operand,
                 // TODO: Error handling
                 None => break,
             };
-
-            if precedence < current_precedence {
-                break;
-            }
-            current_precedence = precedence;
 
             // Eat the operator’s token.
             let operand = self.start();
@@ -75,8 +83,13 @@ impl Parser<'_, '_> {
             operand.complete(self, BIN_OP);
 
             let marker = lhs.precede(self);
-            let rhs_invalid = self.expr_inner(current_precedence).is_none();
+            let rhs_invalid = self.expr_inner(precedence).is_none();
             lhs = marker.complete(self, BIN_EXPR);
+
+            if precedence < current_precedence {
+                break;
+            }
+            current_precedence = precedence;
 
             if rhs_invalid {
                 break;

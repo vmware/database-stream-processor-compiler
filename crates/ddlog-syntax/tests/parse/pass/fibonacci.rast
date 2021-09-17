@@ -1,0 +1,94 @@
+ROOT@0..204
+  COMMENT@0..50 "// kind:item validate ..."
+  WHITESPACE@50..51 "\n"
+  ITEM@51..204
+    FUNCTION_DEF@51..204
+      ATTRIBUTES@51..51
+      MODIFIERS@51..51
+      FUNCTION@51..59 "function"
+      WHITESPACE@59..60 " "
+      FUNCTION_NAME@60..69
+        IDENT@60..69 "fibonacci"
+      FUNCTION_ARGS@69..79
+        L_PAREN@69..70 "("
+        FUNCTION_ARG@70..78
+          ATTRIBUTES@70..70
+          VAR_REF@70..71
+            IDENT@70..71 "n"
+          COLON@71..72 ":"
+          WHITESPACE@72..73 " "
+          TYPE@73..78
+            GENERIC_TYPE@73..78
+              IDENT@73..78 "usize"
+        R_PAREN@78..79 ")"
+      FUNCTION_RETURN@79..87
+        COLON@79..80 ":"
+        WHITESPACE@80..81 " "
+        TYPE@81..87
+          GENERIC_TYPE@81..86
+            IDENT@81..86 "usize"
+          WHITESPACE@86..87 " "
+      BLOCK@87..203
+        L_CURLY@87..88 "{"
+        WHITESPACE@88..93 "\n    "
+        STMT@93..202
+          IF_STMT@93..202
+            IF_BLOCK@93..139
+              IF@93..95 "if"
+              WHITESPACE@95..96 " "
+              EXPR@96..113
+                BIN_EXPR@96..113
+                  VAR_REF@96..97
+                    IDENT@96..97 "n"
+                  WHITESPACE@97..98 " "
+                  BIN_OP@98..100
+                    EQEQ@98..100 "=="
+                  WHITESPACE@100..101 " "
+                  BIN_EXPR@101..113
+                    LITERAL@101..102
+                      NUMBER@101..102 "0"
+                    WHITESPACE@102..103 " "
+                    BIN_OP@103..105
+                      OR@103..105 "or"
+                    WHITESPACE@105..106 " "
+                    BIN_EXPR@106..113
+                      VAR_REF@106..107
+                        IDENT@106..107 "n"
+                      WHITESPACE@107..108 " "
+                      BIN_OP@108..110
+                        EQEQ@108..110 "=="
+                      WHITESPACE@110..111 " "
+                      LITERAL@111..112
+                        NUMBER@111..112 "1"
+                      WHITESPACE@112..113 " "
+              BLOCK@113..138
+                L_CURLY@113..114 "{"
+                WHITESPACE@114..123 "\n        "
+                STMT@123..137
+                  RET_EXPR@123..132
+                    RETURN@123..129 "return"
+                    WHITESPACE@129..130 " "
+                    EXPR@130..131
+                      VAR_REF@130..131
+                        IDENT@130..131 "n"
+                    SEMICOLON@131..132 ";"
+                  WHITESPACE@132..137 "\n    "
+                R_CURLY@137..138 "}"
+              WHITESPACE@138..139 " "
+            ELSE_BLOCK@139..202
+              ELSE@139..143 "else"
+              WHITESPACE@143..144 " "
+              BLOCK@144..201
+                L_CURLY@144..145 "{"
+                WHITESPACE@145..154 "\n        "
+                COMMENT@154..177 "// TODO: Function calls"
+                WHITESPACE@177..186 "\n        "
+                STMT@186..200
+                  EXPR@186..200
+                    VAR_REF@186..195
+                      IDENT@186..195 "fibonacci"
+                    WHITESPACE@195..200 "\n    "
+                R_CURLY@200..201 "}"
+              WHITESPACE@201..202 "\n"
+        R_CURLY@202..203 "}"
+      WHITESPACE@203..204 "\n"

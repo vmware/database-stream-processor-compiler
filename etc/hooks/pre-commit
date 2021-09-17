@@ -62,7 +62,7 @@ EOF
 fi
 
 # Run clippy
-if ! cargo clippy --workspace --locked -D warnings; then
+if ! cargo clippy --workspace --locked -- -D warnings; then
     cat <<EOF
 Error: Clippy exited with errors.
 EOF

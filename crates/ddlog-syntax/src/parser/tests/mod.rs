@@ -1,7 +1,5 @@
 #![cfg(test)]
 
-mod expr;
-
 use crate::{validation, FileId, Interner, NodeCache, Parsed, RuleCtx};
 use ddlog_diagnostics::{DiagnosticConfig, FileCache, Rope};
 use expect_test::{expect, Expect};
