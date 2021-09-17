@@ -55,6 +55,8 @@ impl Parser<'_, '_> {
 
     // TODO: Abandon attributes & modifiers if an error occurs in parsing the item
     fn item(&mut self) -> Option<CompletedMarker> {
+        tracing::trace!(current = %self.current(), peek = %self.peek(), "parsing item");
+
         let item = self.start();
         let inner_item = self.start();
 
