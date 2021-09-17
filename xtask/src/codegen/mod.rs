@@ -12,7 +12,7 @@ pub fn codegen(mode: CodegenMode) -> Result<()> {
     Ok(())
 }
 
-const GRAMMAR: &str = include_str!("ddlog.ungram");
+const GRAMMAR: &str = include_str!("../../../crates/ddlog-syntax/ddlog.ungram");
 
 fn grammar() -> Result<Grammar> {
     GRAMMAR.parse().context("failed to parse ddlog grammar")
