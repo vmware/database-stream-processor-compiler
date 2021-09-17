@@ -1,41 +1,41 @@
-ROOT@0..62
-  COMMENT@0..26 "// kind:item validate ..."
-  WHITESPACE@26..27 "\n"
-  ITEM@27..62
-    FUNCTION_DEF@27..62
-      ATTRIBUTES@27..27
-      MODIFIERS@27..27
-      FUNCTION@27..35 "function"
-      WHITESPACE@35..36 " "
-      FUNCTION_NAME@36..39
-        IDENT@36..39 "foo"
-      FUNCTION_ARGS@39..58
-        L_PAREN@39..40 "("
-        FUNCTION_ARG@40..49
-          ATTRIBUTES@40..40
-          VAR_REF@40..43
-            IDENT@40..43 "foo"
-          COLON@43..44 ":"
-          WHITESPACE@44..45 " "
-          TYPE@45..49
-            GENERIC_TYPE@45..48
-              IDENT@45..48 "Bar"
-            WHITESPACE@48..49 " "
-        FUNCTION_ARG@49..57
-          ATTRIBUTES@49..49
-          VAR_REF@49..52
-            IDENT@49..52 "bar"
-          COLON@52..53 ":"
-          WHITESPACE@53..54 " "
-          TYPE@54..57
-            GENERIC_TYPE@54..57
-              IDENT@54..57 "Baz"
-        R_PAREN@57..58 ")"
-      WHITESPACE@58..59 " "
-      BLOCK@59..61
-        L_CURLY@59..60 "{"
-        R_CURLY@60..61 "}"
-      WHITESPACE@61..62 "\n"
+ROOT@0..86
+  COMMENT@0..50 "// kind:item validate ..."
+  WHITESPACE@50..51 "\n"
+  ITEM@51..86
+    FUNCTION_DEF@51..86
+      ATTRIBUTES@51..51
+      MODIFIERS@51..51
+      FUNCTION@51..59 "function"
+      WHITESPACE@59..60 " "
+      FUNCTION_NAME@60..63
+        IDENT@60..63 "foo"
+      FUNCTION_ARGS@63..82
+        L_PAREN@63..64 "("
+        FUNCTION_ARG@64..73
+          ATTRIBUTES@64..64
+          VAR_REF@64..67
+            IDENT@64..67 "foo"
+          COLON@67..68 ":"
+          WHITESPACE@68..69 " "
+          TYPE@69..73
+            GENERIC_TYPE@69..72
+              IDENT@69..72 "Bar"
+            WHITESPACE@72..73 " "
+        FUNCTION_ARG@73..81
+          ATTRIBUTES@73..73
+          VAR_REF@73..76
+            IDENT@73..76 "bar"
+          COLON@76..77 ":"
+          WHITESPACE@77..78 " "
+          TYPE@78..81
+            GENERIC_TYPE@78..81
+              IDENT@78..81 "Baz"
+        R_PAREN@81..82 ")"
+      WHITESPACE@82..83 " "
+      BLOCK@83..85
+        L_CURLY@83..84 "{"
+        R_CURLY@84..85 "}"
+      WHITESPACE@85..86 "\n"
 --
 Error: missing comma between function arguments
    ,-[validation/fail/missing_function_arg_commas.dl:2:22]
@@ -45,5 +45,5 @@ Error: missing comma between function arguments
    :                      `- expected a comma here
 ---'
 --
-// kind:item validate:true
+// kind:item validate:true pass:false ignore:false
 function foo(foo: Bar bar: Baz) {}

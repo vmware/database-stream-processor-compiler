@@ -1,7 +1,7 @@
-ROOT@0..35
-  COMMENT@0..27 "// kind:expr validate ..."
-  WHITESPACE@27..28 "\n"
-  EXPR@28..35
-    LITERAL@28..34
-      NUMBER@28..34 "0xFFFF"
-    WHITESPACE@34..35 "\n"
+ROOT@0..58
+  COMMENT@0..50 "// kind:expr validate ..."
+  WHITESPACE@50..51 "\n"
+  EXPR@51..58
+    LITERAL@51..57
+      NUMBER@51..57 "0xFFFF"
+    WHITESPACE@57..58 "\n"

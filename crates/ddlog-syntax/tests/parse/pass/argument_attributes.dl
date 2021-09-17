@@ -1,4 +1,4 @@
-// kind:item validate:false
+// kind:item validate:false pass:true ignore:false
 function foo(
     #[by_val]
     bar: Baz,

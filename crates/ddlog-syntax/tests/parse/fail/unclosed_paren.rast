@@ -1,21 +1,21 @@
-ROOT@0..37
-  COMMENT@0..27 "// kind:expr validate ..."
-  WHITESPACE@27..28 "\n"
-  EXPR@28..37
-    PAREN_EXPR@28..37
-      L_PAREN@28..29 "("
-      EXPR@29..37
-        PAREN_EXPR@29..36
-          L_PAREN@29..30 "("
-          EXPR@30..35
-            PAREN_EXPR@30..35
-              L_PAREN@30..31 "("
-              EXPR@31..34
-                LITERAL@31..34
-                  NUMBER@31..34 "100"
-              R_PAREN@34..35 ")"
-          R_PAREN@35..36 ")"
-        WHITESPACE@36..37 "\n"
+ROOT@0..61
+  COMMENT@0..51 "// kind:expr validate ..."
+  WHITESPACE@51..52 "\n"
+  EXPR@52..61
+    PAREN_EXPR@52..61
+      L_PAREN@52..53 "("
+      EXPR@53..61
+        PAREN_EXPR@53..60
+          L_PAREN@53..54 "("
+          EXPR@54..59
+            PAREN_EXPR@54..59
+              L_PAREN@54..55 "("
+              EXPR@55..58
+                LITERAL@55..58
+                  NUMBER@55..58 "100"
+              R_PAREN@58..59 ")"
+          R_PAREN@59..60 ")"
+        WHITESPACE@60..61 "\n"
 --
 Error: expected ')' but instead the file ends
    ,-[parse/fail/unclosed_paren.dl:2:10]
@@ -25,5 +25,5 @@ Error: expected ')' but instead the file ends
    :          `- the file ends here
 ---'
 --
-// kind:expr validate:false
+// kind:expr validate:false pass:false ignore:false
 (((100))

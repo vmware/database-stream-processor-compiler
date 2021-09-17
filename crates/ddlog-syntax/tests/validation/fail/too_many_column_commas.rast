@@ -1,108 +1,108 @@
-ROOT@0..127
-  COMMENT@0..26 "// kind:item validate ..."
-  WHITESPACE@26..27 "\n"
-  ITEM@27..61
-    RELATION_DEF@27..61
-      ATTRIBUTES@27..27
-      MODIFIERS@27..27
-      REL_KW@27..35
-        RELATION@27..35 "relation"
-      WHITESPACE@35..36 " "
-      REL_NAME@36..39
-        IDENT@36..39 "foo"
-      REL_COLS@39..60
-        L_PAREN@39..40 "("
-        REL_COL@40..50
-          ATTRIBUTES@40..40
-          VAR_REF@40..43
-            IDENT@40..43 "foo"
-          COLON@43..44 ":"
-          WHITESPACE@44..45 " "
-          TYPE@45..48
-            GENERIC_TYPE@45..48
-              IDENT@45..48 "Bar"
-          COMMA@48..49 ","
-          COMMA@49..50 ","
-        WHITESPACE@50..51 " "
-        REL_COL@51..59
-          ATTRIBUTES@51..51
-          VAR_REF@51..54
-            IDENT@51..54 "bar"
-          COLON@54..55 ":"
-          WHITESPACE@55..56 " "
-          TYPE@56..59
-            GENERIC_TYPE@56..59
-              IDENT@56..59 "Baz"
-        R_PAREN@59..60 ")"
-      WHITESPACE@60..61 "\n"
-  ITEM@61..95
-    RELATION_DEF@61..95
-      ATTRIBUTES@61..61
-      MODIFIERS@61..61
-      REL_KW@61..69
-        MULTISET@61..69 "multiset"
-      WHITESPACE@69..70 " "
-      REL_NAME@70..73
-        IDENT@70..73 "foo"
-      REL_COLS@73..94
-        L_PAREN@73..74 "("
-        REL_COL@74..84
-          ATTRIBUTES@74..74
-          VAR_REF@74..77
-            IDENT@74..77 "foo"
-          COLON@77..78 ":"
-          WHITESPACE@78..79 " "
-          TYPE@79..82
-            GENERIC_TYPE@79..82
-              IDENT@79..82 "Bar"
-          COMMA@82..83 ","
-          COMMA@83..84 ","
-        WHITESPACE@84..85 " "
-        REL_COL@85..93
-          ATTRIBUTES@85..85
-          VAR_REF@85..88
-            IDENT@85..88 "bar"
-          COLON@88..89 ":"
-          WHITESPACE@89..90 " "
-          TYPE@90..93
-            GENERIC_TYPE@90..93
-              IDENT@90..93 "Baz"
-        R_PAREN@93..94 ")"
-      WHITESPACE@94..95 "\n"
-  ITEM@95..127
-    RELATION_DEF@95..127
-      ATTRIBUTES@95..95
-      MODIFIERS@95..95
-      REL_KW@95..101
-        STREAM@95..101 "stream"
-      WHITESPACE@101..102 " "
-      REL_NAME@102..105
-        IDENT@102..105 "foo"
-      REL_COLS@105..126
-        L_PAREN@105..106 "("
-        REL_COL@106..116
-          ATTRIBUTES@106..106
-          VAR_REF@106..109
-            IDENT@106..109 "foo"
-          COLON@109..110 ":"
-          WHITESPACE@110..111 " "
-          TYPE@111..114
-            GENERIC_TYPE@111..114
-              IDENT@111..114 "Bar"
-          COMMA@114..115 ","
-          COMMA@115..116 ","
-        WHITESPACE@116..117 " "
-        REL_COL@117..125
-          ATTRIBUTES@117..117
-          VAR_REF@117..120
-            IDENT@117..120 "bar"
-          COLON@120..121 ":"
-          WHITESPACE@121..122 " "
-          TYPE@122..125
-            GENERIC_TYPE@122..125
-              IDENT@122..125 "Baz"
-        R_PAREN@125..126 ")"
-      WHITESPACE@126..127 "\n"
+ROOT@0..151
+  COMMENT@0..50 "// kind:item validate ..."
+  WHITESPACE@50..51 "\n"
+  ITEM@51..85
+    RELATION_DEF@51..85
+      ATTRIBUTES@51..51
+      MODIFIERS@51..51
+      REL_KW@51..59
+        RELATION@51..59 "relation"
+      WHITESPACE@59..60 " "
+      REL_NAME@60..63
+        IDENT@60..63 "foo"
+      REL_COLS@63..84
+        L_PAREN@63..64 "("
+        REL_COL@64..74
+          ATTRIBUTES@64..64
+          VAR_REF@64..67
+            IDENT@64..67 "foo"
+          COLON@67..68 ":"
+          WHITESPACE@68..69 " "
+          TYPE@69..72
+            GENERIC_TYPE@69..72
+              IDENT@69..72 "Bar"
+          COMMA@72..73 ","
+          COMMA@73..74 ","
+        WHITESPACE@74..75 " "
+        REL_COL@75..83
+          ATTRIBUTES@75..75
+          VAR_REF@75..78
+            IDENT@75..78 "bar"
+          COLON@78..79 ":"
+          WHITESPACE@79..80 " "
+          TYPE@80..83
+            GENERIC_TYPE@80..83
+              IDENT@80..83 "Baz"
+        R_PAREN@83..84 ")"
+      WHITESPACE@84..85 "\n"
+  ITEM@85..119
+    RELATION_DEF@85..119
+      ATTRIBUTES@85..85
+      MODIFIERS@85..85
+      REL_KW@85..93
+        MULTISET@85..93 "multiset"
+      WHITESPACE@93..94 " "
+      REL_NAME@94..97
+        IDENT@94..97 "foo"
+      REL_COLS@97..118
+        L_PAREN@97..98 "("
+        REL_COL@98..108
+          ATTRIBUTES@98..98
+          VAR_REF@98..101
+            IDENT@98..101 "foo"
+          COLON@101..102 ":"
+          WHITESPACE@102..103 " "
+          TYPE@103..106
+            GENERIC_TYPE@103..106
+              IDENT@103..106 "Bar"
+          COMMA@106..107 ","
+          COMMA@107..108 ","
+        WHITESPACE@108..109 " "
+        REL_COL@109..117
+          ATTRIBUTES@109..109
+          VAR_REF@109..112
+            IDENT@109..112 "bar"
+          COLON@112..113 ":"
+          WHITESPACE@113..114 " "
+          TYPE@114..117
+            GENERIC_TYPE@114..117
+              IDENT@114..117 "Baz"
+        R_PAREN@117..118 ")"
+      WHITESPACE@118..119 "\n"
+  ITEM@119..151
+    RELATION_DEF@119..151
+      ATTRIBUTES@119..119
+      MODIFIERS@119..119
+      REL_KW@119..125
+        STREAM@119..125 "stream"
+      WHITESPACE@125..126 " "
+      REL_NAME@126..129
+        IDENT@126..129 "foo"
+      REL_COLS@129..150
+        L_PAREN@129..130 "("
+        REL_COL@130..140
+          ATTRIBUTES@130..130
+          VAR_REF@130..133
+            IDENT@130..133 "foo"
+          COLON@133..134 ":"
+          WHITESPACE@134..135 " "
+          TYPE@135..138
+            GENERIC_TYPE@135..138
+              IDENT@135..138 "Bar"
+          COMMA@138..139 ","
+          COMMA@139..140 ","
+        WHITESPACE@140..141 " "
+        REL_COL@141..149
+          ATTRIBUTES@141..141
+          VAR_REF@141..144
+            IDENT@141..144 "bar"
+          COLON@144..145 ":"
+          WHITESPACE@145..146 " "
+          TYPE@146..149
+            GENERIC_TYPE@146..149
+              IDENT@146..149 "Baz"
+        R_PAREN@149..150 ")"
+      WHITESPACE@150..151 "\n"
 --
 Error: too many commas between relation columns
    ,-[validation/fail/too_many_column_commas.dl:2:23]
@@ -128,7 +128,7 @@ Error: too many commas between relation columns
    :                     `-- remove this comma
 ---'
 --
-// kind:item validate:true
+// kind:item validate:true pass:false ignore:false
 relation foo(foo: Bar,, bar: Baz)
 multiset foo(foo: Bar,, bar: Baz)
 stream foo(foo: Bar,, bar: Baz)

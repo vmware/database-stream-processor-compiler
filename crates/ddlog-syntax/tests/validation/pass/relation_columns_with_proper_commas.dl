@@ -1,4 +1,4 @@
-// kind:item validate:true
+// kind:item validate:true pass:true ignore:false
 relation foo(bar: Baz)
 relation foo(bar: Baz,)
 relation foo(bar: Baz, foo: Bar, bing: Bop)

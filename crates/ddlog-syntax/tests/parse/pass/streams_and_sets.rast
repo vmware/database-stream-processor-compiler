@@ -1,29 +1,29 @@
-ROOT@0..56
-  COMMENT@0..27 "// kind:item validate ..."
-  WHITESPACE@27..28 "\n"
-  ITEM@28..41
-    RELATION_DEF@28..41
-      ATTRIBUTES@28..28
-      MODIFIERS@28..28
-      REL_KW@28..34
-        STREAM@28..34 "stream"
-      WHITESPACE@34..35 " "
-      REL_NAME@35..38
-        IDENT@35..38 "Bar"
-      REL_COLS@38..40
-        L_PAREN@38..39 "("
-        R_PAREN@39..40 ")"
-      WHITESPACE@40..41 "\n"
-  ITEM@41..56
-    RELATION_DEF@41..56
-      ATTRIBUTES@41..41
-      MODIFIERS@41..41
-      REL_KW@41..49
-        MULTISET@41..49 "multiset"
-      WHITESPACE@49..50 " "
-      REL_NAME@50..53
-        IDENT@50..53 "Foo"
-      REL_COLS@53..55
-        L_PAREN@53..54 "("
-        R_PAREN@54..55 ")"
-      WHITESPACE@55..56 "\n"
+ROOT@0..79
+  COMMENT@0..50 "// kind:item validate ..."
+  WHITESPACE@50..51 "\n"
+  ITEM@51..64
+    RELATION_DEF@51..64
+      ATTRIBUTES@51..51
+      MODIFIERS@51..51
+      REL_KW@51..57
+        STREAM@51..57 "stream"
+      WHITESPACE@57..58 " "
+      REL_NAME@58..61
+        IDENT@58..61 "Bar"
+      REL_COLS@61..63
+        L_PAREN@61..62 "("
+        R_PAREN@62..63 ")"
+      WHITESPACE@63..64 "\n"
+  ITEM@64..79
+    RELATION_DEF@64..79
+      ATTRIBUTES@64..64
+      MODIFIERS@64..64
+      REL_KW@64..72
+        MULTISET@64..72 "multiset"
+      WHITESPACE@72..73 " "
+      REL_NAME@73..76
+        IDENT@73..76 "Foo"
+      REL_COLS@76..78
+        L_PAREN@76..77 "("
+        R_PAREN@77..78 ")"
+      WHITESPACE@78..79 "\n"

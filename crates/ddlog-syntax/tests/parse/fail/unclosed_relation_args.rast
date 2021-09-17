@@ -1,18 +1,18 @@
-ROOT@0..42
-  COMMENT@0..27 "// kind:item validate ..."
-  WHITESPACE@27..28 "\n"
-  ITEM@28..42
-    RELATION_DEF@28..42
-      ATTRIBUTES@28..28
-      MODIFIERS@28..28
-      REL_KW@28..36
-        RELATION@28..36 "relation"
-      WHITESPACE@36..37 " "
-      REL_NAME@37..40
-        IDENT@37..40 "Foo"
-      REL_COLS@40..41
-        L_PAREN@40..41 "("
-      WHITESPACE@41..42 "\n"
+ROOT@0..66
+  COMMENT@0..51 "// kind:item validate ..."
+  WHITESPACE@51..52 "\n"
+  ITEM@52..66
+    RELATION_DEF@52..66
+      ATTRIBUTES@52..52
+      MODIFIERS@52..52
+      REL_KW@52..60
+        RELATION@52..60 "relation"
+      WHITESPACE@60..61 " "
+      REL_NAME@61..64
+        IDENT@61..64 "Foo"
+      REL_COLS@64..65
+        L_PAREN@64..65 "("
+      WHITESPACE@65..66 "\n"
 --
 Error: expected ')' but instead the file ends
    ,-[parse/fail/unclosed_relation_args.dl:2:15]
@@ -22,5 +22,5 @@ Error: expected ')' but instead the file ends
    :               `- the file ends here
 ---'
 --
-// kind:item validate:false
+// kind:item validate:false pass:false ignore:false
 relation Foo(

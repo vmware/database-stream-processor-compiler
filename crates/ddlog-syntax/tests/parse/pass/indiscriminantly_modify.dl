@@ -1,4 +1,4 @@
-// kind:item validate:false
+// kind:item validate:false pass:true ignore:false
 input input input input input output extern output input relation Foo()
 input input input input input output extern output input function foo() {}
 extern extern extern relation Foo()

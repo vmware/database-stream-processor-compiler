@@ -1,26 +1,26 @@
-ROOT@0..58
-  COMMENT@0..26 "// kind:item validate ..."
-  WHITESPACE@26..27 "\n"
-  ITEM@27..58
-    FUNCTION_DEF@27..58
-      ATTRIBUTES@27..27
-      MODIFIERS@27..39
-        EXTERN@27..33 "extern"
-        WHITESPACE@33..34 " "
-        INPUT@34..39 "input"
-      WHITESPACE@39..40 " "
-      FUNCTION@40..48 "function"
-      WHITESPACE@48..49 " "
-      FUNCTION_NAME@49..52
-        IDENT@49..52 "foo"
-      FUNCTION_ARGS@52..54
-        L_PAREN@52..53 "("
-        R_PAREN@53..54 ")"
-      WHITESPACE@54..55 " "
-      BLOCK@55..57
-        L_CURLY@55..56 "{"
-        R_CURLY@56..57 "}"
-      WHITESPACE@57..58 "\n"
+ROOT@0..82
+  COMMENT@0..50 "// kind:item validate ..."
+  WHITESPACE@50..51 "\n"
+  ITEM@51..82
+    FUNCTION_DEF@51..82
+      ATTRIBUTES@51..51
+      MODIFIERS@51..63
+        EXTERN@51..57 "extern"
+        WHITESPACE@57..58 " "
+        INPUT@58..63 "input"
+      WHITESPACE@63..64 " "
+      FUNCTION@64..72 "function"
+      WHITESPACE@72..73 " "
+      FUNCTION_NAME@73..76
+        IDENT@73..76 "foo"
+      FUNCTION_ARGS@76..78
+        L_PAREN@76..77 "("
+        R_PAREN@77..78 ")"
+      WHITESPACE@78..79 " "
+      BLOCK@79..81
+        L_CURLY@79..80 "{"
+        R_CURLY@80..81 "}"
+      WHITESPACE@81..82 "\n"
 --
 Error: received an 'input' modifier on a function definition
    ,-[validation/fail/input_function.dl:2:8]
@@ -30,5 +30,5 @@ Error: received an 'input' modifier on a function definition
    :          `---- functions cannot be marked as 'input'
 ---'
 --
-// kind:item validate:true
+// kind:item validate:true pass:false ignore:false
 extern input function foo() {}

@@ -231,6 +231,7 @@ fn collect_tests(source: &str, all_validate: bool) -> Vec<Test> {
         } else {
             continue;
         };
+        let ignore = false;
 
         let (name, kind) = if let Some(name) = line.strip_prefix("(item) ") {
             (name, TestKind::Item)
@@ -243,13 +244,15 @@ fn collect_tests(source: &str, all_validate: bool) -> Vec<Test> {
         };
 
         let header = format!(
-            "// kind:{} validate:{}",
+            "// kind:{} validate:{} pass:{} ignore:{}",
             match kind {
                 TestKind::Item => "item",
                 TestKind::Stmt => "stmt",
                 TestKind::Expr => "expr",
             },
-            if all_validate { "true" } else { "false" },
+            all_validate,
+            pass,
+            ignore,
         );
         let code = iter::once(&*header)
             .chain(comment_block[1..].iter().map(|line| &**line))

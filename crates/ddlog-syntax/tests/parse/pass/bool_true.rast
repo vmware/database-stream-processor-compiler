@@ -1,7 +1,7 @@
-ROOT@0..33
-  COMMENT@0..27 "// kind:expr validate ..."
-  WHITESPACE@27..28 "\n"
-  EXPR@28..33
-    LITERAL@28..32
-      TRUE@28..32 "true"
-    WHITESPACE@32..33 "\n"
+ROOT@0..56
+  COMMENT@0..50 "// kind:expr validate ..."
+  WHITESPACE@50..51 "\n"
+  EXPR@51..56
+    LITERAL@51..55
+      TRUE@51..55 "true"
+    WHITESPACE@55..56 "\n"

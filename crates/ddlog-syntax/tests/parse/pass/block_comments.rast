@@ -1,34 +1,34 @@
-ROOT@0..95
-  COMMENT@0..27 "// kind:item validate ..."
-  WHITESPACE@27..28 "\n"
-  ITEM@28..77
-    RELATION_DEF@28..77
-      ATTRIBUTES@28..28
-      MODIFIERS@28..28
-      REL_KW@28..36
-        RELATION@28..36 "relation"
-      WHITESPACE@36..37 " "
-      REL_NAME@37..40
-        IDENT@37..40 "Foo"
-      REL_COLS@40..42
-        L_PAREN@40..41 "("
-        R_PAREN@41..42 ")"
-      WHITESPACE@42..43 "\n"
-      COMMENT@43..76 "/*\n    /*\n        Hel ..."
-      WHITESPACE@76..77 "\n"
-  ITEM@77..95
-    FUNCTION_DEF@77..95
-      ATTRIBUTES@77..77
-      MODIFIERS@77..77
-      FUNCTION@77..85 "function"
-      WHITESPACE@85..86 " "
-      FUNCTION_NAME@86..89
-        IDENT@86..89 "bar"
-      FUNCTION_ARGS@89..91
-        L_PAREN@89..90 "("
-        R_PAREN@90..91 ")"
-      WHITESPACE@91..92 " "
-      BLOCK@92..94
-        L_CURLY@92..93 "{"
-        R_CURLY@93..94 "}"
-      WHITESPACE@94..95 "\n"
+ROOT@0..118
+  COMMENT@0..50 "// kind:item validate ..."
+  WHITESPACE@50..51 "\n"
+  ITEM@51..100
+    RELATION_DEF@51..100
+      ATTRIBUTES@51..51
+      MODIFIERS@51..51
+      REL_KW@51..59
+        RELATION@51..59 "relation"
+      WHITESPACE@59..60 " "
+      REL_NAME@60..63
+        IDENT@60..63 "Foo"
+      REL_COLS@63..65
+        L_PAREN@63..64 "("
+        R_PAREN@64..65 ")"
+      WHITESPACE@65..66 "\n"
+      COMMENT@66..99 "/*\n    /*\n        Hel ..."
+      WHITESPACE@99..100 "\n"
+  ITEM@100..118
+    FUNCTION_DEF@100..118
+      ATTRIBUTES@100..100
+      MODIFIERS@100..100
+      FUNCTION@100..108 "function"
+      WHITESPACE@108..109 " "
+      FUNCTION_NAME@109..112
+        IDENT@109..112 "bar"
+      FUNCTION_ARGS@112..114
+        L_PAREN@112..113 "("
+        R_PAREN@113..114 ")"
+      WHITESPACE@114..115 " "
+      BLOCK@115..117
+        L_CURLY@115..116 "{"
+        R_CURLY@116..117 "}"
+      WHITESPACE@117..118 "\n"

@@ -1,4 +1,4 @@
-// kind:item validate:false
+// kind:item validate:false pass:true ignore:false
 function foo(bar: function(Bar, Baz): Bing) {}
 relation Foo(bar: function(Bar, Baz,): Bing,)
 function foo(bar: function(Bar)) {}

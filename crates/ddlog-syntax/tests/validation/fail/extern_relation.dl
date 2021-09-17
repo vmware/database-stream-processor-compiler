@@ -1,4 +1,4 @@
-// kind:item validate:true
+// kind:item validate:true pass:false ignore:false
 input extern relation Foo()
 input extern extern relation Foo()
 input extern multiset Foo()

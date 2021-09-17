@@ -1,2 +1,2 @@
-// kind:expr validate:false
+// kind:expr validate:false pass:true ignore:false
 0b010101

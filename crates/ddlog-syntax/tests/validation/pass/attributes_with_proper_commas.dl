@@ -1,4 +1,4 @@
-// kind:item validate:true
+// kind:item validate:true pass:true ignore:false
 #[foo = bar]
 #[foo = bar,]
 #[foo = bar, bar = baz, bing = bop,]

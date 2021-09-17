@@ -1,102 +1,102 @@
-ROOT@0..121
-  COMMENT@0..26 "// kind:item validate ..."
-  WHITESPACE@26..27 "\n"
-  ITEM@27..59
-    RELATION_DEF@27..59
-      ATTRIBUTES@27..27
-      MODIFIERS@27..27
-      REL_KW@27..35
-        RELATION@27..35 "relation"
-      WHITESPACE@35..36 " "
-      REL_NAME@36..39
-        IDENT@36..39 "Foo"
-      REL_COLS@39..58
-        L_PAREN@39..40 "("
-        REL_COL@40..49
-          ATTRIBUTES@40..40
-          VAR_REF@40..43
-            IDENT@40..43 "foo"
-          COLON@43..44 ":"
-          WHITESPACE@44..45 " "
-          TYPE@45..49
-            GENERIC_TYPE@45..48
-              IDENT@45..48 "Bar"
-            WHITESPACE@48..49 " "
-        REL_COL@49..57
-          ATTRIBUTES@49..49
-          VAR_REF@49..52
-            IDENT@49..52 "bar"
-          COLON@52..53 ":"
-          WHITESPACE@53..54 " "
-          TYPE@54..57
-            GENERIC_TYPE@54..57
-              IDENT@54..57 "Baz"
-        R_PAREN@57..58 ")"
-      WHITESPACE@58..59 "\n"
-  ITEM@59..91
-    RELATION_DEF@59..91
-      ATTRIBUTES@59..59
-      MODIFIERS@59..59
-      REL_KW@59..67
-        MULTISET@59..67 "multiset"
-      WHITESPACE@67..68 " "
-      REL_NAME@68..71
-        IDENT@68..71 "Foo"
-      REL_COLS@71..90
-        L_PAREN@71..72 "("
-        REL_COL@72..81
-          ATTRIBUTES@72..72
-          VAR_REF@72..75
-            IDENT@72..75 "foo"
-          COLON@75..76 ":"
-          WHITESPACE@76..77 " "
-          TYPE@77..81
-            GENERIC_TYPE@77..80
-              IDENT@77..80 "Bar"
-            WHITESPACE@80..81 " "
-        REL_COL@81..89
-          ATTRIBUTES@81..81
-          VAR_REF@81..84
-            IDENT@81..84 "bar"
-          COLON@84..85 ":"
-          WHITESPACE@85..86 " "
-          TYPE@86..89
-            GENERIC_TYPE@86..89
-              IDENT@86..89 "Baz"
-        R_PAREN@89..90 ")"
-      WHITESPACE@90..91 "\n"
-  ITEM@91..121
-    RELATION_DEF@91..121
-      ATTRIBUTES@91..91
-      MODIFIERS@91..91
-      REL_KW@91..97
-        STREAM@91..97 "stream"
-      WHITESPACE@97..98 " "
-      REL_NAME@98..101
-        IDENT@98..101 "Foo"
-      REL_COLS@101..120
-        L_PAREN@101..102 "("
-        REL_COL@102..111
-          ATTRIBUTES@102..102
-          VAR_REF@102..105
-            IDENT@102..105 "foo"
-          COLON@105..106 ":"
-          WHITESPACE@106..107 " "
-          TYPE@107..111
-            GENERIC_TYPE@107..110
-              IDENT@107..110 "Bar"
-            WHITESPACE@110..111 " "
-        REL_COL@111..119
-          ATTRIBUTES@111..111
-          VAR_REF@111..114
-            IDENT@111..114 "bar"
-          COLON@114..115 ":"
-          WHITESPACE@115..116 " "
-          TYPE@116..119
-            GENERIC_TYPE@116..119
-              IDENT@116..119 "Baz"
-        R_PAREN@119..120 ")"
-      WHITESPACE@120..121 "\n"
+ROOT@0..145
+  COMMENT@0..50 "// kind:item validate ..."
+  WHITESPACE@50..51 "\n"
+  ITEM@51..83
+    RELATION_DEF@51..83
+      ATTRIBUTES@51..51
+      MODIFIERS@51..51
+      REL_KW@51..59
+        RELATION@51..59 "relation"
+      WHITESPACE@59..60 " "
+      REL_NAME@60..63
+        IDENT@60..63 "Foo"
+      REL_COLS@63..82
+        L_PAREN@63..64 "("
+        REL_COL@64..73
+          ATTRIBUTES@64..64
+          VAR_REF@64..67
+            IDENT@64..67 "foo"
+          COLON@67..68 ":"
+          WHITESPACE@68..69 " "
+          TYPE@69..73
+            GENERIC_TYPE@69..72
+              IDENT@69..72 "Bar"
+            WHITESPACE@72..73 " "
+        REL_COL@73..81
+          ATTRIBUTES@73..73
+          VAR_REF@73..76
+            IDENT@73..76 "bar"
+          COLON@76..77 ":"
+          WHITESPACE@77..78 " "
+          TYPE@78..81
+            GENERIC_TYPE@78..81
+              IDENT@78..81 "Baz"
+        R_PAREN@81..82 ")"
+      WHITESPACE@82..83 "\n"
+  ITEM@83..115
+    RELATION_DEF@83..115
+      ATTRIBUTES@83..83
+      MODIFIERS@83..83
+      REL_KW@83..91
+        MULTISET@83..91 "multiset"
+      WHITESPACE@91..92 " "
+      REL_NAME@92..95
+        IDENT@92..95 "Foo"
+      REL_COLS@95..114
+        L_PAREN@95..96 "("
+        REL_COL@96..105
+          ATTRIBUTES@96..96
+          VAR_REF@96..99
+            IDENT@96..99 "foo"
+          COLON@99..100 ":"
+          WHITESPACE@100..101 " "
+          TYPE@101..105
+            GENERIC_TYPE@101..104
+              IDENT@101..104 "Bar"
+            WHITESPACE@104..105 " "
+        REL_COL@105..113
+          ATTRIBUTES@105..105
+          VAR_REF@105..108
+            IDENT@105..108 "bar"
+          COLON@108..109 ":"
+          WHITESPACE@109..110 " "
+          TYPE@110..113
+            GENERIC_TYPE@110..113
+              IDENT@110..113 "Baz"
+        R_PAREN@113..114 ")"
+      WHITESPACE@114..115 "\n"
+  ITEM@115..145
+    RELATION_DEF@115..145
+      ATTRIBUTES@115..115
+      MODIFIERS@115..115
+      REL_KW@115..121
+        STREAM@115..121 "stream"
+      WHITESPACE@121..122 " "
+      REL_NAME@122..125
+        IDENT@122..125 "Foo"
+      REL_COLS@125..144
+        L_PAREN@125..126 "("
+        REL_COL@126..135
+          ATTRIBUTES@126..126
+          VAR_REF@126..129
+            IDENT@126..129 "foo"
+          COLON@129..130 ":"
+          WHITESPACE@130..131 " "
+          TYPE@131..135
+            GENERIC_TYPE@131..134
+              IDENT@131..134 "Bar"
+            WHITESPACE@134..135 " "
+        REL_COL@135..143
+          ATTRIBUTES@135..135
+          VAR_REF@135..138
+            IDENT@135..138 "bar"
+          COLON@138..139 ":"
+          WHITESPACE@139..140 " "
+          TYPE@140..143
+            GENERIC_TYPE@140..143
+              IDENT@140..143 "Baz"
+        R_PAREN@143..144 ")"
+      WHITESPACE@144..145 "\n"
 --
 Error: missing comma between relation columns
    ,-[validation/fail/missing_column_commas.dl:2:22]
@@ -122,7 +122,7 @@ Error: missing comma between relation columns
    :                    `- expected a comma here
 ---'
 --
-// kind:item validate:true
+// kind:item validate:true pass:false ignore:false
 relation Foo(foo: Bar bar: Baz)
 multiset Foo(foo: Bar bar: Baz)
 stream Foo(foo: Bar bar: Baz)

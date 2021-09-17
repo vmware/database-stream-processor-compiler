@@ -45,6 +45,11 @@ impl FileCache {
     pub fn clear(&mut self) {
         self.files.clear();
     }
+
+    /// Get a reference to the file cache's interner
+    pub const fn interner(&self) -> &Interner {
+        &self.interner
+    }
 }
 
 impl Cache<FileId> for FileCache {

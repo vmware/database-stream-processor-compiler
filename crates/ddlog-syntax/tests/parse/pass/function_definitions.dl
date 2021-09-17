@@ -1,4 +1,4 @@
-// kind:item validate:false
+// kind:item validate:false pass:true ignore:false
 function foo() {}
 function foo1(bar: Baz) {}
 function foo2(bar: Baz, bing: Bang) {}

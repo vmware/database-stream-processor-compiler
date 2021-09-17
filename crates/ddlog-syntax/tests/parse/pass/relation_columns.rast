@@ -1,102 +1,102 @@
-ROOT@0..131
-  COMMENT@0..27 "// kind:item validate ..."
-  WHITESPACE@27..28 "\n"
-  ITEM@28..63
-    RELATION_DEF@28..63
-      ATTRIBUTES@28..28
-      MODIFIERS@28..28
-      REL_KW@28..36
-        RELATION@28..36 "relation"
-      WHITESPACE@36..37 " "
-      REL_NAME@37..40
-        IDENT@37..40 "Foo"
-      REL_COLS@40..62
-        L_PAREN@40..41 "("
-        REL_COL@41..50
-          ATTRIBUTES@41..41
-          VAR_REF@41..44
-            IDENT@41..44 "bar"
-          COLON@44..45 ":"
-          WHITESPACE@45..46 " "
-          TYPE@46..49
-            GENERIC_TYPE@46..49
-              IDENT@46..49 "Baz"
-          COMMA@49..50 ","
-        WHITESPACE@50..51 " "
-        REL_COL@51..61
-          ATTRIBUTES@51..51
-          VAR_REF@51..55
-            IDENT@51..55 "bing"
-          COLON@55..56 ":"
-          WHITESPACE@56..57 " "
-          TYPE@57..61
-            GENERIC_TYPE@57..61
-              IDENT@57..61 "Bang"
-        R_PAREN@61..62 ")"
-      WHITESPACE@62..63 "\n"
-  ITEM@63..98
-    RELATION_DEF@63..98
-      ATTRIBUTES@63..63
-      MODIFIERS@63..63
-      REL_KW@63..71
-        MULTISET@63..71 "multiset"
-      WHITESPACE@71..72 " "
-      REL_NAME@72..75
-        IDENT@72..75 "Foo"
-      REL_COLS@75..97
-        L_PAREN@75..76 "("
-        REL_COL@76..85
-          ATTRIBUTES@76..76
-          VAR_REF@76..79
-            IDENT@76..79 "bar"
-          COLON@79..80 ":"
-          WHITESPACE@80..81 " "
-          TYPE@81..84
-            GENERIC_TYPE@81..84
-              IDENT@81..84 "Baz"
-          COMMA@84..85 ","
-        WHITESPACE@85..86 " "
-        REL_COL@86..96
-          ATTRIBUTES@86..86
-          VAR_REF@86..90
-            IDENT@86..90 "bing"
-          COLON@90..91 ":"
-          WHITESPACE@91..92 " "
-          TYPE@92..96
-            GENERIC_TYPE@92..96
-              IDENT@92..96 "Bang"
-        R_PAREN@96..97 ")"
-      WHITESPACE@97..98 "\n"
-  ITEM@98..131
-    RELATION_DEF@98..131
-      ATTRIBUTES@98..98
-      MODIFIERS@98..98
-      REL_KW@98..104
-        STREAM@98..104 "stream"
-      WHITESPACE@104..105 " "
-      REL_NAME@105..108
-        IDENT@105..108 "Foo"
-      REL_COLS@108..130
-        L_PAREN@108..109 "("
-        REL_COL@109..118
+ROOT@0..154
+  COMMENT@0..50 "// kind:item validate ..."
+  WHITESPACE@50..51 "\n"
+  ITEM@51..86
+    RELATION_DEF@51..86
+      ATTRIBUTES@51..51
+      MODIFIERS@51..51
+      REL_KW@51..59
+        RELATION@51..59 "relation"
+      WHITESPACE@59..60 " "
+      REL_NAME@60..63
+        IDENT@60..63 "Foo"
+      REL_COLS@63..85
+        L_PAREN@63..64 "("
+        REL_COL@64..73
+          ATTRIBUTES@64..64
+          VAR_REF@64..67
+            IDENT@64..67 "bar"
+          COLON@67..68 ":"
+          WHITESPACE@68..69 " "
+          TYPE@69..72
+            GENERIC_TYPE@69..72
+              IDENT@69..72 "Baz"
+          COMMA@72..73 ","
+        WHITESPACE@73..74 " "
+        REL_COL@74..84
+          ATTRIBUTES@74..74
+          VAR_REF@74..78
+            IDENT@74..78 "bing"
+          COLON@78..79 ":"
+          WHITESPACE@79..80 " "
+          TYPE@80..84
+            GENERIC_TYPE@80..84
+              IDENT@80..84 "Bang"
+        R_PAREN@84..85 ")"
+      WHITESPACE@85..86 "\n"
+  ITEM@86..121
+    RELATION_DEF@86..121
+      ATTRIBUTES@86..86
+      MODIFIERS@86..86
+      REL_KW@86..94
+        MULTISET@86..94 "multiset"
+      WHITESPACE@94..95 " "
+      REL_NAME@95..98
+        IDENT@95..98 "Foo"
+      REL_COLS@98..120
+        L_PAREN@98..99 "("
+        REL_COL@99..108
+          ATTRIBUTES@99..99
+          VAR_REF@99..102
+            IDENT@99..102 "bar"
+          COLON@102..103 ":"
+          WHITESPACE@103..104 " "
+          TYPE@104..107
+            GENERIC_TYPE@104..107
+              IDENT@104..107 "Baz"
+          COMMA@107..108 ","
+        WHITESPACE@108..109 " "
+        REL_COL@109..119
           ATTRIBUTES@109..109
-          VAR_REF@109..112
-            IDENT@109..112 "bar"
-          COLON@112..113 ":"
-          WHITESPACE@113..114 " "
-          TYPE@114..117
-            GENERIC_TYPE@114..117
-              IDENT@114..117 "Baz"
-          COMMA@117..118 ","
-        WHITESPACE@118..119 " "
-        REL_COL@119..129
-          ATTRIBUTES@119..119
-          VAR_REF@119..123
-            IDENT@119..123 "bing"
-          COLON@123..124 ":"
-          WHITESPACE@124..125 " "
-          TYPE@125..129
-            GENERIC_TYPE@125..129
-              IDENT@125..129 "Bang"
-        R_PAREN@129..130 ")"
-      WHITESPACE@130..131 "\n"
+          VAR_REF@109..113
+            IDENT@109..113 "bing"
+          COLON@113..114 ":"
+          WHITESPACE@114..115 " "
+          TYPE@115..119
+            GENERIC_TYPE@115..119
+              IDENT@115..119 "Bang"
+        R_PAREN@119..120 ")"
+      WHITESPACE@120..121 "\n"
+  ITEM@121..154
+    RELATION_DEF@121..154
+      ATTRIBUTES@121..121
+      MODIFIERS@121..121
+      REL_KW@121..127
+        STREAM@121..127 "stream"
+      WHITESPACE@127..128 " "
+      REL_NAME@128..131
+        IDENT@128..131 "Foo"
+      REL_COLS@131..153
+        L_PAREN@131..132 "("
+        REL_COL@132..141
+          ATTRIBUTES@132..132
+          VAR_REF@132..135
+            IDENT@132..135 "bar"
+          COLON@135..136 ":"
+          WHITESPACE@136..137 " "
+          TYPE@137..140
+            GENERIC_TYPE@137..140
+              IDENT@137..140 "Baz"
+          COMMA@140..141 ","
+        WHITESPACE@141..142 " "
+        REL_COL@142..152
+          ATTRIBUTES@142..142
+          VAR_REF@142..146
+            IDENT@142..146 "bing"
+          COLON@146..147 ":"
+          WHITESPACE@147..148 " "
+          TYPE@148..152
+            GENERIC_TYPE@148..152
+              IDENT@148..152 "Bang"
+        R_PAREN@152..153 ")"
+      WHITESPACE@153..154 "\n"

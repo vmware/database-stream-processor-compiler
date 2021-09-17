@@ -1,4 +1,4 @@
-// kind:item validate:false
+// kind:item validate:false pass:true ignore:false
 relation Foo()
 /*
     /*

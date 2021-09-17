@@ -1,114 +1,114 @@
-ROOT@0..212
-  COMMENT@0..26 "// kind:item validate ..."
-  WHITESPACE@26..27 "\n"
-  ITEM@27..55
-    RELATION_DEF@27..55
-      ATTRIBUTES@27..27
-      MODIFIERS@27..39
-        INPUT@27..32 "input"
-        WHITESPACE@32..33 " "
-        EXTERN@33..39 "extern"
-      WHITESPACE@39..40 " "
-      REL_KW@40..48
-        RELATION@40..48 "relation"
-      WHITESPACE@48..49 " "
-      REL_NAME@49..52
-        IDENT@49..52 "Foo"
-      REL_COLS@52..54
-        L_PAREN@52..53 "("
-        R_PAREN@53..54 ")"
-      WHITESPACE@54..55 "\n"
-  ITEM@55..90
-    RELATION_DEF@55..90
-      ATTRIBUTES@55..55
-      MODIFIERS@55..74
-        INPUT@55..60 "input"
-        WHITESPACE@60..61 " "
-        EXTERN@61..67 "extern"
-        WHITESPACE@67..68 " "
-        EXTERN@68..74 "extern"
-      WHITESPACE@74..75 " "
-      REL_KW@75..83
-        RELATION@75..83 "relation"
-      WHITESPACE@83..84 " "
-      REL_NAME@84..87
-        IDENT@84..87 "Foo"
-      REL_COLS@87..89
-        L_PAREN@87..88 "("
-        R_PAREN@88..89 ")"
-      WHITESPACE@89..90 "\n"
-  ITEM@90..118
-    RELATION_DEF@90..118
-      ATTRIBUTES@90..90
-      MODIFIERS@90..102
-        INPUT@90..95 "input"
-        WHITESPACE@95..96 " "
-        EXTERN@96..102 "extern"
-      WHITESPACE@102..103 " "
-      REL_KW@103..111
-        MULTISET@103..111 "multiset"
-      WHITESPACE@111..112 " "
-      REL_NAME@112..115
-        IDENT@112..115 "Foo"
-      REL_COLS@115..117
-        L_PAREN@115..116 "("
-        R_PAREN@116..117 ")"
-      WHITESPACE@117..118 "\n"
-  ITEM@118..153
-    RELATION_DEF@118..153
-      ATTRIBUTES@118..118
-      MODIFIERS@118..137
-        INPUT@118..123 "input"
-        WHITESPACE@123..124 " "
-        EXTERN@124..130 "extern"
-        WHITESPACE@130..131 " "
-        EXTERN@131..137 "extern"
-      WHITESPACE@137..138 " "
-      REL_KW@138..146
-        MULTISET@138..146 "multiset"
-      WHITESPACE@146..147 " "
-      REL_NAME@147..150
-        IDENT@147..150 "Foo"
-      REL_COLS@150..152
-        L_PAREN@150..151 "("
-        R_PAREN@151..152 ")"
-      WHITESPACE@152..153 "\n"
-  ITEM@153..179
-    RELATION_DEF@153..179
-      ATTRIBUTES@153..153
-      MODIFIERS@153..165
-        INPUT@153..158 "input"
-        WHITESPACE@158..159 " "
-        EXTERN@159..165 "extern"
-      WHITESPACE@165..166 " "
-      REL_KW@166..172
-        STREAM@166..172 "stream"
-      WHITESPACE@172..173 " "
-      REL_NAME@173..176
-        IDENT@173..176 "Foo"
-      REL_COLS@176..178
-        L_PAREN@176..177 "("
-        R_PAREN@177..178 ")"
-      WHITESPACE@178..179 "\n"
-  ITEM@179..212
-    RELATION_DEF@179..212
-      ATTRIBUTES@179..179
-      MODIFIERS@179..198
-        INPUT@179..184 "input"
-        WHITESPACE@184..185 " "
-        EXTERN@185..191 "extern"
-        WHITESPACE@191..192 " "
-        EXTERN@192..198 "extern"
-      WHITESPACE@198..199 " "
-      REL_KW@199..205
-        STREAM@199..205 "stream"
-      WHITESPACE@205..206 " "
-      REL_NAME@206..209
-        IDENT@206..209 "Foo"
-      REL_COLS@209..211
-        L_PAREN@209..210 "("
-        R_PAREN@210..211 ")"
-      WHITESPACE@211..212 "\n"
+ROOT@0..236
+  COMMENT@0..50 "// kind:item validate ..."
+  WHITESPACE@50..51 "\n"
+  ITEM@51..79
+    RELATION_DEF@51..79
+      ATTRIBUTES@51..51
+      MODIFIERS@51..63
+        INPUT@51..56 "input"
+        WHITESPACE@56..57 " "
+        EXTERN@57..63 "extern"
+      WHITESPACE@63..64 " "
+      REL_KW@64..72
+        RELATION@64..72 "relation"
+      WHITESPACE@72..73 " "
+      REL_NAME@73..76
+        IDENT@73..76 "Foo"
+      REL_COLS@76..78
+        L_PAREN@76..77 "("
+        R_PAREN@77..78 ")"
+      WHITESPACE@78..79 "\n"
+  ITEM@79..114
+    RELATION_DEF@79..114
+      ATTRIBUTES@79..79
+      MODIFIERS@79..98
+        INPUT@79..84 "input"
+        WHITESPACE@84..85 " "
+        EXTERN@85..91 "extern"
+        WHITESPACE@91..92 " "
+        EXTERN@92..98 "extern"
+      WHITESPACE@98..99 " "
+      REL_KW@99..107
+        RELATION@99..107 "relation"
+      WHITESPACE@107..108 " "
+      REL_NAME@108..111
+        IDENT@108..111 "Foo"
+      REL_COLS@111..113
+        L_PAREN@111..112 "("
+        R_PAREN@112..113 ")"
+      WHITESPACE@113..114 "\n"
+  ITEM@114..142
+    RELATION_DEF@114..142
+      ATTRIBUTES@114..114
+      MODIFIERS@114..126
+        INPUT@114..119 "input"
+        WHITESPACE@119..120 " "
+        EXTERN@120..126 "extern"
+      WHITESPACE@126..127 " "
+      REL_KW@127..135
+        MULTISET@127..135 "multiset"
+      WHITESPACE@135..136 " "
+      REL_NAME@136..139
+        IDENT@136..139 "Foo"
+      REL_COLS@139..141
+        L_PAREN@139..140 "("
+        R_PAREN@140..141 ")"
+      WHITESPACE@141..142 "\n"
+  ITEM@142..177
+    RELATION_DEF@142..177
+      ATTRIBUTES@142..142
+      MODIFIERS@142..161
+        INPUT@142..147 "input"
+        WHITESPACE@147..148 " "
+        EXTERN@148..154 "extern"
+        WHITESPACE@154..155 " "
+        EXTERN@155..161 "extern"
+      WHITESPACE@161..162 " "
+      REL_KW@162..170
+        MULTISET@162..170 "multiset"
+      WHITESPACE@170..171 " "
+      REL_NAME@171..174
+        IDENT@171..174 "Foo"
+      REL_COLS@174..176
+        L_PAREN@174..175 "("
+        R_PAREN@175..176 ")"
+      WHITESPACE@176..177 "\n"
+  ITEM@177..203
+    RELATION_DEF@177..203
+      ATTRIBUTES@177..177
+      MODIFIERS@177..189
+        INPUT@177..182 "input"
+        WHITESPACE@182..183 " "
+        EXTERN@183..189 "extern"
+      WHITESPACE@189..190 " "
+      REL_KW@190..196
+        STREAM@190..196 "stream"
+      WHITESPACE@196..197 " "
+      REL_NAME@197..200
+        IDENT@197..200 "Foo"
+      REL_COLS@200..202
+        L_PAREN@200..201 "("
+        R_PAREN@201..202 ")"
+      WHITESPACE@202..203 "\n"
+  ITEM@203..236
+    RELATION_DEF@203..236
+      ATTRIBUTES@203..203
+      MODIFIERS@203..222
+        INPUT@203..208 "input"
+        WHITESPACE@208..209 " "
+        EXTERN@209..215 "extern"
+        WHITESPACE@215..216 " "
+        EXTERN@216..222 "extern"
+      WHITESPACE@222..223 " "
+      REL_KW@223..229
+        STREAM@223..229 "stream"
+      WHITESPACE@229..230 " "
+      REL_NAME@230..233
+        IDENT@230..233 "Foo"
+      REL_COLS@233..235
+        L_PAREN@233..234 "("
+        R_PAREN@234..235 ")"
+      WHITESPACE@235..236 "\n"
 --
 Error: received an 'extern' modifier on a relation definition
    ,-[validation/fail/extern_relation.dl:2:7]
@@ -182,7 +182,7 @@ Error: received an 'extern' modifier on a relation definition
    :                 `---- relations cannot be marked as 'extern'
 ---'
 --
-// kind:item validate:true
+// kind:item validate:true pass:false ignore:false
 input extern relation Foo()
 input extern extern relation Foo()
 input extern multiset Foo()

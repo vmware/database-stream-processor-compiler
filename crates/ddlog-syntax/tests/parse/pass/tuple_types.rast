@@ -1,73 +1,73 @@
-ROOT@0..92
-  COMMENT@0..27 "// kind:item validate ..."
-  WHITESPACE@27..28 "\n"
-  ITEM@28..61
-    FUNCTION_DEF@28..61
-      ATTRIBUTES@28..28
-      MODIFIERS@28..28
-      FUNCTION@28..36 "function"
-      WHITESPACE@36..37 " "
-      FUNCTION_NAME@37..40
-        IDENT@37..40 "foo"
-      FUNCTION_ARGS@40..57
-        L_PAREN@40..41 "("
-        FUNCTION_ARG@41..56
-          ATTRIBUTES@41..41
-          VAR_REF@41..44
-            IDENT@41..44 "bar"
-          COLON@44..45 ":"
-          WHITESPACE@45..46 " "
-          TYPE@46..56
-            TUPLE_TYPE@46..56
-              L_PAREN@46..47 "("
-              TUPLE_TYPE_ELEM@47..51
-                TYPE@47..50
-                  GENERIC_TYPE@47..50
-                    IDENT@47..50 "Bar"
-                COMMA@50..51 ","
-              WHITESPACE@51..52 " "
-              TUPLE_TYPE_ELEM@52..55
-                TYPE@52..55
-                  GENERIC_TYPE@52..55
-                    IDENT@52..55 "Baz"
-              R_PAREN@55..56 ")"
-        R_PAREN@56..57 ")"
-      WHITESPACE@57..58 " "
-      BLOCK@58..60
-        L_CURLY@58..59 "{"
-        R_CURLY@59..60 "}"
-      WHITESPACE@60..61 "\n"
-  ITEM@61..92
-    RELATION_DEF@61..92
-      ATTRIBUTES@61..61
-      MODIFIERS@61..61
-      REL_KW@61..69
-        RELATION@61..69 "relation"
-      WHITESPACE@69..70 " "
-      REL_NAME@70..73
-        IDENT@70..73 "Foo"
-      REL_COLS@73..91
-        L_PAREN@73..74 "("
-        REL_COL@74..90
-          ATTRIBUTES@74..74
-          VAR_REF@74..77
-            IDENT@74..77 "bar"
-          COLON@77..78 ":"
-          WHITESPACE@78..79 " "
-          TYPE@79..90
-            TUPLE_TYPE@79..90
-              L_PAREN@79..80 "("
-              TUPLE_TYPE_ELEM@80..84
-                TYPE@80..83
-                  GENERIC_TYPE@80..83
-                    IDENT@80..83 "Bar"
-                COMMA@83..84 ","
-              WHITESPACE@84..85 " "
-              TUPLE_TYPE_ELEM@85..89
-                TYPE@85..88
-                  GENERIC_TYPE@85..88
-                    IDENT@85..88 "Baz"
-                COMMA@88..89 ","
-              R_PAREN@89..90 ")"
-        R_PAREN@90..91 ")"
-      WHITESPACE@91..92 "\n"
+ROOT@0..115
+  COMMENT@0..50 "// kind:item validate ..."
+  WHITESPACE@50..51 "\n"
+  ITEM@51..84
+    FUNCTION_DEF@51..84
+      ATTRIBUTES@51..51
+      MODIFIERS@51..51
+      FUNCTION@51..59 "function"
+      WHITESPACE@59..60 " "
+      FUNCTION_NAME@60..63
+        IDENT@60..63 "foo"
+      FUNCTION_ARGS@63..80
+        L_PAREN@63..64 "("
+        FUNCTION_ARG@64..79
+          ATTRIBUTES@64..64
+          VAR_REF@64..67
+            IDENT@64..67 "bar"
+          COLON@67..68 ":"
+          WHITESPACE@68..69 " "
+          TYPE@69..79
+            TUPLE_TYPE@69..79
+              L_PAREN@69..70 "("
+              TUPLE_TYPE_ELEM@70..74
+                TYPE@70..73
+                  GENERIC_TYPE@70..73
+                    IDENT@70..73 "Bar"
+                COMMA@73..74 ","
+              WHITESPACE@74..75 " "
+              TUPLE_TYPE_ELEM@75..78
+                TYPE@75..78
+                  GENERIC_TYPE@75..78
+                    IDENT@75..78 "Baz"
+              R_PAREN@78..79 ")"
+        R_PAREN@79..80 ")"
+      WHITESPACE@80..81 " "
+      BLOCK@81..83
+        L_CURLY@81..82 "{"
+        R_CURLY@82..83 "}"
+      WHITESPACE@83..84 "\n"
+  ITEM@84..115
+    RELATION_DEF@84..115
+      ATTRIBUTES@84..84
+      MODIFIERS@84..84
+      REL_KW@84..92
+        RELATION@84..92 "relation"
+      WHITESPACE@92..93 " "
+      REL_NAME@93..96
+        IDENT@93..96 "Foo"
+      REL_COLS@96..114
+        L_PAREN@96..97 "("
+        REL_COL@97..113
+          ATTRIBUTES@97..97
+          VAR_REF@97..100
+            IDENT@97..100 "bar"
+          COLON@100..101 ":"
+          WHITESPACE@101..102 " "
+          TYPE@102..113
+            TUPLE_TYPE@102..113
+              L_PAREN@102..103 "("
+              TUPLE_TYPE_ELEM@103..107
+                TYPE@103..106
+                  GENERIC_TYPE@103..106
+                    IDENT@103..106 "Bar"
+                COMMA@106..107 ","
+              WHITESPACE@107..108 " "
+              TUPLE_TYPE_ELEM@108..112
+                TYPE@108..111
+                  GENERIC_TYPE@108..111
+                    IDENT@108..111 "Baz"
+                COMMA@111..112 ","
+              R_PAREN@112..113 ")"
+        R_PAREN@113..114 ")"
+      WHITESPACE@114..115 "\n"

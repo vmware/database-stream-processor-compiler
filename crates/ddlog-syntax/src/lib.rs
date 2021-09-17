@@ -32,7 +32,7 @@ pub type GreenNodeBuilder<'cache, 'interner> =
 pub type NodeCache<'interner> = cstree::NodeCache<'interner, Interner>;
 pub type SyntaxText<'node, 'interner> =
     cstree::SyntaxText<'node, 'interner, Interner, DifferentialDatalog>;
-pub type SyntaxToken = cstree::syntax::SyntaxToken<DifferentialDatalog>;
+pub type SyntaxToken = cstree::SyntaxToken<DifferentialDatalog>;
 pub type SyntaxElement = cstree::SyntaxElement<DifferentialDatalog>;
 pub type SyntaxElementRef<'a> = cstree::SyntaxElementRef<'a, DifferentialDatalog>;
 
