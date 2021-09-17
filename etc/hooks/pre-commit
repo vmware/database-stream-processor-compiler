@@ -48,7 +48,7 @@ fi
 # Check generated code
 if ! cargo xtask codegen check; then
     cat <<EOF
-Error: The generated code doesn't match expectations, run `cargo xtask codegen`.
+Error: The generated code doesn't match expectations, run \`cargo xtask codegen\`.
 EOF
     exit 1
 fi
@@ -56,7 +56,7 @@ fi
 # Check formatting
 if ! cargo fmt --all -- --check; then
     cat <<EOF
-Error: Files aren't formatted properly, run `cargo fmt --all`.
+Error: Files aren't formatted properly, run \`cargo fmt --all\`.
 EOF
     exit 1
 fi
