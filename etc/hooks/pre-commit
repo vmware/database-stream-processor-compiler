@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# Set command failures to be fatal
-set -e
-
 if git rev-parse --verify HEAD >/dev/null 2>&1
 then
     against=HEAD
@@ -41,16 +38,41 @@ fi
 # exec git diff-index --check --cached $against --
 
 # Check line endings
-cargo xtask line-endings --mode check
+if ! cargo xtask line-endings --mode check; then
+    cat <<EOF
+Error: Failed to verify file line endings, make sure every file uses LF line endings.
+EOF
+    exit 1
+fi
 
 # Check generated code
-cargo xtask codegen check
+if ! cargo xtask codegen check; then
+    cat <<EOF
+Error: The generated code doesn't match expectations, run `cargo xtask codegen`.
+EOF
+    exit 1
+fi
 
 # Check formatting
-cargo fmt --all -- --check
+if ! cargo fmt --all -- --check; then
+    cat <<EOF
+Error: Files aren't formatted properly, run `cargo fmt --all`.
+EOF
+    exit 1
+fi
 
 # Run clippy
-cargo clippy --workspace --locked -D warnings
+if ! cargo clippy --workspace --locked -D warnings; then
+    cat <<EOF
+Error: Clippy exited with errors.
+EOF
+    exit 1
+fi
 
 # Run tests
-cargo test --workspace
+if ! cargo test --workspace; then
+    cat <<EOF
+Error: Tests exited with errors.
+EOF
+    exit 1
+fi
