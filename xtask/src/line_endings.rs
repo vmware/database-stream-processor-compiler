@@ -46,13 +46,13 @@ pub fn line_endings(mode: CodegenMode) -> Result<()> {
 
         if contents.contains("\r\n") {
             if mode.is_check() {
-                eprintln!(
+                println!(
                     "file contains CRLF line endings: '{}'",
                     fs2::display_path(&file),
                 );
                 non_normalized += 1;
             } else {
-                eprintln!(
+                println!(
                     "normalizing the line endings of '{}'",
                     fs2::display_path(&file),
                 );

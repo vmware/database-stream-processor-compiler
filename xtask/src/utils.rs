@@ -3,6 +3,7 @@ use std::{
     env,
     fmt::{self, Display},
     path::{Path, PathBuf},
+    process::Command,
     str::FromStr,
 };
 
@@ -45,6 +46,22 @@ pub fn normalize_path_slashes(string: &mut String) {
             *byte = b'/';
         }
     }
+}
+
+pub fn npm(args: &[&str]) -> Command {
+    let mut command = if cfg!(windows) {
+        Command::new("cmd.exe")
+    } else {
+        Command::new("npm")
+    };
+
+    if cfg!(windows) {
+        command.args(&["/c", "npm"]).args(args);
+    } else {
+        command.args(args);
+    }
+
+    command
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -273,7 +290,7 @@ pub mod fs2 {
                     let parent_dir = path.parent().expect("files should have a parent path");
                     create_dir_all(parent_dir)?;
 
-                    eprintln!("updating '{}'", display_path(&path));
+                    println!("updating '{}'", display_path(&path));
                     write(path, contents)?;
                 }
 
@@ -281,7 +298,7 @@ pub mod fs2 {
                 CodegenMode::Check => anyhow::bail!("'{}' is not up-to-date", display_path(path)),
             }
         } else {
-            eprintln!("up-to-date '{}'", display_path(path));
+            println!("up-to-date '{}'", display_path(path));
         }
 
         Ok(())
@@ -326,4 +343,105 @@ pub mod ansi {
     // pub const GREEN: &str = "\x1B[1;32m";
     // pub const RED: &str = "\x1B[1;31m";
     pub const RESET: &str = "\x1B[0m";
+}
+
+pub mod checks {
+    use crate::utils::npm;
+    use anyhow::{Context, Result};
+    use std::process::Command;
+
+    /// This will probably never be used, but just in case
+    const MIN_MAJOR_RUST_VERSION: usize = 1;
+    /// The latest stable Rust version, feel free to open PRs to update it
+    const MIN_MINOR_RUST_VERSION: usize = 55;
+
+    pub fn cargo_exists() -> Result<()> {
+        let output = Command::new("cargo")
+            .arg("--version")
+            .output()
+            .context("`cargo` is required for building ddlog")?;
+
+        // Parse out the semver major and minor versions of cargo
+        // ```
+        // cargo 1.55.0 (32da73ab1 2021-08-23)
+        //       ^ ^^
+        // ```
+        let version = String::from_utf8(output.stdout).context("cargo didn't return valid utf8")?;
+        let (major, minor): (usize, usize) = version
+            .trim()
+            .split(' ')
+            .nth(1)
+            .and_then(|version| {
+                let mut split = version.split('.');
+                Some((split.next()?, split.next()?))
+            })
+            .and_then(|(major, minor)| Some((major.parse().ok()?, minor.parse().ok()?)))
+            .with_context(|| format!("failed to parse cargo's output: {:?}", version))?;
+
+        if major < MIN_MAJOR_RUST_VERSION || minor < MIN_MINOR_RUST_VERSION {
+            anyhow::bail!(
+                "You have a pre-{major}.{minor} version of cargo installed, please update to at least {major}.{minor}",
+                major = MIN_MAJOR_RUST_VERSION,
+                minor = MIN_MINOR_RUST_VERSION,
+            );
+        }
+
+        println!(
+            "detected {} (>= minimum of {}.{})",
+            version.trim(),
+            MIN_MAJOR_RUST_VERSION,
+            MIN_MINOR_RUST_VERSION,
+        );
+
+        Ok(())
+    }
+
+    pub fn rustfmt_exists() -> Result<()> {
+        let output = Command::new("rustfmt").arg("--version").output().context(
+            "`rustfmt` is required for code generation, try running `rustup component add rustfmt`",
+        )?;
+
+        if !output.status.success() {
+            anyhow::bail!("`rustfmt` is required for code generation, try running `rustup component add rustfmt`");
+        }
+
+        if let Ok(version) = String::from_utf8(output.stdout) {
+            println!("detected {}", version.trim());
+        }
+
+        Ok(())
+    }
+
+    pub fn clippy_exists() -> Result<()> {
+        let output = Command::new("cargo")
+            .args(&["clippy", "--", "--version"])
+            .output()
+            .context("`clippy` is required for code generation, try running `rustup component add clippy`")?;
+
+        if !output.status.success() {
+            anyhow::bail!("`clippy` is required for code generation, try running `rustup component add clippy`");
+        }
+
+        if let Ok(version) = String::from_utf8(output.stdout) {
+            println!("detected {}", version.trim());
+        }
+
+        Ok(())
+    }
+
+    pub fn npm_exists() -> Result<()> {
+        let output = npm(&["--version"])
+            .output()
+            .context("`npm` is required to build the VS Code plugin")?;
+
+        if !output.status.success() {
+            anyhow::bail!("`npm` is required to build the VS Code plugin");
+        }
+
+        if let Ok(version) = String::from_utf8(output.stdout) {
+            println!("detected npm {}", version.trim());
+        }
+
+        Ok(())
+    }
 }

@@ -18,8 +18,8 @@ use walkdir::WalkDir;
 
 pub fn parse_tests(mode: CodegenMode) -> Result<()> {
     match mode {
-        CodegenMode::Run => eprintln!("running test generation..."),
-        CodegenMode::Check => eprintln!("checking generated tests..."),
+        CodegenMode::Run => println!("running test generation..."),
+        CodegenMode::Check => println!("checking generated tests..."),
     }
 
     let mut missing_dumps = false;
@@ -61,19 +61,19 @@ pub fn parse_tests(mode: CodegenMode) -> Result<()> {
     }
 
     if missing_dumps {
-        eprintln!(
+        println!(
             "{}warning{}: missing dump files, run `cargo test` with `UPDATE_EXPECT` set to 1",
             YELLOW, RESET,
         );
-        eprintln!(
+        println!(
             "{}warning{}:     shell: `UPDATE_EXPECT=1 cargo test`",
             YELLOW, RESET,
         );
-        eprintln!(
+        println!(
             "{}warning{}:     cmd: `set UPDATE_EXPECT=1 && cargo test && set UPDATE_EXPECT=`",
             YELLOW, RESET,
         );
-        eprintln!(
+        println!(
             "{}warning{}:     powershell: `$env:UPDATE_EXPECT=1; cargo test; Remove-Item Env:\\UPDATE_EXPECT`",
             YELLOW, RESET,
         );
@@ -83,8 +83,8 @@ pub fn parse_tests(mode: CodegenMode) -> Result<()> {
     }
 
     match mode {
-        CodegenMode::Run => eprintln!("finished running test generation"),
-        CodegenMode::Check => eprintln!("finished checking generated tests"),
+        CodegenMode::Run => println!("finished running test generation"),
+        CodegenMode::Check => println!("finished checking generated tests"),
     }
 
     Ok(())
@@ -125,7 +125,7 @@ fn install_tests(tests: &HashMap<String, Test>, test_dir: &str, mode: CodegenMod
         if !test_paths.contains(entry.path()) {
             match mode {
                 CodegenMode::Run => {
-                    eprintln!("removing '{}'", display_path(entry.path()));
+                    println!("removing '{}'", display_path(entry.path()));
                     fs2::remove_file(entry.path())?;
                 }
 
@@ -141,7 +141,7 @@ fn install_tests(tests: &HashMap<String, Test>, test_dir: &str, mode: CodegenMod
         let dump_file = tests_dir.join(format!("{}.rast", test.name));
 
         if !dump_file.exists() {
-            eprintln!(
+            println!(
                 "{}warning{}: the dump file associated with test '{}' doesn't exist (dump file: '{}')",
                 YELLOW, RESET,
                 name,
@@ -285,7 +285,7 @@ fn tests_from_dir(dir: &Path, all_validate: bool) -> Result<Tests> {
     }
 
     let total = tests.pass.len() + tests.fail.len();
-    eprintln!(
+    println!(
         "found {} inline test{}",
         total,
         if total == 1 { "" } else { "s" },
@@ -335,7 +335,7 @@ fn existing_tests(dir: &Path, ok: bool) -> Result<HashMap<String, (PathBuf, Test
         };
 
         if let Some(old) = res.insert(name, (path, test)) {
-            eprintln!("duplicate test: {:?}", old);
+            println!("duplicate test: {:?}", old);
         }
     }
 

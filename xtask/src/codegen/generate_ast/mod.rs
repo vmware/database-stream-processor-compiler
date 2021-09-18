@@ -85,6 +85,7 @@ struct AstGenerator<'a> {
     mode: CodegenMode,
     ast_node_path: PathBuf,
     ast_token_path: PathBuf,
+    ast_visitor_path: PathBuf,
     rust_keywords: Vec<Ident>,
     token_enums: Vec<String>,
 }
@@ -107,6 +108,7 @@ impl<'a> AstGenerator<'a> {
         let syntax_src_dir = project_root().join("crates/ddlog-syntax/src");
         let ast_node_path = syntax_src_dir.join("ast/generated/nodes.rs");
         let ast_token_path = syntax_src_dir.join("ast/generated/tokens.rs");
+        let ast_visitor_path = syntax_src_dir.join("ast/generated/visitor.rs");
         let ast_module_path = syntax_src_dir.join("ast/generated/mod.rs");
 
         let rust_keywords = rust_keywords();
@@ -125,7 +127,7 @@ impl<'a> AstGenerator<'a> {
             })
             .collect();
 
-        let ast_module = "pub mod nodes;\npub mod tokens;\n";
+        let ast_module = "pub mod nodes;\npub mod tokens;\npub mod visitor;";
         fs2::update_formatted(&ast_module_path, ast_module, mode)?;
 
         Ok(Self {
@@ -133,6 +135,7 @@ impl<'a> AstGenerator<'a> {
             mode,
             ast_node_path,
             ast_token_path,
+            ast_visitor_path,
             rust_keywords,
             token_enums,
         })
@@ -352,6 +355,142 @@ impl<'a> AstGenerator<'a> {
         Ok(token_ast)
     }
 
+    // TODO: Finish visitor generation
+    // TODO: Maybe this all needs to be refactored by turning the ungrammar into
+    // a more real ast that defines structs, enums, fields, etc. and their canonical
+    // names so that codegen just consists of traversing the pre-processed tree
+    // instead of constantly re-generating and re-checking things while trying to make
+    // ad-hoc guesses at what the "correct" names of things are.
+    fn ast_visitors(&self) -> Result<()> {
+        let visitors: TokenStream = self
+            .grammar
+            .iter()
+            .map(|node| {
+                let node_data = &self.grammar[node];
+
+                if let Rule::Alt(arms) = &node_data.rule {
+                    if arms.iter().all(|arm| matches!(arm, Rule::Token(_))) {
+                        return Ok(TokenStream::new());
+                    }
+                } else if matches!(node_data.rule, Rule::Token(_)) {
+                    return Ok(TokenStream::new());
+                }
+
+                let struct_name = self.ast_struct(&node_data.name)?;
+                let struct_path = quote! { crate::ast::nodes::#struct_name };
+
+                let visitor_method =
+                    format_ident!("visit_{}", self.ast_method(&node_data.name, false)?);
+                let default_method =
+                    format_ident!("default_{}", self.ast_method(&node_data.name, false)?);
+
+                let body = self.default_visitor(&node_data.rule, Some(&node_data.name))?;
+
+                let visitor = quote! {
+                    #[inline]
+                    #[doc(hidden)]
+                    pub fn #default_method(&mut self, node: &#struct_path) {
+                        #body
+                    }
+
+                    #[inline]
+                    pub fn #visitor_method(&mut self, node: &#struct_path) {
+                        self.#default_method(node);
+                    }
+                };
+
+                Ok(visitor)
+            })
+            .collect::<Result<_>>()?;
+
+        let visitors = quote! {
+            pub trait AstVisitor {
+                #visitors
+            }
+        };
+        let visitors = visitors.to_string();
+        fs2::update_formatted(&self.ast_visitor_path, &visitors, self.mode)?;
+
+        Ok(())
+    }
+
+    fn default_visitor(&self, rule: &Rule, name: Option<&str>) -> Result<TokenStream> {
+        match rule {
+            Rule::Opt(rule) => {
+                if matches!(&**rule, Rule::Token(_)) {
+                    return Ok(TokenStream::new());
+                }
+
+                let method = name.map_or_else(
+                    || {
+                        self.get_rule_name(&**rule)
+                            .unwrap_or_else(|_| (format_ident!("err"), TokenStream::new()))
+                            .0
+                    },
+                    |name| self.ast_method(name, false).unwrap(),
+                );
+                let visitor = format_ident!("visit_{}", method);
+
+                Ok(quote! {
+                    if let ::core::option::Option::Some(node) = node.#method() {
+                        self.#visitor(&*node)
+                    }
+                })
+            }
+
+            &Rule::Node(node) => {
+                let data = &self.grammar[node];
+                if matches!(data.rule, Rule::Token(_)) {
+                    return Ok(TokenStream::new());
+                }
+
+                let method = self.ast_method(&data.name, false)?;
+                let visitor = format_ident!("visit_{}", method);
+
+                Ok(quote! {
+                    if let ::core::option::Option::Some(node) = node.#method() {
+                        self.#visitor(&*node)
+                    }
+                })
+            }
+
+            Rule::Seq(rules) => rules
+                .iter()
+                .map(|rule| self.default_visitor(rule, None))
+                .collect(),
+
+            Rule::Labeled { label, rule, .. } => self.default_visitor(rule, Some(label)),
+
+            Rule::Alt(_) => Ok(TokenStream::new()),
+            Rule::Rep(rule) => {
+                if matches!(&**rule, Rule::Token(_)) {
+                    return Ok(TokenStream::new());
+                }
+
+                let method = name.map_or_else(
+                    || self.get_rule_name(&**rule).unwrap().0,
+                    |name| self.ast_method(name, false).unwrap(),
+                );
+
+                let visitor = method.to_string();
+                let mut visitor = &*visitor;
+                if let Some(visit) = visitor.strip_suffix('s') {
+                    visitor = visit;
+                }
+
+                let visitor = format_ident!("visit_{}", visitor);
+
+                Ok(quote! {
+                    for node in node.#method() {
+                        self.#visitor(::core::ops::Deref::deref(&node));
+                    }
+                })
+            }
+
+            Rule::Token(_) => Ok(TokenStream::new()),
+        }
+    }
+
     fn get_rule_name(&self, rule: &Rule) -> Result<(Ident, TokenStream)> {
         match rule {
             Rule::Labeled { label, .. } => {
@@ -376,19 +515,23 @@ impl<'a> AstGenerator<'a> {
             }
 
             Rule::Seq(_) => anyhow::bail!(
-                "direct sequences in alternatives are not supported, use a named rule",
+                "direct sequences in alternatives are not supported, use a named rule (rule: {:?})",
+                rule,
             ),
 
             Rule::Alt(_) => anyhow::bail!(
-                "direct alternatives in alternatives are not supported, use a named rule",
+                "direct alternatives in alternatives are not supported, use a named rule (rule: {:?})",
+                rule,
             ),
 
             Rule::Opt(_) => anyhow::bail!(
-                "direct optionals in alternatives are not supported, use a named rule",
+                "direct optionals in alternatives are not supported, use a named rule (rule: {:?})",
+                rule,
             ),
 
             Rule::Rep(_) => anyhow::bail!(
-                "direct repetition in alternatives are not supported, use a named rule",
+                "direct repetition in alternatives are not supported, use a named rule (rule: {:?})",
+                rule,
             ),
         }
     }
@@ -657,12 +800,14 @@ impl<'a> AstGenerator<'a> {
                     }
                 };
 
-                Ok(quote! {
+                let method = quote! {
                     #[inline]
                     pub fn #method_name(&self) -> #ret_ty {
                         #support
                     }
-                })
+                };
+
+                Ok(method)
             }
 
             &Rule::Token(token) => {
@@ -706,7 +851,8 @@ impl<'a> AstGenerator<'a> {
 
                 let mut methods = TokenStream::new();
                 for rule in rules {
-                    methods.extend(self.gather_node_methods(rule, false, false, None)?);
+                    let method = self.gather_node_methods(rule, false, false, None)?;
+                    methods.extend(method);
                 }
 
                 Ok(methods)
@@ -880,8 +1026,8 @@ impl<'a> AstGenerator<'a> {
 
 pub fn generate_ast(mode: CodegenMode) -> Result<()> {
     match mode {
-        CodegenMode::Run => eprintln!("running code generation..."),
-        CodegenMode::Check => eprintln!("checking generated code..."),
+        CodegenMode::Run => println!("running code generation..."),
+        CodegenMode::Check => println!("checking generated code..."),
     }
 
     let grammar = grammar()?;
@@ -909,10 +1055,11 @@ pub fn generate_ast(mode: CodegenMode) -> Result<()> {
     generate_syntax_kind(&tokens, mode)?;
     let token_ast = generator.node_ast()?;
     generator.token_ast(token_ast)?;
+    generator.ast_visitors()?;
 
     match mode {
-        CodegenMode::Run => eprintln!("finished running code generation"),
-        CodegenMode::Check => eprintln!("finished checking generated code"),
+        CodegenMode::Run => println!("finished running code generation"),
+        CodegenMode::Check => println!("finished checking generated code"),
     }
     Ok(())
 }

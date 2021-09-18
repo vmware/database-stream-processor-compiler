@@ -1,12 +1,10 @@
 use crate::utils::{
+    checks,
     fs2::{self, display_path},
-    project_root,
+    npm, project_root,
 };
 use anyhow::{Context, Result};
-use std::{
-    fs,
-    process::{Command, Stdio},
-};
+use std::fs;
 
 // TODO: Check that `rustc` and `cargo` exist and are >= our supported versions
 // TODO: Check that `npm` exists and is >= our npm version
@@ -17,10 +15,13 @@ use std::{
 // TODO: Make sure that `rustfmt`, `clippy` and `mdbook` all exist and offer to
 //       install them if they don't
 pub fn setup() -> Result<()> {
-    // Check that npm exists
-    check_for_npm()?;
+    // Check that all required binaries exist
+    checks::cargo_exists()?;
+    checks::npm_exists()?;
+    checks::rustfmt_exists()?;
+    checks::clippy_exists()?;
 
-    eprintln!("installing vsce...");
+    println!("installing vsce...");
     // Note: Don't immediately propagate the error, continue trying to do stuff
     let result = npm(&["install", "-g", "vsce"])
         .spawn()
@@ -33,13 +34,13 @@ pub fn setup() -> Result<()> {
     }
 
     if did_error {
-        eprintln!("failed");
+        println!("failed");
     }
     result?;
 
     let vscode_path = project_root().join("editors/vscode");
     fs2::with_working_dir(&vscode_path, || {
-        eprintln!("initializing editor dependencies...");
+        println!("initializing editor dependencies...");
 
         let result = npm(&["install"])
             .spawn()
@@ -56,7 +57,7 @@ pub fn setup() -> Result<()> {
             did_error = !exit_code.success();
         }
         if did_error {
-            eprintln!("failed");
+            println!("failed");
         }
 
         result
@@ -82,36 +83,4 @@ pub fn setup() -> Result<()> {
     }
 
     Ok(())
-}
-
-fn check_for_npm() -> Result<()> {
-    let result = npm(&["--version"])
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .and_then(|mut child| child.wait())
-        .context("`npm` is required to build the VS Code plugin")?;
-
-    if !result.success() {
-        anyhow::bail!("`npm` is required to build the VS Code plugin");
-    }
-
-    Ok(())
-}
-
-fn npm(args: &[&str]) -> Command {
-    let mut command = if cfg!(windows) {
-        Command::new("cmd.exe")
-    } else {
-        Command::new("npm")
-    };
-
-    if cfg!(windows) {
-        command.args(&["/c", "npm"]).args(args);
-    } else {
-        command.args(args);
-    }
-
-    command
 }
