@@ -60,19 +60,3 @@ Error: Files aren't formatted properly, run \`cargo fmt --all\`.
 EOF
     exit 1
 fi
-
-# Run clippy
-if ! cargo clippy --workspace --locked -- -D warnings; then
-    cat <<EOF
-Error: Clippy exited with errors.
-EOF
-    exit 1
-fi
-
-# Run tests
-if ! cargo test --workspace; then
-    cat <<EOF
-Error: Tests exited with errors.
-EOF
-    exit 1
-fi
