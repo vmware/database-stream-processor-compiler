@@ -1,133 +1,157 @@
 # Syntax
 
-The root of a ddlog file will contain any number of item declarations,
-an empty ddlog file is a valid program.
-
 ```ebnf
-Root := Item*
+Root = Item*
 
-Ident := [A-Za-z_][A-Za-z0-9_]*
-Path := (Ident)'.'+
-Pattern := Ident | Literal | TuplePattern | RecordPattern
-TuplePattern := '(' (Pattern)','* ','? ')'
-RecordDecl := '{' (Ident (':' Pattern)?)','* ','? '}'
-Attribute := '#[' (AttrPair)','* ','? ']'
-AttrPair := Ident ('=' Expr)?
-Modifier := 'export'
-```
+Item =
+    FunctionDef
+    | StructDef
+    | EnumDef
+    | ConstDef
+    | UseDef
+    // TODO: Relations & Clauses
 
-## Items
+FunctionDef = Attribute* Modifier* keyword:'fn' name:FunctionName Generics args:FunctionArgs ret:FunctionReturn? body:Block
+FunctionName = 'ident'
+FunctionArgs = '(' args:FunctionArg* ')'
+FunctionArg = Attribute* binding:Pattern ':' ty:Type ','*
+FunctionReturn = '->' return_ty:Type
 
-Items are any of the top-level declarations contained within a ddlog file
+StructDef = Attribute* Modifier* keyword:'struct' name:StructName fields:StructFields
+StructName = 'ident'
+StructFields = '{' fields:StructField* '}'
+StructField = name:StructFieldName ':' ty:Type ','*
+StructFieldName = 'ident'
 
-### Imports
+EnumDef = Attribute* Modifier* keyword:'enum' name:EnumName variants:EnumVariants
+EnumName = 'ident'
+EnumVariants = '{' variants:EnumVariant* '}'
+EnumVariant = EnumVariantName (VariantTuple | VariantStruct)
+EnumVariantName = 'ident'
+VariantTuple = '(' VariantTupleElem* ')'
+VariantTupleElem = Type ','*
+VariantStruct = '{' fields:VariantStructField* '}'
+VariantStructField = name:VariantStructFieldName ':' ty:Type ','*
+VariantStructFieldName = 'ident'
 
-Imports allow using other modules and the types contained within them
+ConstDef = Attribute* Modifier* keyword:'const' name:ConstName '=' ConstValue ';'
+// TODO: Could be a pattern
+ConstName = 'ident'
+ConstValue = value:Expr
 
-#### Grammar
+UseDef = Attribute* Modifier* keyword:'use' UseTree ';'
+UseTree = Path UseBranch?
+UseBranch = '{' (UseTree ','*)* '}'
 
-```ebnf
-Import := 'import' Path ('exposing' (Path)','+ ','?)?
-```
+Attribute = '#[' AttrPair* ']'
+AttrPair = AttrName ('=' Expr ','*)?
+AttrName = 'ident'
 
-#### Example
+Modifier = 'pub' // 'input' | 'output'
 
-```
-import graphs
-import graphs exposing SCC
-import graphs exposing SCC, SCCUnsafe
-```
+Type = GenericType | TupleType | FunctionType
+Path = '::'? 'ident' ('::' 'ident')*
 
-### Relations
+GenericType = Path Generics?
+Generics = '<' generics:GenericArg* '>'
+GenericArg = Type ','*
 
-#### Grammar
+TupleType = '(' elements:TupleTypeElem* ')'
+TupleTypeElem = Type ','*
 
-```ebnf
-Relation := Attribute* Modifier* ('relation' | 'stream' | 'multiset') Ident '=' (Type | RecordDecl)
-```
+FunctionType = 'fn' args:FunctionTypeArgs ret:FunctionReturnType?
+FunctionTypeArgs = '(' args:FunctionTypeArg* ')'
+FunctionTypeArg = Type ','*
+FunctionReturnType = '->' Type
 
-### Functions
+Block = '{' statements:Stmt* '}'
+Stmt =
+    ExprStmt
+    | VarDecl
+    | IfStmt
 
-#### Grammar
+ExprStmt = Expr ';'
+VarDecl = 'let' binding:Pattern '=' value:Expr ';'
 
-```ebnf
-Function := Attribute* Modifier* 'function' Ident '(' (FunctionArgument)','* ','? ')' ('->' Type)? Block
-FunctionArgument := Pattern ':' Type
-```
+IfStmt = IfBlock* ElseBlock?
+IfBlock = leading_else:'else'? 'if' cond:Expr Block
+ElseBlock = 'else' Block
 
-#### Example
+Pattern = VarRef | TuplePattern
+TuplePattern = '(' elements:TuplePatternElem* ')'
+TuplePatternElem = Pattern ','*
 
-```
-function foo() -> Bar {
-    Bar.new()
-}
-```
-
-### Type Declarations
-
-#### Grammar
-
-```ebnf
-TypeDecl := Attribute* Modifier* 'type' Ident '=' (Type | RecordDecl)
-RecordDecl := '{' (Ident ':' Type)','* ','? '}'
-```
-
-#### Example
-
-```
-type Foo = Bar
-type Foo = (u32, u32, u32)
-type Foo = { bar: u32, baz: Box[Foo] }
-```
-
-## Statements
-
-```ebnf
-Stmt := (VarDecl | Expr) ';'*
-VarDecl := 'let' 'mut'? Pattern '=' Expr
-```
-
-## Expressions
-
-```ebnf
-Expr :=
+Expr =
     Literal
     | VarRef
-    | Block
-    | If
-    | Match
-    | For
-    | While
-    | Loop
     | Assign
-    | BinOp
-    | Return
-    | Break
-    | Continue
-    | '(' Expr ')'
+    | ParenExpr
+    | BinExpr
+    | IfStmt
+    | RetExpr
+    | UnaryExpr
+    | Block
+    | WhileExpr
+    | ForExpr
+    | LoopExpr
+    | MatchExpr
 
-Literal := Bool | String | Number | Float
-Bool := 'true' | 'false'
-String := '"' .* '"'
-Number := [0-9]+
-Float := [0-9]+ '.' [0-9]+
-VarRef := Ident
-Block := '{' (Stmt)';'* '}'
-If := 'if' Expr Block ('else' 'if' Expr Block)* ('else' Block)?
-Match := 'match' Expr '{' (Pattern '=>' Expr)','* ','? '}'
-For := 'for' Pattern 'in' Expr Block
-While := 'while' Expr Block
-Loop := 'loop' Block
-Assign := Pattern AssignModifier? '=' Expr
-AssignModifier :=
-    '+' | '-' | '*' | '/'
-    | '%' | '&' | '|' | '^'
-BinOp := Expr BinaryOperator Expr
-BinaryOperator :=
-    AssignModifier | 'and' | 'or'
-    | '<' | '>' | '<=' | '>='
-    | '==' | '!='
-Return = 'return' Expr
-Break = 'break' Expr
-Continue = 'continue'
+VarRef = 'ident'
+
+WhileExpr = 'while' cond:Expr Block
+
+ForExpr = 'for' binding:Pattern 'in' iter:Expr Block
+
+LoopExpr = 'loop' Block
+
+MatchExpr = 'match' scrutinee:Expr '{' MatchArm* '}'
+MatchArm = binding:Pattern '=>' body:Expr ','* 
+
+Assign = binding:Pattern AssignOp value:Expr
+AssignOp =
+    '='
+    | '+='
+    | '-='
+    | '/='
+    | '*='
+    | '%='
+    | '&='
+    | '|='
+    | '^='
+    | '<<='
+    | '>>='
+
+ParenExpr = '(' inner:Expr ')'
+
+// TODO: Floats
+Literal = Bool | Number | String
+Bool = 'true' | 'false'
+Number = 'number'
+String = 'string'
+
+RetExpr = 'return' expr:Expr
+
+UnaryExpr = op:UnaryOp expr:Expr
+UnaryOp = '!' | '-'
+
+BinExpr = lhs:Expr op:BinOp rhs:Expr
+BinOp =
+    '+'
+    | '-'
+    | '*'
+    | '/' 
+    | '%'
+    | '|'
+    | '^'
+    | '&'
+    | '<<'
+    | '>>'
+    | 'and'
+    | 'or'
+    | '=='
+    | '!='
+    | '>'
+    | '>='
+    | '<'
+    | '<='
 ```
