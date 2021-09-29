@@ -115,6 +115,7 @@ Expr =
     | FunctionCall
     | StructInitExpr
     | TupleInitExpr
+    | ArrayInitExpr
     // TODO: `if let` and `while let` expressions
 
 VarRef = 'ident'
@@ -162,6 +163,9 @@ StructInitField = field:'ident' (':' value:Expr)? ','*
 
 TupleInitExpr = '(' elems:TupleExprElem* ')'
 TupleExprElem = Expr ','*
+
+ArrayInitExpr = '[' ArrayExprElem ']'
+ArrayExprElem = Expr ','*
 
 // TODO: Floats
 Literal = Bool | Number | String
