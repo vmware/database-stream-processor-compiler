@@ -9,6 +9,8 @@ Item =
     | EnumDef
     | ConstDef
     | UseDef
+    | ImplBlock
+    | TypeAlias
     // TODO: Relations & Clauses
 
 FunctionDef = Attribute* Modifier* keyword:'fn' name:FunctionName Generics args:FunctionArgs ret:FunctionReturn? body:Block
@@ -47,6 +49,12 @@ UseTree = Path (UseBranch | 'as' UseAlias)?
 UseAlias = 'ident'
 UseBranch = '{' (UseTree ','*)* '}'
 
+// TODO: `impl Trait for Type { ... }`
+ImplBlock = Attribute* Modifier* keyword:'impl' Type contents:ImplBlockContents
+ImplBlockContents = '{' Item* '}'
+
+TypeAlias =  Attribute* Modifier* keyword:'type' alias:Type '=' original:Type ';'*
+
 Attribute = '#[' AttrPair* ']'
 AttrPair = AttrName ('=' Expr ','*)?
 AttrName = 'ident'
@@ -82,7 +90,7 @@ Stmt =
     | VarDecl
 
 ExprStmt = Expr ';'*
-VarDecl = 'let' binding:Pattern (':' Type)? '=' value:Expr ';'
+VarDecl = 'let' binding:Pattern (':' Type)? '=' value:Expr ';'*
 
 Expr =
     Literal
@@ -106,6 +114,7 @@ Expr =
     | ArrayAccess
     | FunctionCall
     | StructInitExpr
+    | TupleInitExpr
     // TODO: `if let` and `while let` expressions
 
 VarRef = 'ident'
@@ -150,6 +159,9 @@ FunctionCallArg = arg:Expr ','*
 
 StructInitExpr = ty:Path '{' fields:StructInitField* '}'
 StructInitField = field:'ident' (':' value:Expr)? ','*
+
+TupleInitExpr = '(' elems:TupleExprElem* ')'
+TupleExprElem = Expr ','*
 
 // TODO: Floats
 Literal = Bool | Number | String
