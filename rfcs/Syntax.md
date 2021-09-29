@@ -19,9 +19,12 @@ FunctionReturn = '->' return_ty:Type
 
 StructDef = Attribute* Modifier* keyword:'struct' name:StructName fields:StructFields
 StructName = 'ident'
-StructFields = '{' fields:StructField* '}'
-StructField = name:StructFieldName ':' ty:Type ','*
+StructFields = BrackedStructFields | TupleStructFields
+BrackedStructFields = '{' fields:BrackedStructField* '}'
+BrackedStructField = name:StructFieldName ':' ty:Type ','*
 StructFieldName = 'ident'
+TupleStructFields = '(' TupleStructField* ')'
+TupleStructField = Type ','*
 
 EnumDef = Attribute* Modifier* keyword:'enum' name:EnumName variants:EnumVariants
 EnumName = 'ident'
@@ -40,7 +43,8 @@ ConstName = 'ident'
 ConstValue = value:Expr
 
 UseDef = Attribute* Modifier* keyword:'use' UseTree ';'
-UseTree = Path UseBranch?
+UseTree = Path (UseBranch | 'as' UseAlias)?
+UseAlias = 'ident'
 UseBranch = '{' (UseTree ','*)* '}'
 
 Attribute = '#[' AttrPair* ']'
@@ -80,10 +84,6 @@ Stmt =
 ExprStmt = Expr ';'*
 VarDecl = 'let' binding:Pattern (':' Type)? '=' value:Expr ';'
 
-IfStmt = IfBlock* ElseBlock?
-IfBlock = leading_else:'else'? 'if' cond:Expr Block
-ElseBlock = 'else' Block
-
 Expr =
     Literal
     | VarRef
@@ -91,7 +91,7 @@ Expr =
     | Assign
     | ParenExpr
     | BinExpr
-    | IfStmt
+    | IfExpr
     | RetExpr
     | BreakExpr
     | ContinueExpr
@@ -106,6 +106,7 @@ Expr =
     | ArrayAccess
     | FunctionCall
     | StructInitExpr
+    // TODO: `if let` and `while let` expressions
 
 VarRef = 'ident'
 QualifiedRef = Path
@@ -113,6 +114,10 @@ QualifiedRef = Path
 WhileExpr = 'while' cond:Expr Block
 ForExpr = 'for' binding:Pattern 'in' iter:Expr Block
 LoopExpr = 'loop' Block
+
+IfExpr = IfBlock* ElseBlock?
+IfBlock = leading_else:'else'? 'if' cond:Expr Block
+ElseBlock = 'else' Block
 
 MatchExpr = 'match' scrutinee:Expr '{' MatchArm* '}'
 MatchArm = binding:Pattern '=>' body:Expr ','* 
