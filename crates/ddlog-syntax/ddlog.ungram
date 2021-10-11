@@ -1,146 +1,203 @@
 Root = Item*
 
-Item = FunctionDef | RelationDef | TypeDef
+Item =
+    FunctionDef
+    | StructDef
+    | EnumDef
+    | ConstDef
+    | UseDef
+    | ImplBlock
+    | TypeAlias
+    // TODO: Relations & Clauses
 
-RelationDef = Attributes Modifiers keyword:RelKw name:RelName columns:RelCols
-RelKw = 'relation' | 'multiset' | 'stream'
-RelName = 'ident'
-RelCols = '(' columns:RelCol* ')'
-RelCol = Attributes binding:Pattern ':' ty:Type ','*
-
-FunctionDef = Attributes Modifiers keyword:'function' name:FunctionName Generics args:FunctionArgs ret:FunctionReturn? body:Block
+FunctionDef = Attribute* Modifier* keyword:'fn' name:FunctionName Generics args:FunctionArgs ret:FunctionReturn? body:Block
 FunctionName = 'ident'
 FunctionArgs = '(' args:FunctionArg* ')'
-FunctionArg = Attributes binding:Pattern ':' ty:Type ','*
-FunctionReturn = ':' return_ty:Type
+FunctionArg = Attribute* binding:Pattern ':' ty:Type ','*
+FunctionReturn = '->' return_ty:Type
 
-TypeDef = Attributes Modifiers keyword:'typedef' name:TypeName '=' body:TypeBody
-TypeName = 'ident'
+StructDef = Attribute* Modifier* keyword:'struct' name:StructName fields:StructFields
+StructName = 'ident'
+StructFields = BrackedStructFields | TupleStructFields
+BrackedStructFields = '{' fields:BrackedStructField* '}'
+BrackedStructField = name:StructFieldName ':' ty:Type ','*
+StructFieldName = 'ident'
+TupleStructFields = '(' TupleStructField* ')'
+TupleStructField = Type ','*
 
-TypeBody = RecordType | SumType
-RecordType = constructor:RecordName ('{' fields:RecordField* '}')?
-RecordName = 'ident'
-RecordField = Attributes name:Pattern ':' ty:Type ','*
-SumType = ('|' RecordType)*
+EnumDef = Attribute* Modifier* keyword:'enum' name:EnumName variants:EnumVariants
+EnumName = 'ident'
+EnumVariants = '{' variants:EnumVariant* '}'
+EnumVariant = EnumVariantName EnumVariantBody
+EnumVariantBody = VariantTuple | VariantStruct
+EnumVariantName = 'ident'
+VariantTuple = '(' VariantTupleElem* ')'
+VariantTupleElem = Type ','*
+VariantStruct = '{' fields:VariantStructField* '}'
+VariantStructField = name:VariantStructFieldName ':' ty:Type ','*
+VariantStructFieldName = 'ident'
 
-Attributes = Attribute*
+ConstDef = Attribute* Modifier* keyword:'const' name:ConstName '=' ConstValue ';'
+// TODO: Could be a pattern
+ConstName = 'ident'
+ConstValue = value:Expr
+
+UseDef = Attribute* Modifier* keyword:'use' UseTree ';'
+UseTree = Path UseBranchOrAlias?
+UseBranchOrAlias = UseBranch | UseAlias
+UseAlias = 'as' UseAliasName
+UseAliasName = 'ident'
+UseBranch = '{' (UseTree ','*)* '}'
+
+// TODO: `impl Trait for Type { ... }`
+ImplBlock = Attribute* Modifier* keyword:'impl' Type contents:ImplBlockContents
+ImplBlockContents = '{' Item* '}'
+
+TypeAlias =  Attribute* Modifier* keyword:'type' alias:Type '=' original:Type ';'*
+
 Attribute = '#[' AttrPair* ']'
-AttrPair = 'ident' '=' Expr ','*
+AttrPair = AttrName ('=' Expr ','*)?
+AttrName = 'ident'
 
-Modifiers = Modifier*
-Modifier = 'input' | 'output' | 'extern'
+Modifier = 'pub' // 'input' | 'output'
+
+Pattern = VarRef | TuplePattern | StructPattern
+TuplePattern = '(' elements:TuplePatternElem* ')'
+TuplePatternElem = Pattern ','*
+StructPattern = '{' fields:StructPatternField* '}'
+StructPatternField = name:StructPatternFieldName (':' alias:Pattern)? ','*
+StructPatternFieldName = 'ident'
 
 Type = GenericType | TupleType | FunctionType
+Path = '::'? head:PathSegment tail:PathTail*
+PathTail = '::' tail:PathSegment
+PathSegment = 'ident'
 
-GenericType = 'ident' Generics?
+GenericType = Path Generics?
 Generics = '<' generics:GenericArg* '>'
 GenericArg = Type ','*
 
 TupleType = '(' elements:TupleTypeElem* ')'
 TupleTypeElem = Type ','*
 
-FunctionType = 'function' args:FunctionTypeArgs ret:FunctionReturnType?
+FunctionType = 'fn' args:FunctionTypeArgs ret:FunctionReturnType?
 FunctionTypeArgs = '(' args:FunctionTypeArg* ')'
 FunctionTypeArg = Type ','*
-FunctionReturnType = ':' Type
+FunctionReturnType = '->' Type
 
 Block = '{' statements:Stmt* '}'
-Stmt =
-    ExprStmt
-    | VarDecl
-    | IfStmt
+Stmt = ExprStmt | VarDecl
 
-ExprStmt = Expr ';'
-VarDecl = 'var' binding:Pattern '=' value:Expr ';'
-
-IfStmt = IfBlock* ElseBlock?
-IfBlock = leading_else:'else'? 'if' cond:Expr Block
-ElseBlock = 'else' Block
-
-Pattern = VarRef | TuplePattern
-TuplePattern = '(' elements:TuplePatternElem* ')'
-TuplePatternElem = Pattern ','*
+ExprStmt = Expr ';'*
+VarDecl = 'let' binding:Pattern (':' Type)? '=' value:Expr ';'*
 
 Expr =
     Literal
     | VarRef
+    | QualifiedRef
     | Assign
     | ParenExpr
     | BinExpr
-    | IfStmt
+    | IfExpr
     | RetExpr
+    | BreakExpr
+    | ContinueExpr
     | UnaryExpr
     | Block
+    | WhileExpr
+    | ForExpr
+    | LoopExpr
+    | MatchExpr
+    | ClosureExpr
+    | FieldAccess
+    | ArrayAccess
+    | FunctionCall
+    | StructInitExpr
+    | TupleInitExpr
+    | ArrayInitExpr
+    // TODO: `if let` and `while let` expressions
 
 VarRef = 'ident'
+QualifiedRef = Path
 
-Assign = binding:Pattern '=' value:Expr
+WhileExpr = 'while' cond:Expr Block
+ForExpr = 'for' binding:Pattern 'in' iter:Expr Block
+LoopExpr = 'loop' Block
+
+IfExpr = IfBlock* ElseBlock?
+IfBlock = leading_else:'else'? 'if' cond:Expr Block
+ElseBlock = 'else' Block
+
+MatchExpr = 'match' scrutinee:Expr '{' MatchArm* '}'
+MatchArm = binding:Pattern '=>' body:Expr ','* 
+
+Assign = binding:Pattern AssignOp value:Expr
+AssignOp =
+    '='
+    | '+='
+    | '-='
+    | '/='
+    | '*='
+    | '%='
+    | '&='
+    | '|='
+    | '^='
+    | '<<='
+    | '>>='
 
 ParenExpr = '(' inner:Expr ')'
 
+ClosureExpr = '|' args:ClosureArg* '|' body:Expr
+ClosureArg = binding:Pattern (':' Type)? ','*
+
+FieldAccess = Expr '.' FieldAccessor
+FieldAccessor = FieldAccessorName | Number
+FieldAccessorName = 'ident'
+ArrayAccess = Expr '[' index:Expr ']'
+
+FunctionCall = func:Expr '(' args:FunctionCallArg* ')'
+// Future Possibility: Named arguments
+FunctionCallArg = arg:Expr ','*
+
+StructInitExpr = ty:Path '{' fields:StructInitField* '}'
+StructInitField = field:'ident' (':' value:Expr)? ','*
+
+TupleInitExpr = '(' elems:TupleExprElem* ')'
+TupleExprElem = Expr ','*
+
+ArrayInitExpr = '[' ArrayExprElem ']'
+ArrayExprElem = Expr ','*
+
 // TODO: Floats
 Literal = Bool | Number | String
-Bool = True | False
+Bool = 'true' | 'false'
 Number = 'number'
 String = 'string'
 
 RetExpr = 'return' expr:Expr
+BreakExpr = 'break' expr:Expr
+ContinueExpr = 'continue'
 
 UnaryExpr = op:UnaryOp expr:Expr
-UnaryOp = Bang | Minus
+UnaryOp = '!' | '-'
 
 BinExpr = lhs:Expr op:BinOp rhs:Expr
 BinOp =
-    Plus
-    | Minus
-    | Star
-    | Slash 
-    | Percent
-    | RightRocket
-    | Pipe
-    | Caret
-    | Ampersand
-    | Shl
-    | Shr
-    | And
-    | Or
-    | EqEq
-    | Neq
-    | RAngle
-    | RAngleEq
-    | LAngle
-    | LAngleEq
-
-Or = 'or'
-And = 'and'
-True = 'true'
-False = 'false'
-
-Eq = '='
-Bang = '!'
-Pipe = '|'
-Plus = '+'
-Star = '*'
-Neq = '!='
-Shl = '<<'
-Shr = '>>'
-Caret = '^'
-Comma = ','
-Colon = ':'
-Minus = '-'
-Slash = '/'
-EqEq = '=='
-LAngle = '<'
-RAngle = '>'
-LBrack = '['
-RBrack = ']'
-LCurly = '{'
-RCurly = '}'
-LParen = '('
-RParen = ')'
-Percent = '%'
-Ampersand = '&'
-Semicolon = ';'
-LAngleEq = '<='
-RAngleEq = '>='
-RightRocket = '=>'
+    '+'
+    | '-'
+    | '*'
+    | '/' 
+    | '%'
+    | '|'
+    | '^'
+    | '&'
+    | '<<'
+    | '>>'
+    | 'and'
+    | 'or'
+    | '=='
+    | '!='
+    | '>'
+    | '>='
+    | '<'
+    | '<='

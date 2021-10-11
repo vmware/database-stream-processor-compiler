@@ -10,162 +10,243 @@ pub enum SyntaxKind {
     HASH_BRACK = 2u16,
     #[token("%")]
     PERCENT = 3u16,
+    #[token("%=")]
+    PERCENT_EQ = 4u16,
     #[token("&")]
-    AMPERSAND = 4u16,
+    AMPERSAND = 5u16,
+    #[token("&=")]
+    AMPERSAND_EQ = 6u16,
     #[token("(")]
-    L_PAREN = 5u16,
+    L_PAREN = 7u16,
     #[token(")")]
-    R_PAREN = 6u16,
+    R_PAREN = 8u16,
     #[token("*")]
-    STAR = 7u16,
+    STAR = 9u16,
+    #[token("*=")]
+    STAR_EQ = 10u16,
     #[token("+")]
-    PLUS = 8u16,
+    PLUS = 11u16,
+    #[token("+=")]
+    PLUS_EQ = 12u16,
     #[token(",")]
-    COMMA = 9u16,
+    COMMA = 13u16,
     #[token("-")]
-    MINUS = 10u16,
+    MINUS = 14u16,
+    #[token("-=")]
+    MINUS_EQ = 15u16,
+    #[token("->")]
+    RIGHT_ARROW = 16u16,
+    #[token(".")]
+    DOT = 17u16,
     #[token("/")]
-    SLASH = 11u16,
+    SLASH = 18u16,
+    #[token("/=")]
+    SLASH_EQ = 19u16,
     #[token(":")]
-    COLON = 12u16,
+    COLON = 20u16,
+    #[token("::")]
+    DOUBLE_COLON = 21u16,
     #[token(";")]
-    SEMICOLON = 13u16,
+    SEMICOLON = 22u16,
     #[token("<")]
-    L_ANGLE = 14u16,
+    L_ANGLE = 23u16,
     #[token("<<")]
-    SHL = 15u16,
+    SHL = 24u16,
+    #[token("<<=")]
+    SHL_EQ = 25u16,
     #[token("<=")]
-    L_ANGLE_EQ = 16u16,
+    L_ANGLE_EQ = 26u16,
     #[token("=")]
-    EQ = 17u16,
+    EQ = 27u16,
     #[token("==")]
-    EQEQ = 18u16,
+    EQEQ = 28u16,
     #[token("=>")]
-    RIGHT_ROCKET = 19u16,
+    RIGHT_ROCKET = 29u16,
     #[token(">")]
-    R_ANGLE = 20u16,
+    R_ANGLE = 30u16,
     #[token(">=")]
-    R_ANGLE_EQ = 21u16,
+    R_ANGLE_EQ = 31u16,
     #[token(">>")]
-    SHR = 22u16,
-    ASSIGN = 23u16,
-    ATTR_PAIR = 24u16,
-    ATTRIBUTE = 25u16,
-    ATTRIBUTES = 26u16,
-    BIN_EXPR = 27u16,
-    BIN_OP = 28u16,
-    BLOCK = 29u16,
-    BOOL = 30u16,
-    ELSE_BLOCK = 31u16,
-    EQ_EQ = 32u16,
-    EXPR = 33u16,
-    EXPR_STMT = 34u16,
-    FUNCTION_ARG = 35u16,
-    FUNCTION_ARGS = 36u16,
-    FUNCTION_DEF = 37u16,
-    FUNCTION_NAME = 38u16,
-    FUNCTION_RETURN = 39u16,
-    FUNCTION_RETURN_TYPE = 40u16,
-    FUNCTION_TYPE = 41u16,
-    FUNCTION_TYPE_ARG = 42u16,
-    FUNCTION_TYPE_ARGS = 43u16,
-    GENERIC_ARG = 44u16,
-    GENERIC_TYPE = 45u16,
-    GENERICS = 46u16,
-    IF_BLOCK = 47u16,
-    IF_STMT = 48u16,
-    ITEM = 49u16,
-    LITERAL = 50u16,
-    MODIFIER = 51u16,
-    MODIFIERS = 52u16,
-    PAREN_EXPR = 53u16,
-    PATTERN = 54u16,
-    RECORD_FIELD = 55u16,
-    RECORD_NAME = 56u16,
-    RECORD_TYPE = 57u16,
-    REL_COL = 58u16,
-    REL_COLS = 59u16,
-    REL_KW = 60u16,
-    REL_NAME = 61u16,
-    RELATION_DEF = 62u16,
-    RET_EXPR = 63u16,
-    ROOT = 64u16,
-    STMT = 65u16,
-    SUM_TYPE = 66u16,
-    TUPLE_PATTERN = 67u16,
-    TUPLE_PATTERN_ELEM = 68u16,
-    TUPLE_TYPE = 69u16,
-    TUPLE_TYPE_ELEM = 70u16,
-    TYPE = 71u16,
-    TYPE_BODY = 72u16,
-    TYPE_DEF = 73u16,
-    TYPE_NAME = 74u16,
-    UNARY_EXPR = 75u16,
-    UNARY_OP = 76u16,
-    VAR_DECL = 77u16,
-    VAR_REF = 78u16,
+    SHR = 32u16,
+    #[token(">>=")]
+    SHR_EQ = 33u16,
+    ARRAY_ACCESS = 34u16,
+    ARRAY_EXPR_ELEM = 35u16,
+    ARRAY_INIT_EXPR = 36u16,
+    ASSIGN = 37u16,
+    ASSIGN_OP = 38u16,
+    ATTR_NAME = 39u16,
+    ATTR_PAIR = 40u16,
+    ATTRIBUTE = 41u16,
+    BIN_EXPR = 42u16,
+    BIN_OP = 43u16,
+    BLOCK = 44u16,
+    BOOL = 45u16,
+    BRACKED_STRUCT_FIELD = 46u16,
+    BRACKED_STRUCT_FIELDS = 47u16,
+    BREAK_EXPR = 48u16,
+    CLOSURE_ARG = 49u16,
+    CLOSURE_EXPR = 50u16,
+    CONST_DEF = 51u16,
+    CONST_NAME = 52u16,
+    CONST_VALUE = 53u16,
+    CONTINUE_EXPR = 54u16,
+    ELSE_BLOCK = 55u16,
+    ENUM_DEF = 56u16,
+    ENUM_NAME = 57u16,
+    ENUM_VARIANT = 58u16,
+    ENUM_VARIANT_BODY = 59u16,
+    ENUM_VARIANT_NAME = 60u16,
+    ENUM_VARIANTS = 61u16,
+    EXPR = 62u16,
+    EXPR_STMT = 63u16,
+    FIELD_ACCESS = 64u16,
+    FIELD_ACCESSOR = 65u16,
+    FIELD_ACCESSOR_NAME = 66u16,
+    FOR_EXPR = 67u16,
+    FUNCTION_ARG = 68u16,
+    FUNCTION_ARGS = 69u16,
+    FUNCTION_CALL = 70u16,
+    FUNCTION_CALL_ARG = 71u16,
+    FUNCTION_DEF = 72u16,
+    FUNCTION_NAME = 73u16,
+    FUNCTION_RETURN = 74u16,
+    FUNCTION_RETURN_TYPE = 75u16,
+    FUNCTION_TYPE = 76u16,
+    FUNCTION_TYPE_ARG = 77u16,
+    FUNCTION_TYPE_ARGS = 78u16,
+    GENERIC_ARG = 79u16,
+    GENERIC_TYPE = 80u16,
+    GENERICS = 81u16,
+    IF_BLOCK = 82u16,
+    IF_EXPR = 83u16,
+    IMPL_BLOCK = 84u16,
+    IMPL_BLOCK_CONTENTS = 85u16,
+    ITEM = 86u16,
+    LITERAL = 87u16,
+    LOOP_EXPR = 88u16,
+    MATCH_ARM = 89u16,
+    MATCH_EXPR = 90u16,
+    MODIFIER = 91u16,
+    PAREN_EXPR = 92u16,
+    PATH = 93u16,
+    PATH_SEGMENT = 94u16,
+    PATH_TAIL = 95u16,
+    PATTERN = 96u16,
+    QUALIFIED_REF = 97u16,
+    RET_EXPR = 98u16,
+    ROOT = 99u16,
+    STMT = 100u16,
+    STRUCT_DEF = 101u16,
+    STRUCT_FIELD_NAME = 102u16,
+    STRUCT_FIELDS = 103u16,
+    STRUCT_INIT_EXPR = 104u16,
+    STRUCT_INIT_FIELD = 105u16,
+    STRUCT_NAME = 106u16,
+    STRUCT_PATTERN = 107u16,
+    STRUCT_PATTERN_FIELD = 108u16,
+    STRUCT_PATTERN_FIELD_NAME = 109u16,
+    TUPLE_EXPR_ELEM = 110u16,
+    TUPLE_INIT_EXPR = 111u16,
+    TUPLE_PATTERN = 112u16,
+    TUPLE_PATTERN_ELEM = 113u16,
+    TUPLE_STRUCT_FIELD = 114u16,
+    TUPLE_STRUCT_FIELDS = 115u16,
+    TUPLE_TYPE = 116u16,
+    TUPLE_TYPE_ELEM = 117u16,
+    TYPE = 118u16,
+    TYPE_ALIAS = 119u16,
+    UNARY_EXPR = 120u16,
+    UNARY_OP = 121u16,
+    USE_ALIAS = 122u16,
+    USE_ALIAS_NAME = 123u16,
+    USE_BRANCH = 124u16,
+    USE_BRANCH_OR_ALIAS = 125u16,
+    USE_DEF = 126u16,
+    USE_TREE = 127u16,
+    VAR_DECL = 128u16,
+    VAR_REF = 129u16,
+    VARIANT_STRUCT = 130u16,
+    VARIANT_STRUCT_FIELD = 131u16,
+    VARIANT_STRUCT_FIELD_NAME = 132u16,
+    VARIANT_TUPLE = 133u16,
+    VARIANT_TUPLE_ELEM = 134u16,
+    WHILE_EXPR = 135u16,
     #[token("[")]
-    L_BRACK = 79u16,
+    L_BRACK = 136u16,
     #[token("]")]
-    R_BRACK = 80u16,
+    R_BRACK = 137u16,
     #[token("^")]
-    CARET = 81u16,
+    CARET = 138u16,
+    #[token("^=")]
+    CARET_EQ = 139u16,
     #[token("and")]
-    AND = 82u16,
+    AND = 140u16,
+    #[token("as")]
+    AS = 141u16,
+    #[token("break")]
+    BREAK = 142u16,
     #[regex("//.*")]
     #[regex("///.*")]
     #[token("/*", lex_block_comment)]
-    COMMENT = 83u16,
+    COMMENT = 143u16,
+    #[token("const")]
+    CONST = 144u16,
+    CONTINUE = 145u16,
     #[token("else")]
-    ELSE = 84u16,
-    EOF = 85u16,
-    #[token("extern")]
-    EXTERN = 86u16,
+    ELSE = 146u16,
+    #[token("enum")]
+    ENUM = 147u16,
+    EOF = 148u16,
     #[token("false")]
-    FALSE = 87u16,
-    #[token("function")]
-    FUNCTION = 88u16,
+    FALSE = 149u16,
+    FN = 150u16,
+    #[token("for")]
+    FOR = 151u16,
     #[regex("[A-Za-z_'][A-Za-z0-9_']*")]
-    IDENT = 89u16,
+    IDENT = 152u16,
     #[token("if")]
-    IF = 90u16,
-    #[token("input")]
-    INPUT = 91u16,
-    #[token("multiset")]
-    MULTISET = 92u16,
+    IF = 153u16,
+    IMPL = 154u16,
+    IN = 155u16,
+    #[token("let")]
+    LET = 156u16,
+    #[token("loop")]
+    LOOP = 157u16,
+    #[token("match")]
+    MATCH = 158u16,
     #[regex("[0-9][0-9_]*")]
     #[regex("0b[0-1][0-1_]*")]
     #[regex("0x[0-9a-fA-F][0-9a-fA-F_]*")]
-    NUMBER = 93u16,
+    NUMBER = 159u16,
     #[token("or")]
-    OR = 94u16,
-    #[token("output")]
-    OUTPUT = 95u16,
-    #[token("relation")]
-    RELATION = 96u16,
+    OR = 160u16,
+    PUB = 161u16,
     #[token("return")]
-    RETURN = 97u16,
-    #[token("stream")]
-    STREAM = 98u16,
-    STRING = 99u16,
-    TOMBSTONE = 100u16,
+    RETURN = 162u16,
+    STRING = 163u16,
+    #[token("struct")]
+    STRUCT = 164u16,
+    TOMBSTONE = 165u16,
     #[token("true")]
-    TRUE = 101u16,
-    #[token("typedef")]
-    TYPEDEF = 102u16,
-    #[token("var")]
-    VAR = 103u16,
+    TRUE = 166u16,
+    TYPE = 167u16,
+    USE = 168u16,
+    #[token("while")]
+    WHILE = 169u16,
     #[regex("[\n\t\r ]+")]
-    WHITESPACE = 104u16,
+    WHITESPACE = 170u16,
     #[token("{")]
-    L_CURLY = 105u16,
+    L_CURLY = 171u16,
     #[token("|")]
-    PIPE = 106u16,
+    PIPE = 172u16,
+    #[token("|=")]
+    PIPE_EQ = 173u16,
     #[token("}")]
-    R_CURLY = 107u16,
+    R_CURLY = 174u16,
     /// An error within the syntax tree
     #[error]
-    ERROR = 108u16,
+    ERROR = 175u16,
 }
 impl SyntaxKind {
     #[doc(hidden)]
@@ -198,18 +279,28 @@ impl ::core::fmt::Debug for SyntaxKind {
             Self::NEQ => ::core::fmt::Formatter::write_str(f, "NEQ"),
             Self::HASH_BRACK => ::core::fmt::Formatter::write_str(f, "HASH_BRACK"),
             Self::PERCENT => ::core::fmt::Formatter::write_str(f, "PERCENT"),
+            Self::PERCENT_EQ => ::core::fmt::Formatter::write_str(f, "PERCENT_EQ"),
             Self::AMPERSAND => ::core::fmt::Formatter::write_str(f, "AMPERSAND"),
+            Self::AMPERSAND_EQ => ::core::fmt::Formatter::write_str(f, "AMPERSAND_EQ"),
             Self::L_PAREN => ::core::fmt::Formatter::write_str(f, "L_PAREN"),
             Self::R_PAREN => ::core::fmt::Formatter::write_str(f, "R_PAREN"),
             Self::STAR => ::core::fmt::Formatter::write_str(f, "STAR"),
+            Self::STAR_EQ => ::core::fmt::Formatter::write_str(f, "STAR_EQ"),
             Self::PLUS => ::core::fmt::Formatter::write_str(f, "PLUS"),
+            Self::PLUS_EQ => ::core::fmt::Formatter::write_str(f, "PLUS_EQ"),
             Self::COMMA => ::core::fmt::Formatter::write_str(f, "COMMA"),
             Self::MINUS => ::core::fmt::Formatter::write_str(f, "MINUS"),
+            Self::MINUS_EQ => ::core::fmt::Formatter::write_str(f, "MINUS_EQ"),
+            Self::RIGHT_ARROW => ::core::fmt::Formatter::write_str(f, "RIGHT_ARROW"),
+            Self::DOT => ::core::fmt::Formatter::write_str(f, "DOT"),
             Self::SLASH => ::core::fmt::Formatter::write_str(f, "SLASH"),
+            Self::SLASH_EQ => ::core::fmt::Formatter::write_str(f, "SLASH_EQ"),
             Self::COLON => ::core::fmt::Formatter::write_str(f, "COLON"),
+            Self::DOUBLE_COLON => ::core::fmt::Formatter::write_str(f, "DOUBLE_COLON"),
             Self::SEMICOLON => ::core::fmt::Formatter::write_str(f, "SEMICOLON"),
             Self::L_ANGLE => ::core::fmt::Formatter::write_str(f, "L_ANGLE"),
             Self::SHL => ::core::fmt::Formatter::write_str(f, "SHL"),
+            Self::SHL_EQ => ::core::fmt::Formatter::write_str(f, "SHL_EQ"),
             Self::L_ANGLE_EQ => ::core::fmt::Formatter::write_str(f, "L_ANGLE_EQ"),
             Self::EQ => ::core::fmt::Formatter::write_str(f, "EQ"),
             Self::EQEQ => ::core::fmt::Formatter::write_str(f, "EQEQ"),
@@ -217,20 +308,51 @@ impl ::core::fmt::Debug for SyntaxKind {
             Self::R_ANGLE => ::core::fmt::Formatter::write_str(f, "R_ANGLE"),
             Self::R_ANGLE_EQ => ::core::fmt::Formatter::write_str(f, "R_ANGLE_EQ"),
             Self::SHR => ::core::fmt::Formatter::write_str(f, "SHR"),
+            Self::SHR_EQ => ::core::fmt::Formatter::write_str(f, "SHR_EQ"),
+            Self::ARRAY_ACCESS => ::core::fmt::Formatter::write_str(f, "ARRAY_ACCESS"),
+            Self::ARRAY_EXPR_ELEM => ::core::fmt::Formatter::write_str(f, "ARRAY_EXPR_ELEM"),
+            Self::ARRAY_INIT_EXPR => ::core::fmt::Formatter::write_str(f, "ARRAY_INIT_EXPR"),
             Self::ASSIGN => ::core::fmt::Formatter::write_str(f, "ASSIGN"),
+            Self::ASSIGN_OP => ::core::fmt::Formatter::write_str(f, "ASSIGN_OP"),
+            Self::ATTR_NAME => ::core::fmt::Formatter::write_str(f, "ATTR_NAME"),
             Self::ATTR_PAIR => ::core::fmt::Formatter::write_str(f, "ATTR_PAIR"),
             Self::ATTRIBUTE => ::core::fmt::Formatter::write_str(f, "ATTRIBUTE"),
-            Self::ATTRIBUTES => ::core::fmt::Formatter::write_str(f, "ATTRIBUTES"),
             Self::BIN_EXPR => ::core::fmt::Formatter::write_str(f, "BIN_EXPR"),
             Self::BIN_OP => ::core::fmt::Formatter::write_str(f, "BIN_OP"),
             Self::BLOCK => ::core::fmt::Formatter::write_str(f, "BLOCK"),
             Self::BOOL => ::core::fmt::Formatter::write_str(f, "BOOL"),
+            Self::BRACKED_STRUCT_FIELD => {
+                ::core::fmt::Formatter::write_str(f, "BRACKED_STRUCT_FIELD")
+            }
+            Self::BRACKED_STRUCT_FIELDS => {
+                ::core::fmt::Formatter::write_str(f, "BRACKED_STRUCT_FIELDS")
+            }
+            Self::BREAK_EXPR => ::core::fmt::Formatter::write_str(f, "BREAK_EXPR"),
+            Self::CLOSURE_ARG => ::core::fmt::Formatter::write_str(f, "CLOSURE_ARG"),
+            Self::CLOSURE_EXPR => ::core::fmt::Formatter::write_str(f, "CLOSURE_EXPR"),
+            Self::CONST_DEF => ::core::fmt::Formatter::write_str(f, "CONST_DEF"),
+            Self::CONST_NAME => ::core::fmt::Formatter::write_str(f, "CONST_NAME"),
+            Self::CONST_VALUE => ::core::fmt::Formatter::write_str(f, "CONST_VALUE"),
+            Self::CONTINUE_EXPR => ::core::fmt::Formatter::write_str(f, "CONTINUE_EXPR"),
             Self::ELSE_BLOCK => ::core::fmt::Formatter::write_str(f, "ELSE_BLOCK"),
-            Self::EQ_EQ => ::core::fmt::Formatter::write_str(f, "EQ_EQ"),
+            Self::ENUM_DEF => ::core::fmt::Formatter::write_str(f, "ENUM_DEF"),
+            Self::ENUM_NAME => ::core::fmt::Formatter::write_str(f, "ENUM_NAME"),
+            Self::ENUM_VARIANT => ::core::fmt::Formatter::write_str(f, "ENUM_VARIANT"),
+            Self::ENUM_VARIANT_BODY => ::core::fmt::Formatter::write_str(f, "ENUM_VARIANT_BODY"),
+            Self::ENUM_VARIANT_NAME => ::core::fmt::Formatter::write_str(f, "ENUM_VARIANT_NAME"),
+            Self::ENUM_VARIANTS => ::core::fmt::Formatter::write_str(f, "ENUM_VARIANTS"),
             Self::EXPR => ::core::fmt::Formatter::write_str(f, "EXPR"),
             Self::EXPR_STMT => ::core::fmt::Formatter::write_str(f, "EXPR_STMT"),
+            Self::FIELD_ACCESS => ::core::fmt::Formatter::write_str(f, "FIELD_ACCESS"),
+            Self::FIELD_ACCESSOR => ::core::fmt::Formatter::write_str(f, "FIELD_ACCESSOR"),
+            Self::FIELD_ACCESSOR_NAME => {
+                ::core::fmt::Formatter::write_str(f, "FIELD_ACCESSOR_NAME")
+            }
+            Self::FOR_EXPR => ::core::fmt::Formatter::write_str(f, "FOR_EXPR"),
             Self::FUNCTION_ARG => ::core::fmt::Formatter::write_str(f, "FUNCTION_ARG"),
             Self::FUNCTION_ARGS => ::core::fmt::Formatter::write_str(f, "FUNCTION_ARGS"),
+            Self::FUNCTION_CALL => ::core::fmt::Formatter::write_str(f, "FUNCTION_CALL"),
+            Self::FUNCTION_CALL_ARG => ::core::fmt::Formatter::write_str(f, "FUNCTION_CALL_ARG"),
             Self::FUNCTION_DEF => ::core::fmt::Formatter::write_str(f, "FUNCTION_DEF"),
             Self::FUNCTION_NAME => ::core::fmt::Formatter::write_str(f, "FUNCTION_NAME"),
             Self::FUNCTION_RETURN => ::core::fmt::Formatter::write_str(f, "FUNCTION_RETURN"),
@@ -244,65 +366,111 @@ impl ::core::fmt::Debug for SyntaxKind {
             Self::GENERIC_TYPE => ::core::fmt::Formatter::write_str(f, "GENERIC_TYPE"),
             Self::GENERICS => ::core::fmt::Formatter::write_str(f, "GENERICS"),
             Self::IF_BLOCK => ::core::fmt::Formatter::write_str(f, "IF_BLOCK"),
-            Self::IF_STMT => ::core::fmt::Formatter::write_str(f, "IF_STMT"),
+            Self::IF_EXPR => ::core::fmt::Formatter::write_str(f, "IF_EXPR"),
+            Self::IMPL_BLOCK => ::core::fmt::Formatter::write_str(f, "IMPL_BLOCK"),
+            Self::IMPL_BLOCK_CONTENTS => {
+                ::core::fmt::Formatter::write_str(f, "IMPL_BLOCK_CONTENTS")
+            }
             Self::ITEM => ::core::fmt::Formatter::write_str(f, "ITEM"),
             Self::LITERAL => ::core::fmt::Formatter::write_str(f, "LITERAL"),
+            Self::LOOP_EXPR => ::core::fmt::Formatter::write_str(f, "LOOP_EXPR"),
+            Self::MATCH_ARM => ::core::fmt::Formatter::write_str(f, "MATCH_ARM"),
+            Self::MATCH_EXPR => ::core::fmt::Formatter::write_str(f, "MATCH_EXPR"),
             Self::MODIFIER => ::core::fmt::Formatter::write_str(f, "MODIFIER"),
-            Self::MODIFIERS => ::core::fmt::Formatter::write_str(f, "MODIFIERS"),
             Self::PAREN_EXPR => ::core::fmt::Formatter::write_str(f, "PAREN_EXPR"),
+            Self::PATH => ::core::fmt::Formatter::write_str(f, "PATH"),
+            Self::PATH_SEGMENT => ::core::fmt::Formatter::write_str(f, "PATH_SEGMENT"),
+            Self::PATH_TAIL => ::core::fmt::Formatter::write_str(f, "PATH_TAIL"),
             Self::PATTERN => ::core::fmt::Formatter::write_str(f, "PATTERN"),
-            Self::RECORD_FIELD => ::core::fmt::Formatter::write_str(f, "RECORD_FIELD"),
-            Self::RECORD_NAME => ::core::fmt::Formatter::write_str(f, "RECORD_NAME"),
-            Self::RECORD_TYPE => ::core::fmt::Formatter::write_str(f, "RECORD_TYPE"),
-            Self::REL_COL => ::core::fmt::Formatter::write_str(f, "REL_COL"),
-            Self::REL_COLS => ::core::fmt::Formatter::write_str(f, "REL_COLS"),
-            Self::REL_KW => ::core::fmt::Formatter::write_str(f, "REL_KW"),
-            Self::REL_NAME => ::core::fmt::Formatter::write_str(f, "REL_NAME"),
-            Self::RELATION_DEF => ::core::fmt::Formatter::write_str(f, "RELATION_DEF"),
+            Self::QUALIFIED_REF => ::core::fmt::Formatter::write_str(f, "QUALIFIED_REF"),
             Self::RET_EXPR => ::core::fmt::Formatter::write_str(f, "RET_EXPR"),
             Self::ROOT => ::core::fmt::Formatter::write_str(f, "ROOT"),
             Self::STMT => ::core::fmt::Formatter::write_str(f, "STMT"),
-            Self::SUM_TYPE => ::core::fmt::Formatter::write_str(f, "SUM_TYPE"),
+            Self::STRUCT_DEF => ::core::fmt::Formatter::write_str(f, "STRUCT_DEF"),
+            Self::STRUCT_FIELD_NAME => ::core::fmt::Formatter::write_str(f, "STRUCT_FIELD_NAME"),
+            Self::STRUCT_FIELDS => ::core::fmt::Formatter::write_str(f, "STRUCT_FIELDS"),
+            Self::STRUCT_INIT_EXPR => ::core::fmt::Formatter::write_str(f, "STRUCT_INIT_EXPR"),
+            Self::STRUCT_INIT_FIELD => ::core::fmt::Formatter::write_str(f, "STRUCT_INIT_FIELD"),
+            Self::STRUCT_NAME => ::core::fmt::Formatter::write_str(f, "STRUCT_NAME"),
+            Self::STRUCT_PATTERN => ::core::fmt::Formatter::write_str(f, "STRUCT_PATTERN"),
+            Self::STRUCT_PATTERN_FIELD => {
+                ::core::fmt::Formatter::write_str(f, "STRUCT_PATTERN_FIELD")
+            }
+            Self::STRUCT_PATTERN_FIELD_NAME => {
+                ::core::fmt::Formatter::write_str(f, "STRUCT_PATTERN_FIELD_NAME")
+            }
+            Self::TUPLE_EXPR_ELEM => ::core::fmt::Formatter::write_str(f, "TUPLE_EXPR_ELEM"),
+            Self::TUPLE_INIT_EXPR => ::core::fmt::Formatter::write_str(f, "TUPLE_INIT_EXPR"),
             Self::TUPLE_PATTERN => ::core::fmt::Formatter::write_str(f, "TUPLE_PATTERN"),
             Self::TUPLE_PATTERN_ELEM => ::core::fmt::Formatter::write_str(f, "TUPLE_PATTERN_ELEM"),
+            Self::TUPLE_STRUCT_FIELD => ::core::fmt::Formatter::write_str(f, "TUPLE_STRUCT_FIELD"),
+            Self::TUPLE_STRUCT_FIELDS => {
+                ::core::fmt::Formatter::write_str(f, "TUPLE_STRUCT_FIELDS")
+            }
             Self::TUPLE_TYPE => ::core::fmt::Formatter::write_str(f, "TUPLE_TYPE"),
             Self::TUPLE_TYPE_ELEM => ::core::fmt::Formatter::write_str(f, "TUPLE_TYPE_ELEM"),
             Self::TYPE => ::core::fmt::Formatter::write_str(f, "TYPE"),
-            Self::TYPE_BODY => ::core::fmt::Formatter::write_str(f, "TYPE_BODY"),
-            Self::TYPE_DEF => ::core::fmt::Formatter::write_str(f, "TYPE_DEF"),
-            Self::TYPE_NAME => ::core::fmt::Formatter::write_str(f, "TYPE_NAME"),
+            Self::TYPE_ALIAS => ::core::fmt::Formatter::write_str(f, "TYPE_ALIAS"),
             Self::UNARY_EXPR => ::core::fmt::Formatter::write_str(f, "UNARY_EXPR"),
             Self::UNARY_OP => ::core::fmt::Formatter::write_str(f, "UNARY_OP"),
+            Self::USE_ALIAS => ::core::fmt::Formatter::write_str(f, "USE_ALIAS"),
+            Self::USE_ALIAS_NAME => ::core::fmt::Formatter::write_str(f, "USE_ALIAS_NAME"),
+            Self::USE_BRANCH => ::core::fmt::Formatter::write_str(f, "USE_BRANCH"),
+            Self::USE_BRANCH_OR_ALIAS => {
+                ::core::fmt::Formatter::write_str(f, "USE_BRANCH_OR_ALIAS")
+            }
+            Self::USE_DEF => ::core::fmt::Formatter::write_str(f, "USE_DEF"),
+            Self::USE_TREE => ::core::fmt::Formatter::write_str(f, "USE_TREE"),
             Self::VAR_DECL => ::core::fmt::Formatter::write_str(f, "VAR_DECL"),
             Self::VAR_REF => ::core::fmt::Formatter::write_str(f, "VAR_REF"),
+            Self::VARIANT_STRUCT => ::core::fmt::Formatter::write_str(f, "VARIANT_STRUCT"),
+            Self::VARIANT_STRUCT_FIELD => {
+                ::core::fmt::Formatter::write_str(f, "VARIANT_STRUCT_FIELD")
+            }
+            Self::VARIANT_STRUCT_FIELD_NAME => {
+                ::core::fmt::Formatter::write_str(f, "VARIANT_STRUCT_FIELD_NAME")
+            }
+            Self::VARIANT_TUPLE => ::core::fmt::Formatter::write_str(f, "VARIANT_TUPLE"),
+            Self::VARIANT_TUPLE_ELEM => ::core::fmt::Formatter::write_str(f, "VARIANT_TUPLE_ELEM"),
+            Self::WHILE_EXPR => ::core::fmt::Formatter::write_str(f, "WHILE_EXPR"),
             Self::L_BRACK => ::core::fmt::Formatter::write_str(f, "L_BRACK"),
             Self::R_BRACK => ::core::fmt::Formatter::write_str(f, "R_BRACK"),
             Self::CARET => ::core::fmt::Formatter::write_str(f, "CARET"),
+            Self::CARET_EQ => ::core::fmt::Formatter::write_str(f, "CARET_EQ"),
             Self::AND => ::core::fmt::Formatter::write_str(f, "AND"),
+            Self::AS => ::core::fmt::Formatter::write_str(f, "AS"),
+            Self::BREAK => ::core::fmt::Formatter::write_str(f, "BREAK"),
             Self::COMMENT => ::core::fmt::Formatter::write_str(f, "COMMENT"),
+            Self::CONST => ::core::fmt::Formatter::write_str(f, "CONST"),
+            Self::CONTINUE => ::core::fmt::Formatter::write_str(f, "CONTINUE"),
             Self::ELSE => ::core::fmt::Formatter::write_str(f, "ELSE"),
+            Self::ENUM => ::core::fmt::Formatter::write_str(f, "ENUM"),
             Self::EOF => ::core::fmt::Formatter::write_str(f, "EOF"),
-            Self::EXTERN => ::core::fmt::Formatter::write_str(f, "EXTERN"),
             Self::FALSE => ::core::fmt::Formatter::write_str(f, "FALSE"),
-            Self::FUNCTION => ::core::fmt::Formatter::write_str(f, "FUNCTION"),
+            Self::FN => ::core::fmt::Formatter::write_str(f, "FN"),
+            Self::FOR => ::core::fmt::Formatter::write_str(f, "FOR"),
             Self::IDENT => ::core::fmt::Formatter::write_str(f, "IDENT"),
             Self::IF => ::core::fmt::Formatter::write_str(f, "IF"),
-            Self::INPUT => ::core::fmt::Formatter::write_str(f, "INPUT"),
-            Self::MULTISET => ::core::fmt::Formatter::write_str(f, "MULTISET"),
+            Self::IMPL => ::core::fmt::Formatter::write_str(f, "IMPL"),
+            Self::IN => ::core::fmt::Formatter::write_str(f, "IN"),
+            Self::LET => ::core::fmt::Formatter::write_str(f, "LET"),
+            Self::LOOP => ::core::fmt::Formatter::write_str(f, "LOOP"),
+            Self::MATCH => ::core::fmt::Formatter::write_str(f, "MATCH"),
             Self::NUMBER => ::core::fmt::Formatter::write_str(f, "NUMBER"),
             Self::OR => ::core::fmt::Formatter::write_str(f, "OR"),
-            Self::OUTPUT => ::core::fmt::Formatter::write_str(f, "OUTPUT"),
-            Self::RELATION => ::core::fmt::Formatter::write_str(f, "RELATION"),
+            Self::PUB => ::core::fmt::Formatter::write_str(f, "PUB"),
             Self::RETURN => ::core::fmt::Formatter::write_str(f, "RETURN"),
-            Self::STREAM => ::core::fmt::Formatter::write_str(f, "STREAM"),
             Self::STRING => ::core::fmt::Formatter::write_str(f, "STRING"),
+            Self::STRUCT => ::core::fmt::Formatter::write_str(f, "STRUCT"),
             Self::TOMBSTONE => ::core::fmt::Formatter::write_str(f, "TOMBSTONE"),
             Self::TRUE => ::core::fmt::Formatter::write_str(f, "TRUE"),
-            Self::TYPEDEF => ::core::fmt::Formatter::write_str(f, "TYPEDEF"),
-            Self::VAR => ::core::fmt::Formatter::write_str(f, "VAR"),
+            Self::TYPE => ::core::fmt::Formatter::write_str(f, "TYPE"),
+            Self::USE => ::core::fmt::Formatter::write_str(f, "USE"),
+            Self::WHILE => ::core::fmt::Formatter::write_str(f, "WHILE"),
             Self::WHITESPACE => ::core::fmt::Formatter::write_str(f, "WHITESPACE"),
             Self::L_CURLY => ::core::fmt::Formatter::write_str(f, "L_CURLY"),
             Self::PIPE => ::core::fmt::Formatter::write_str(f, "PIPE"),
+            Self::PIPE_EQ => ::core::fmt::Formatter::write_str(f, "PIPE_EQ"),
             Self::R_CURLY => ::core::fmt::Formatter::write_str(f, "R_CURLY"),
             Self::ERROR => ::core::fmt::Formatter::write_str(f, "ERROR"),
         }
@@ -315,18 +483,28 @@ impl ::core::fmt::Display for SyntaxKind {
             Self::NEQ => ::core::fmt::Formatter::write_str(f, "!="),
             Self::HASH_BRACK => ::core::fmt::Formatter::write_str(f, "#["),
             Self::PERCENT => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '%'),
+            Self::PERCENT_EQ => ::core::fmt::Formatter::write_str(f, "%="),
             Self::AMPERSAND => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '&'),
+            Self::AMPERSAND_EQ => ::core::fmt::Formatter::write_str(f, "&="),
             Self::L_PAREN => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '('),
             Self::R_PAREN => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, ')'),
             Self::STAR => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '*'),
+            Self::STAR_EQ => ::core::fmt::Formatter::write_str(f, "*="),
             Self::PLUS => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '+'),
+            Self::PLUS_EQ => ::core::fmt::Formatter::write_str(f, "+="),
             Self::COMMA => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, ','),
             Self::MINUS => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '-'),
+            Self::MINUS_EQ => ::core::fmt::Formatter::write_str(f, "-="),
+            Self::RIGHT_ARROW => ::core::fmt::Formatter::write_str(f, "->"),
+            Self::DOT => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '.'),
             Self::SLASH => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '/'),
+            Self::SLASH_EQ => ::core::fmt::Formatter::write_str(f, "/="),
             Self::COLON => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, ':'),
+            Self::DOUBLE_COLON => ::core::fmt::Formatter::write_str(f, "::"),
             Self::SEMICOLON => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, ';'),
             Self::L_ANGLE => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '<'),
             Self::SHL => ::core::fmt::Formatter::write_str(f, "<<"),
+            Self::SHL_EQ => ::core::fmt::Formatter::write_str(f, "<<="),
             Self::L_ANGLE_EQ => ::core::fmt::Formatter::write_str(f, "<="),
             Self::EQ => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '='),
             Self::EQEQ => ::core::fmt::Formatter::write_str(f, "=="),
@@ -334,20 +512,51 @@ impl ::core::fmt::Display for SyntaxKind {
             Self::R_ANGLE => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '>'),
             Self::R_ANGLE_EQ => ::core::fmt::Formatter::write_str(f, ">="),
             Self::SHR => ::core::fmt::Formatter::write_str(f, ">>"),
+            Self::SHR_EQ => ::core::fmt::Formatter::write_str(f, ">>="),
+            Self::ARRAY_ACCESS => ::core::fmt::Formatter::write_str(f, "ARRAY_ACCESS"),
+            Self::ARRAY_EXPR_ELEM => ::core::fmt::Formatter::write_str(f, "ARRAY_EXPR_ELEM"),
+            Self::ARRAY_INIT_EXPR => ::core::fmt::Formatter::write_str(f, "ARRAY_INIT_EXPR"),
             Self::ASSIGN => ::core::fmt::Formatter::write_str(f, "ASSIGN"),
+            Self::ASSIGN_OP => ::core::fmt::Formatter::write_str(f, "ASSIGN_OP"),
+            Self::ATTR_NAME => ::core::fmt::Formatter::write_str(f, "ATTR_NAME"),
             Self::ATTR_PAIR => ::core::fmt::Formatter::write_str(f, "ATTR_PAIR"),
             Self::ATTRIBUTE => ::core::fmt::Formatter::write_str(f, "ATTRIBUTE"),
-            Self::ATTRIBUTES => ::core::fmt::Formatter::write_str(f, "ATTRIBUTES"),
             Self::BIN_EXPR => ::core::fmt::Formatter::write_str(f, "BIN_EXPR"),
             Self::BIN_OP => ::core::fmt::Formatter::write_str(f, "BIN_OP"),
             Self::BLOCK => ::core::fmt::Formatter::write_str(f, "BLOCK"),
             Self::BOOL => ::core::fmt::Formatter::write_str(f, "BOOL"),
+            Self::BRACKED_STRUCT_FIELD => {
+                ::core::fmt::Formatter::write_str(f, "BRACKED_STRUCT_FIELD")
+            }
+            Self::BRACKED_STRUCT_FIELDS => {
+                ::core::fmt::Formatter::write_str(f, "BRACKED_STRUCT_FIELDS")
+            }
+            Self::BREAK_EXPR => ::core::fmt::Formatter::write_str(f, "BREAK_EXPR"),
+            Self::CLOSURE_ARG => ::core::fmt::Formatter::write_str(f, "CLOSURE_ARG"),
+            Self::CLOSURE_EXPR => ::core::fmt::Formatter::write_str(f, "CLOSURE_EXPR"),
+            Self::CONST_DEF => ::core::fmt::Formatter::write_str(f, "CONST_DEF"),
+            Self::CONST_NAME => ::core::fmt::Formatter::write_str(f, "CONST_NAME"),
+            Self::CONST_VALUE => ::core::fmt::Formatter::write_str(f, "CONST_VALUE"),
+            Self::CONTINUE_EXPR => ::core::fmt::Formatter::write_str(f, "CONTINUE_EXPR"),
             Self::ELSE_BLOCK => ::core::fmt::Formatter::write_str(f, "ELSE_BLOCK"),
-            Self::EQ_EQ => ::core::fmt::Formatter::write_str(f, "EQ_EQ"),
+            Self::ENUM_DEF => ::core::fmt::Formatter::write_str(f, "ENUM_DEF"),
+            Self::ENUM_NAME => ::core::fmt::Formatter::write_str(f, "ENUM_NAME"),
+            Self::ENUM_VARIANT => ::core::fmt::Formatter::write_str(f, "ENUM_VARIANT"),
+            Self::ENUM_VARIANT_BODY => ::core::fmt::Formatter::write_str(f, "ENUM_VARIANT_BODY"),
+            Self::ENUM_VARIANT_NAME => ::core::fmt::Formatter::write_str(f, "ENUM_VARIANT_NAME"),
+            Self::ENUM_VARIANTS => ::core::fmt::Formatter::write_str(f, "ENUM_VARIANTS"),
             Self::EXPR => ::core::fmt::Formatter::write_str(f, "EXPR"),
             Self::EXPR_STMT => ::core::fmt::Formatter::write_str(f, "EXPR_STMT"),
+            Self::FIELD_ACCESS => ::core::fmt::Formatter::write_str(f, "FIELD_ACCESS"),
+            Self::FIELD_ACCESSOR => ::core::fmt::Formatter::write_str(f, "FIELD_ACCESSOR"),
+            Self::FIELD_ACCESSOR_NAME => {
+                ::core::fmt::Formatter::write_str(f, "FIELD_ACCESSOR_NAME")
+            }
+            Self::FOR_EXPR => ::core::fmt::Formatter::write_str(f, "FOR_EXPR"),
             Self::FUNCTION_ARG => ::core::fmt::Formatter::write_str(f, "FUNCTION_ARG"),
             Self::FUNCTION_ARGS => ::core::fmt::Formatter::write_str(f, "FUNCTION_ARGS"),
+            Self::FUNCTION_CALL => ::core::fmt::Formatter::write_str(f, "FUNCTION_CALL"),
+            Self::FUNCTION_CALL_ARG => ::core::fmt::Formatter::write_str(f, "FUNCTION_CALL_ARG"),
             Self::FUNCTION_DEF => ::core::fmt::Formatter::write_str(f, "FUNCTION_DEF"),
             Self::FUNCTION_NAME => ::core::fmt::Formatter::write_str(f, "FUNCTION_NAME"),
             Self::FUNCTION_RETURN => ::core::fmt::Formatter::write_str(f, "FUNCTION_RETURN"),
@@ -361,65 +570,111 @@ impl ::core::fmt::Display for SyntaxKind {
             Self::GENERIC_TYPE => ::core::fmt::Formatter::write_str(f, "GENERIC_TYPE"),
             Self::GENERICS => ::core::fmt::Formatter::write_str(f, "GENERICS"),
             Self::IF_BLOCK => ::core::fmt::Formatter::write_str(f, "IF_BLOCK"),
-            Self::IF_STMT => ::core::fmt::Formatter::write_str(f, "IF_STMT"),
+            Self::IF_EXPR => ::core::fmt::Formatter::write_str(f, "IF_EXPR"),
+            Self::IMPL_BLOCK => ::core::fmt::Formatter::write_str(f, "IMPL_BLOCK"),
+            Self::IMPL_BLOCK_CONTENTS => {
+                ::core::fmt::Formatter::write_str(f, "IMPL_BLOCK_CONTENTS")
+            }
             Self::ITEM => ::core::fmt::Formatter::write_str(f, "ITEM"),
             Self::LITERAL => ::core::fmt::Formatter::write_str(f, "LITERAL"),
+            Self::LOOP_EXPR => ::core::fmt::Formatter::write_str(f, "LOOP_EXPR"),
+            Self::MATCH_ARM => ::core::fmt::Formatter::write_str(f, "MATCH_ARM"),
+            Self::MATCH_EXPR => ::core::fmt::Formatter::write_str(f, "MATCH_EXPR"),
             Self::MODIFIER => ::core::fmt::Formatter::write_str(f, "MODIFIER"),
-            Self::MODIFIERS => ::core::fmt::Formatter::write_str(f, "MODIFIERS"),
             Self::PAREN_EXPR => ::core::fmt::Formatter::write_str(f, "PAREN_EXPR"),
+            Self::PATH => ::core::fmt::Formatter::write_str(f, "PATH"),
+            Self::PATH_SEGMENT => ::core::fmt::Formatter::write_str(f, "PATH_SEGMENT"),
+            Self::PATH_TAIL => ::core::fmt::Formatter::write_str(f, "PATH_TAIL"),
             Self::PATTERN => ::core::fmt::Formatter::write_str(f, "PATTERN"),
-            Self::RECORD_FIELD => ::core::fmt::Formatter::write_str(f, "RECORD_FIELD"),
-            Self::RECORD_NAME => ::core::fmt::Formatter::write_str(f, "RECORD_NAME"),
-            Self::RECORD_TYPE => ::core::fmt::Formatter::write_str(f, "RECORD_TYPE"),
-            Self::REL_COL => ::core::fmt::Formatter::write_str(f, "REL_COL"),
-            Self::REL_COLS => ::core::fmt::Formatter::write_str(f, "REL_COLS"),
-            Self::REL_KW => ::core::fmt::Formatter::write_str(f, "REL_KW"),
-            Self::REL_NAME => ::core::fmt::Formatter::write_str(f, "REL_NAME"),
-            Self::RELATION_DEF => ::core::fmt::Formatter::write_str(f, "RELATION_DEF"),
+            Self::QUALIFIED_REF => ::core::fmt::Formatter::write_str(f, "QUALIFIED_REF"),
             Self::RET_EXPR => ::core::fmt::Formatter::write_str(f, "RET_EXPR"),
             Self::ROOT => ::core::fmt::Formatter::write_str(f, "ROOT"),
             Self::STMT => ::core::fmt::Formatter::write_str(f, "STMT"),
-            Self::SUM_TYPE => ::core::fmt::Formatter::write_str(f, "SUM_TYPE"),
+            Self::STRUCT_DEF => ::core::fmt::Formatter::write_str(f, "STRUCT_DEF"),
+            Self::STRUCT_FIELD_NAME => ::core::fmt::Formatter::write_str(f, "STRUCT_FIELD_NAME"),
+            Self::STRUCT_FIELDS => ::core::fmt::Formatter::write_str(f, "STRUCT_FIELDS"),
+            Self::STRUCT_INIT_EXPR => ::core::fmt::Formatter::write_str(f, "STRUCT_INIT_EXPR"),
+            Self::STRUCT_INIT_FIELD => ::core::fmt::Formatter::write_str(f, "STRUCT_INIT_FIELD"),
+            Self::STRUCT_NAME => ::core::fmt::Formatter::write_str(f, "STRUCT_NAME"),
+            Self::STRUCT_PATTERN => ::core::fmt::Formatter::write_str(f, "STRUCT_PATTERN"),
+            Self::STRUCT_PATTERN_FIELD => {
+                ::core::fmt::Formatter::write_str(f, "STRUCT_PATTERN_FIELD")
+            }
+            Self::STRUCT_PATTERN_FIELD_NAME => {
+                ::core::fmt::Formatter::write_str(f, "STRUCT_PATTERN_FIELD_NAME")
+            }
+            Self::TUPLE_EXPR_ELEM => ::core::fmt::Formatter::write_str(f, "TUPLE_EXPR_ELEM"),
+            Self::TUPLE_INIT_EXPR => ::core::fmt::Formatter::write_str(f, "TUPLE_INIT_EXPR"),
             Self::TUPLE_PATTERN => ::core::fmt::Formatter::write_str(f, "TUPLE_PATTERN"),
             Self::TUPLE_PATTERN_ELEM => ::core::fmt::Formatter::write_str(f, "TUPLE_PATTERN_ELEM"),
+            Self::TUPLE_STRUCT_FIELD => ::core::fmt::Formatter::write_str(f, "TUPLE_STRUCT_FIELD"),
+            Self::TUPLE_STRUCT_FIELDS => {
+                ::core::fmt::Formatter::write_str(f, "TUPLE_STRUCT_FIELDS")
+            }
             Self::TUPLE_TYPE => ::core::fmt::Formatter::write_str(f, "TUPLE_TYPE"),
             Self::TUPLE_TYPE_ELEM => ::core::fmt::Formatter::write_str(f, "TUPLE_TYPE_ELEM"),
             Self::TYPE => ::core::fmt::Formatter::write_str(f, "TYPE"),
-            Self::TYPE_BODY => ::core::fmt::Formatter::write_str(f, "TYPE_BODY"),
-            Self::TYPE_DEF => ::core::fmt::Formatter::write_str(f, "TYPE_DEF"),
-            Self::TYPE_NAME => ::core::fmt::Formatter::write_str(f, "TYPE_NAME"),
+            Self::TYPE_ALIAS => ::core::fmt::Formatter::write_str(f, "TYPE_ALIAS"),
             Self::UNARY_EXPR => ::core::fmt::Formatter::write_str(f, "UNARY_EXPR"),
             Self::UNARY_OP => ::core::fmt::Formatter::write_str(f, "UNARY_OP"),
+            Self::USE_ALIAS => ::core::fmt::Formatter::write_str(f, "USE_ALIAS"),
+            Self::USE_ALIAS_NAME => ::core::fmt::Formatter::write_str(f, "USE_ALIAS_NAME"),
+            Self::USE_BRANCH => ::core::fmt::Formatter::write_str(f, "USE_BRANCH"),
+            Self::USE_BRANCH_OR_ALIAS => {
+                ::core::fmt::Formatter::write_str(f, "USE_BRANCH_OR_ALIAS")
+            }
+            Self::USE_DEF => ::core::fmt::Formatter::write_str(f, "USE_DEF"),
+            Self::USE_TREE => ::core::fmt::Formatter::write_str(f, "USE_TREE"),
             Self::VAR_DECL => ::core::fmt::Formatter::write_str(f, "VAR_DECL"),
             Self::VAR_REF => ::core::fmt::Formatter::write_str(f, "VAR_REF"),
+            Self::VARIANT_STRUCT => ::core::fmt::Formatter::write_str(f, "VARIANT_STRUCT"),
+            Self::VARIANT_STRUCT_FIELD => {
+                ::core::fmt::Formatter::write_str(f, "VARIANT_STRUCT_FIELD")
+            }
+            Self::VARIANT_STRUCT_FIELD_NAME => {
+                ::core::fmt::Formatter::write_str(f, "VARIANT_STRUCT_FIELD_NAME")
+            }
+            Self::VARIANT_TUPLE => ::core::fmt::Formatter::write_str(f, "VARIANT_TUPLE"),
+            Self::VARIANT_TUPLE_ELEM => ::core::fmt::Formatter::write_str(f, "VARIANT_TUPLE_ELEM"),
+            Self::WHILE_EXPR => ::core::fmt::Formatter::write_str(f, "WHILE_EXPR"),
             Self::L_BRACK => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '['),
             Self::R_BRACK => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, ']'),
             Self::CARET => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '^'),
+            Self::CARET_EQ => ::core::fmt::Formatter::write_str(f, "^="),
             Self::AND => ::core::fmt::Formatter::write_str(f, "and"),
+            Self::AS => ::core::fmt::Formatter::write_str(f, "as"),
+            Self::BREAK => ::core::fmt::Formatter::write_str(f, "break"),
             Self::COMMENT => ::core::fmt::Formatter::write_str(f, "COMMENT"),
+            Self::CONST => ::core::fmt::Formatter::write_str(f, "const"),
+            Self::CONTINUE => ::core::fmt::Formatter::write_str(f, "CONTINUE"),
             Self::ELSE => ::core::fmt::Formatter::write_str(f, "else"),
+            Self::ENUM => ::core::fmt::Formatter::write_str(f, "enum"),
             Self::EOF => ::core::fmt::Formatter::write_str(f, "EOF"),
-            Self::EXTERN => ::core::fmt::Formatter::write_str(f, "extern"),
             Self::FALSE => ::core::fmt::Formatter::write_str(f, "false"),
-            Self::FUNCTION => ::core::fmt::Formatter::write_str(f, "function"),
+            Self::FN => ::core::fmt::Formatter::write_str(f, "FN"),
+            Self::FOR => ::core::fmt::Formatter::write_str(f, "for"),
             Self::IDENT => ::core::fmt::Formatter::write_str(f, "IDENT"),
             Self::IF => ::core::fmt::Formatter::write_str(f, "if"),
-            Self::INPUT => ::core::fmt::Formatter::write_str(f, "input"),
-            Self::MULTISET => ::core::fmt::Formatter::write_str(f, "multiset"),
+            Self::IMPL => ::core::fmt::Formatter::write_str(f, "IMPL"),
+            Self::IN => ::core::fmt::Formatter::write_str(f, "IN"),
+            Self::LET => ::core::fmt::Formatter::write_str(f, "let"),
+            Self::LOOP => ::core::fmt::Formatter::write_str(f, "loop"),
+            Self::MATCH => ::core::fmt::Formatter::write_str(f, "match"),
             Self::NUMBER => ::core::fmt::Formatter::write_str(f, "NUMBER"),
             Self::OR => ::core::fmt::Formatter::write_str(f, "or"),
-            Self::OUTPUT => ::core::fmt::Formatter::write_str(f, "output"),
-            Self::RELATION => ::core::fmt::Formatter::write_str(f, "relation"),
+            Self::PUB => ::core::fmt::Formatter::write_str(f, "PUB"),
             Self::RETURN => ::core::fmt::Formatter::write_str(f, "return"),
-            Self::STREAM => ::core::fmt::Formatter::write_str(f, "stream"),
             Self::STRING => ::core::fmt::Formatter::write_str(f, "STRING"),
+            Self::STRUCT => ::core::fmt::Formatter::write_str(f, "struct"),
             Self::TOMBSTONE => ::core::fmt::Formatter::write_str(f, "TOMBSTONE"),
             Self::TRUE => ::core::fmt::Formatter::write_str(f, "true"),
-            Self::TYPEDEF => ::core::fmt::Formatter::write_str(f, "typedef"),
-            Self::VAR => ::core::fmt::Formatter::write_str(f, "var"),
+            Self::TYPE => ::core::fmt::Formatter::write_str(f, "TYPE"),
+            Self::USE => ::core::fmt::Formatter::write_str(f, "USE"),
+            Self::WHILE => ::core::fmt::Formatter::write_str(f, "while"),
             Self::WHITESPACE => ::core::fmt::Formatter::write_str(f, "WHITESPACE"),
             Self::L_CURLY => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '{'),
             Self::PIPE => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '|'),
+            Self::PIPE_EQ => ::core::fmt::Formatter::write_str(f, "|="),
             Self::R_CURLY => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '}'),
             Self::ERROR => ::core::fmt::Formatter::write_str(f, "???"),
         }
@@ -528,8 +783,14 @@ macro_rules! T {
     (%) => {
         $crate::SyntaxKind::PERCENT
     };
+    (%=) => {
+        $crate::SyntaxKind::PERCENT_EQ
+    };
     (&) => {
         $crate::SyntaxKind::AMPERSAND
+    };
+    (&=) => {
+        $crate::SyntaxKind::AMPERSAND_EQ
     };
     ('(') => {
         $crate::SyntaxKind::L_PAREN
@@ -540,8 +801,14 @@ macro_rules! T {
     (*) => {
         $crate::SyntaxKind::STAR
     };
+    (*=) => {
+        $crate::SyntaxKind::STAR_EQ
+    };
     (+) => {
         $crate::SyntaxKind::PLUS
+    };
+    (+=) => {
+        $crate::SyntaxKind::PLUS_EQ
     };
     (,) => {
         $crate::SyntaxKind::COMMA
@@ -549,11 +816,26 @@ macro_rules! T {
     (-) => {
         $crate::SyntaxKind::MINUS
     };
+    (-=) => {
+        $crate::SyntaxKind::MINUS_EQ
+    };
+    (->) => {
+        $crate::SyntaxKind::RIGHT_ARROW
+    };
+    (.) => {
+        $crate::SyntaxKind::DOT
+    };
     (/) => {
         $crate::SyntaxKind::SLASH
     };
+    (/=) => {
+        $crate::SyntaxKind::SLASH_EQ
+    };
     (:) => {
         $crate::SyntaxKind::COLON
+    };
+    (::) => {
+        $crate::SyntaxKind::DOUBLE_COLON
     };
     (;) => {
         $crate::SyntaxKind::SEMICOLON
@@ -563,6 +845,9 @@ macro_rules! T {
     };
     (<<) => {
         $crate::SyntaxKind::SHL
+    };
+    (<<=) => {
+        $crate::SyntaxKind::SHL_EQ
     };
     (<=) => {
         $crate::SyntaxKind::L_ANGLE_EQ
@@ -585,6 +870,9 @@ macro_rules! T {
     (>>) => {
         $crate::SyntaxKind::SHR
     };
+    (>>=) => {
+        $crate::SyntaxKind::SHR_EQ
+    };
     ('[') => {
         $crate::SyntaxKind::L_BRACK
     };
@@ -594,59 +882,68 @@ macro_rules! T {
     (^) => {
         $crate::SyntaxKind::CARET
     };
+    (^=) => {
+        $crate::SyntaxKind::CARET_EQ
+    };
     (and) => {
         $crate::SyntaxKind::AND
+    };
+    (as) => {
+        $crate::SyntaxKind::AS
+    };
+    (break) => {
+        $crate::SyntaxKind::BREAK
+    };
+    (const) => {
+        $crate::SyntaxKind::CONST
     };
     (else) => {
         $crate::SyntaxKind::ELSE
     };
-    (extern) => {
-        $crate::SyntaxKind::EXTERN
+    (enum) => {
+        $crate::SyntaxKind::ENUM
     };
     (false) => {
         $crate::SyntaxKind::FALSE
     };
-    (function) => {
-        $crate::SyntaxKind::FUNCTION
+    (for) => {
+        $crate::SyntaxKind::FOR
     };
     (if) => {
         $crate::SyntaxKind::IF
     };
-    (input) => {
-        $crate::SyntaxKind::INPUT
+    (let) => {
+        $crate::SyntaxKind::LET
     };
-    (multiset) => {
-        $crate::SyntaxKind::MULTISET
+    (loop) => {
+        $crate::SyntaxKind::LOOP
+    };
+    (match) => {
+        $crate::SyntaxKind::MATCH
     };
     (or) => {
         $crate::SyntaxKind::OR
     };
-    (output) => {
-        $crate::SyntaxKind::OUTPUT
-    };
-    (relation) => {
-        $crate::SyntaxKind::RELATION
-    };
     (return) => {
         $crate::SyntaxKind::RETURN
     };
-    (stream) => {
-        $crate::SyntaxKind::STREAM
+    (struct) => {
+        $crate::SyntaxKind::STRUCT
     };
     (true) => {
         $crate::SyntaxKind::TRUE
     };
-    (typedef) => {
-        $crate::SyntaxKind::TYPEDEF
-    };
-    (var) => {
-        $crate::SyntaxKind::VAR
+    (while) => {
+        $crate::SyntaxKind::WHILE
     };
     ('{') => {
         $crate::SyntaxKind::L_CURLY
     };
     (|) => {
         $crate::SyntaxKind::PIPE
+    };
+    (|=) => {
+        $crate::SyntaxKind::PIPE_EQ
     };
     ('}') => {
         $crate::SyntaxKind::R_CURLY

@@ -1,9 +1,10 @@
-use anyhow::{Error, Result};
+use anyhow::{Context, Error, Result};
 use std::{
     env,
     fmt::{self, Display},
+    io::{Read, Write},
     path::{Path, PathBuf},
-    process::Command,
+    process::{Command, Stdio},
     str::FromStr,
 };
 
@@ -122,16 +123,60 @@ pub fn project_root() -> PathBuf {
         .to_path_buf()
 }
 
+/// Formats rust code using `rustfmt`
+pub fn format(code: &str) -> Result<String> {
+    let mut child = Command::new("rustfmt")
+        .args(&[
+            "--edition",
+            "2018",
+            "--config",
+            // TODO: Use `blank_lines_upper_bound=1` once it's stable
+            "newline_style=Unix,normalize_doc_attributes=true",
+        ])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .context("failed to spawn rustfmt")?;
+
+    {
+        let mut stdin = child.stdin.take().context("failed to take rustfmt stdin")?;
+        stdin
+            .write_all(code.as_bytes())
+            .context("failed to write to rustfmt stdin")?;
+        stdin.flush().context("failed to flush rustfmt stdin")?;
+    }
+
+    let formatted = {
+        let mut stdout = child
+            .stdout
+            .take()
+            .context("failed to take rustfmt stdout")?;
+
+        let mut buffer = String::with_capacity(code.len());
+        stdout
+            .read_to_string(&mut buffer)
+            .context("failed to read from rustfmt stdout")?;
+
+        buffer
+    };
+
+    let status = child.wait().context("failed to wait for rustfmt")?;
+    if !status.success() {
+        anyhow::bail!("rustfmt failed to run");
+    }
+
+    Ok(formatted)
+}
+
 pub mod fs2 {
-    use crate::utils::{normalize_line_endings, normalize_path_slashes, project_root, CodegenMode};
-    use ::std::process::Stdio;
+    use crate::utils::{
+        self, normalize_line_endings, normalize_path_slashes, project_root, CodegenMode,
+    };
     use anyhow::{Context, Result};
     use std::{
         env, fs,
-        io::{Read, Write},
         panic::{self, UnwindSafe},
         path::Path,
-        process::Command,
     };
 
     pub fn with_working_dir<P, F, T>(path: P, with: F) -> Result<T>
@@ -219,46 +264,7 @@ pub mod fs2 {
     where
         P: AsRef<Path>,
     {
-        let mut child = Command::new("rustfmt")
-            .args(&[
-                "--edition",
-                "2018",
-                "--config",
-                // TODO: Use `blank_lines_upper_bound=1` once it's stable
-                "newline_style=Unix,normalize_doc_attributes=true",
-            ])
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .spawn()
-            .context("failed to spawn rustfmt")?;
-
-        {
-            let mut stdin = child.stdin.take().context("failed to take rustfmt stdin")?;
-            stdin
-                .write_all(contents.as_bytes())
-                .context("failed to write to rustfmt stdin")?;
-            stdin.flush().context("failed to flush rustfmt stdin")?;
-        }
-
-        let formatted = {
-            let mut stdout = child
-                .stdout
-                .take()
-                .context("failed to take rustfmt stdout")?;
-
-            let mut buffer = String::with_capacity(contents.len());
-            stdout
-                .read_to_string(&mut buffer)
-                .context("failed to read from rustfmt stdout")?;
-
-            buffer
-        };
-
-        let status = child.wait().context("failed to wait for rustfmt")?;
-        if !status.success() {
-            anyhow::bail!("rustfmt failed to run");
-        }
-
+        let formatted = utils::format(contents)?;
         update(path, &formatted, mode)?;
 
         Ok(())
