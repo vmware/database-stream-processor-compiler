@@ -18,9 +18,9 @@ FunctionReturn = '->' return_ty:Type
 
 StructDef = Attribute* Modifier* keyword:'struct' name:StructName fields:StructFields
 StructName = 'ident'
-StructFields = BrackedStructFields | TupleStructFields
-BrackedStructFields = '{' fields:BrackedStructField* '}'
-BrackedStructField = name:StructFieldName ':' ty:Type ','*
+StructFields = BracketedStructFields | TupleStructFields
+BracketedStructFields = '{' fields:BracketedStructField* '}'
+BracketedStructField = name:StructFieldName ':' ty:Type ','*
 StructFieldName = 'ident'
 TupleStructFields = '(' TupleStructField* ')'
 TupleStructField = Type ','*
@@ -56,7 +56,7 @@ ImplBlockContents = '{' Item* '}'
 TypeAlias =  Attribute* Modifier* keyword:'type' alias:Type '=' original:Type ';'*
 
 Attribute = '#[' AttrPair* ']'
-AttrPair = AttrName ('=' Expr ','*)?
+AttrPair = name:AttrName ('=' Expr ','*)?
 AttrName = 'ident'
 
 Modifier = 'pub' // 'input' | 'output'
@@ -147,7 +147,7 @@ AssignOp =
 
 ParenExpr = '(' inner:Expr ')'
 
-ClosureExpr = '|' args:ClosureArg* '|' body:Expr
+ClosureExpr = start_pipe:'|' args:ClosureArg* end_pipe:'|' body:Expr
 ClosureArg = binding:Pattern (':' Type)? ','*
 
 FieldAccess = Expr '.' FieldAccessor
@@ -171,8 +171,8 @@ ArrayExprElem = Expr ','*
 // TODO: Floats
 Literal = Bool | Number | String
 Bool = 'true' | 'false'
-Number = 'number'
-String = 'string'
+Number = 'number_literal'
+String = 'string_literal'
 
 RetExpr = 'return' expr:Expr
 BreakExpr = 'break' expr:Expr

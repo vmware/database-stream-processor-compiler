@@ -1,20 +1,163 @@
 use crate::{
     codegen::{
-        generate_ast::parser::{Enum, EnumVariant, NodeKind, Struct},
+        generate_ast::parser::{Enum, EnumKind, EnumVariant, NodeKind, Struct},
         grammar,
     },
     utils::{fs2, project_root, CodegenMode},
 };
 use anyhow::Result;
-use heck::{CamelCase, ShoutySnakeCase, SnakeCase};
-use proc_macro2::{Ident, TokenStream};
-use quote::{format_ident, quote, ToTokens};
-use std::{collections::HashSet, path::PathBuf};
-use ungrammar::{Grammar, Rule};
+use proc_macro2::TokenStream;
+use quote::{format_ident, quote};
 
-#[allow(dead_code)]
+mod enums;
 mod parser;
+mod structs;
+mod syntax_kind;
 
+pub fn generate_ast(mode: CodegenMode) -> Result<()> {
+    match mode {
+        CodegenMode::Run => println!("running code generation..."),
+        CodegenMode::Check => println!("checking generated code..."),
+    }
+
+    let grammar = grammar()?;
+    let (structs, enums, syntax_kinds, max_syntax_discriminant) = parser::from_grammar(&grammar)?;
+    let derives = default_derives();
+
+    let (mut token_ast, mut node_ast) = (TokenStream::new(), TokenStream::new());
+
+    // Create all cst structs
+    for Struct {
+        camel_case_name,
+        screaming_snake_case_name,
+        kind,
+        ..
+    } in structs
+    {
+        let syntax = match kind {
+            NodeKind::Syntax => format_ident!("SyntaxNode"),
+            NodeKind::Token => format_ident!("SyntaxToken"),
+        };
+
+        let decl = quote! {
+            #derives
+            #[repr(transparent)]
+            pub struct #camel_case_name {
+                syntax: crate::#syntax,
+            }
+        };
+
+        match kind {
+            NodeKind::Syntax => {
+                node_ast.extend(decl);
+
+                let ast_node_impl =
+                    structs::ast_node_for_struct(&camel_case_name, &screaming_snake_case_name);
+                node_ast.extend(ast_node_impl);
+            }
+
+            NodeKind::Token => {
+                token_ast.extend(decl);
+
+                let ast_token_impl =
+                    structs::ast_token_for_struct(&camel_case_name, &screaming_snake_case_name);
+                token_ast.extend(ast_token_impl);
+            }
+        }
+    }
+
+    // Create all cst enums
+    for Enum {
+        camel_case_name,
+        screaming_snake_case_name,
+        variants,
+        kind,
+        ..
+    } in enums
+    {
+        let enum_variants = variants.iter().map(|variant| {
+            let EnumVariant {
+                variant_name,
+                variant_type,
+                ..
+            } = variant;
+
+            quote!(#variant_name(#variant_type))
+        });
+
+        match kind {
+            EnumKind::NodeOfNodes => {
+                node_ast.extend(quote! {
+                    #derives
+                    pub enum #camel_case_name {
+                        #(#enum_variants,)*
+                    }
+                });
+
+                let ast_node_impl = enums::ast_node_of_nodes(&camel_case_name, &variants);
+                node_ast.extend(ast_node_impl);
+            }
+
+            EnumKind::NodeOfTokens => {
+                node_ast.extend(quote! {
+                    #derives
+                    #[repr(transparent)]
+                    pub struct #camel_case_name {
+                        syntax: crate::SyntaxNode,
+                    }
+                });
+
+                let ast_node_impl =
+                    enums::ast_node_of_tokens(&camel_case_name, &screaming_snake_case_name);
+                node_ast.extend(ast_node_impl);
+            }
+        }
+    }
+
+    let syntax_ast = syntax_kind::generate_syntax_kind(&syntax_kinds, max_syntax_discriminant)?;
+
+    let root = project_root();
+    let generated_dir = root.join("crates/ddlog-syntax/src/ast/generated");
+
+    let ast_module = "pub mod nodes;\npub mod tokens;";
+    fs2::update_formatted(generated_dir.join("mod.rs"), ast_module, mode)?;
+
+    fs2::update_formatted(generated_dir.join("nodes.rs"), &node_ast.to_string(), mode)?;
+
+    fs2::update_formatted(
+        generated_dir.join("tokens.rs"),
+        &token_ast.to_string(),
+        mode,
+    )?;
+
+    fs2::update_formatted(
+        root.join("crates/ddlog-syntax/src/syntax_kind/generated.rs"),
+        &syntax_ast.to_string(),
+        mode,
+    )?;
+
+    match mode {
+        CodegenMode::Run => println!("finished running code generation"),
+        CodegenMode::Check => println!("finished checking generated code"),
+    }
+
+    Ok(())
+}
+
+/// Returns the default derives for both nodes and tokens
+fn default_derives() -> TokenStream {
+    quote! {
+        #[derive(
+            ::core::fmt::Debug,
+            ::core::clone::Clone,
+            ::core::cmp::PartialEq,
+            ::core::cmp::Eq,
+            ::core::hash::Hash,
+        )]
+    }
+}
+
+/*
 // TODO: Refactor and document this, it should be spread across files
 // TODO: Sort any sort of inputs we get to ensure that we're as
 //       deterministic as possible (maybe use a `Sorted` wrapper type?)
@@ -66,7 +209,8 @@ const NAMED_TOKENS: &[(&str, &str)] = &[
     ("&=", "AMPERSAND_EQ"),
 ];
 
-const FUNKY_CHARS: &[&str] = &["(", ")", "{", "}", "[", "]", "#[", "/*", "*/"];
+const FUNKY_CHARS: &[&str] = &["(", ")", "{", "}", "[", "]", "#[", "/*", "*/
+"];
 
 const KEYWORDS: &[&str] = &[
     "function", "let", "match", "input", "output", "relation", "struct", "for", "while", "loop",
@@ -74,32 +218,7 @@ const KEYWORDS: &[&str] = &[
     "stream", "enum", "const", "as",
 ];
 
-const TOKEN_LOGOS: &[(&str, &[&str])] = &[
-    ("ident", &["regex(\"[A-Za-z_'][A-Za-z0-9_']*\")"]),
-    ("whitespace", &["regex(\"[\\n\\t\\r ]+\")"]),
-    (
-        "comment",
-        // Note that these regexae don't include the trailing newlines, this
-        // is on purpose. If they keep ahold of the newline then we'll create
-        // lsp spans that cross line boundaries which is bad
-        &[
-            "regex(\"//.*\")",
-            // TODO: Make this a separate doc comment
-            "regex(\"///.*\")",
-            // Block comments
-            "token(\"/*\", lex_block_comment)",
-        ],
-    ),
-    ("bool", &["token(\"true\")", "token(\"false\")"]),
-    (
-        "number",
-        &[
-            "regex(\"[0-9][0-9_]*\")",
-            "regex(\"0b[0-1][0-1_]*\")",
-            "regex(\"0x[0-9a-fA-F][0-9a-fA-F_]*\")",
-        ],
-    ),
-];
+
 
 struct AstGenerator<'a> {
     grammar: &'a Grammar,
@@ -113,7 +232,7 @@ struct AstGenerator<'a> {
 
 impl<'a> AstGenerator<'a> {
     fn new(grammar: &'a Grammar, mode: CodegenMode) -> Result<Self> {
-        // Sort the tokens so that their ordering is consistent across runs
+// Sort the tokens so that their ordering is consistent across runs
         let mut tokens: Vec<_> = grammar
             .iter()
             .map(|node| &*grammar[node].name)
@@ -252,7 +371,7 @@ impl<'a> AstGenerator<'a> {
                         name,
                     );
                 }
-                // If every variant of the alternative is a token, the generated enum is a token
+// If every variant of the alternative is a token, the generated enum is a token
                 let is_token = inner.iter().all(|rule| matches!(rule, Rule::Token(_)));
 
                 let mut variants = inner
@@ -376,12 +495,12 @@ impl<'a> AstGenerator<'a> {
         Ok(token_ast)
     }
 
-    // TODO: Finish visitor generation
-    // TODO: Maybe this all needs to be refactored by turning the ungrammar into
-    // a more real ast that defines structs, enums, fields, etc. and their canonical
-    // names so that codegen just consists of traversing the pre-processed tree
-    // instead of constantly re-generating and re-checking things while trying to make
-    // ad-hoc guesses at what the "correct" names of things are.
+// TODO: Finish visitor generation
+// TODO: Maybe this all needs to be refactored by turning the ungrammar into
+// a more real ast that defines structs, enums, fields, etc. and their canonical
+// names so that codegen just consists of traversing the pre-processed tree
+// instead of constantly re-generating and re-checking things while trying to make
+// ad-hoc guesses at what the "correct" names of things are.
     fn ast_visitors(&self) -> Result<()> {
         let visitors: TokenStream = self
             .grammar
@@ -489,8 +608,13 @@ impl<'a> AstGenerator<'a> {
                 }
 
                 let method = name.map_or_else(
-                    || self.get_rule_name(&**rule).unwrap().0,
-                    |name| self.ast_method(name, false).unwrap(),
+                    || {
+                        self.get_rule_name(&**rule).map_or_else(
+                            |_| quote!(something_broke),
+                            |(name, _)| name.to_token_stream(),
+                        )
+                    },
+                    |name| self.ast_method(name, false).unwrap().to_token_stream(),
                 );
 
                 let visitor = method.to_string();
@@ -621,7 +745,7 @@ impl<'a> AstGenerator<'a> {
                         .map(|first| ['a', 'e', 'i', 'o', 'u'].contains(&first))
                         .unwrap_or(false);
 
-                    // Statically format the panic message
+// Statically format the panic message
                     let panic_message = format!(
                         "malformed codegen for casting SyntaxKind::{} into a{} {}::{}",
                         variant_kind,
@@ -638,7 +762,7 @@ impl<'a> AstGenerator<'a> {
                                     if ::core::cfg!(debug_assertions) {
                                         ::core::panic!(#panic_message)
                                     } else {
-                                        // Safety: The match guard validates the inner syntax kind
+// Safety: The match guard validates the inner syntax kind
                                         unsafe { ::core::hint::unreachable_unchecked() }
                                     }
                                 }
@@ -694,8 +818,8 @@ impl<'a> AstGenerator<'a> {
                     #[inline]
                     fn cast(syntax: &crate::SyntaxNode) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
                         if <Self as crate::ast::AstNode>::can_cast_from(crate::SyntaxNode::kind(syntax)) {
-                            // Safety: `Self` is `#[repr(transparent)]` around a `SyntaxNode`
-                            //         so `&SyntaxNode` can be transmuted into an `&Self`
+// Safety: `Self` is `#[repr(transparent)]` around a `SyntaxNode`
+//         so `&SyntaxNode` can be transmuted into an `&Self`
                             let node = unsafe {
                                 ::core::mem::transmute::<&crate::SyntaxNode, &Self>(syntax)
                             };
@@ -731,8 +855,8 @@ impl<'a> AstGenerator<'a> {
                 #[inline]
                 fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
                     if <Self as crate::ast::AstToken>::can_cast_from(crate::SyntaxToken::kind(syntax)) {
-                        // Safety: `Self` is `#[repr(transparent)]` around a `SyntaxToken`
-                        //         so `&SyntaxToken` can be transmuted into an `&Self`
+// Safety: `Self` is `#[repr(transparent)]` around a `SyntaxToken`
+//         so `&SyntaxToken` can be transmuted into an `&Self`
                         let node = unsafe {
                             ::core::mem::transmute::<&crate::SyntaxToken, &Self>(syntax)
                         };
@@ -753,8 +877,8 @@ impl<'a> AstGenerator<'a> {
         })
     }
 
-    // TODO: This is recursive, but does it *really* matter?
-    // TODO: Pluralize names when needed
+// TODO: This is recursive, but does it *really* matter?
+// TODO: Pluralize names when needed
     fn gather_node_methods(
         &self,
         rule: &Rule,
@@ -865,7 +989,7 @@ impl<'a> AstGenerator<'a> {
                 })
             }
 
-            // TODO: The rules aren't sorted, does that matter?
+// TODO: The rules aren't sorted, does that matter?
             Rule::Seq(rules) => {
                 debug_assert!(name.is_none());
                 debug_assert!(!is_multiple);
@@ -1045,265 +1169,6 @@ impl<'a> AstGenerator<'a> {
     }
 }
 
-pub fn generate_ast(mode: CodegenMode) -> Result<()> {
-    match mode {
-        CodegenMode::Run => println!("running code generation..."),
-        CodegenMode::Check => println!("checking generated code..."),
-    }
-
-    let grammar = grammar()?;
-    let (structs, enums) = parser::from_grammar(&grammar);
-
-    let mut ast = TokenStream::new();
-    for Struct {
-        camel_case_name,
-        snake_case_name,
-        screaming_snake_case_name,
-        kind,
-    } in structs
-    {
-        let doc_str = format!(
-            " {}, {}, {}, {:?}",
-            camel_case_name, snake_case_name, screaming_snake_case_name, kind
-        );
-        let syntax = match kind {
-            NodeKind::Syntax => format_ident!("SyntaxNode"),
-            NodeKind::Token => format_ident!("SyntaxToken"),
-        };
-
-        ast.extend(quote! {
-            #[doc = #doc_str]
-            #[derive(
-                ::core::fmt::Debug,
-                ::core::clone::Clone,
-                ::core::cmp::PartialEq,
-                ::core::cmp::Eq,
-                ::core::hash::Hash,
-            )]
-            pub struct #camel_case_name {
-                syntax: crate::#syntax,
-            }
-        });
-
-        match kind {
-            NodeKind::Syntax => {
-                ast.extend(quote! {
-                    impl crate::ast::AstNode for #camel_case_name {
-                        #[inline]
-                        fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-                            kind == crate::SyntaxKind::#screaming_snake_case_name
-                        }
-
-                        #[inline]
-                        fn cast(syntax: &crate::SyntaxNode) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
-                            if <Self as crate::ast::AstNode>::can_cast_from(crate::SyntaxNode::kind(syntax)) {
-                                // Safety: `Self` is `#[repr(transparent)]` around a `SyntaxNode`
-                                //         so `&SyntaxNode` can be transmuted into an `&Self`
-                                let node = unsafe {
-                                    ::core::mem::transmute::<&crate::SyntaxNode, &Self>(syntax)
-                                };
-
-                                ::core::option::Option::Some(
-                                    ::std::borrow::Cow::Borrowed(node),
-                                )
-                            } else {
-                                ::core::option::Option::None
-                            }
-                        }
-
-                        #[inline]
-                        fn syntax(&self) -> &crate::SyntaxNode {
-                            &self.syntax
-                        }
-                    }
-                });
-            }
-
-            NodeKind::Token => {
-                ast.extend(quote! {
-                    impl crate::ast::AstToken for #camel_case_name {
-                        #[inline]
-                        fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-                            kind == crate::SyntaxKind::#screaming_snake_case_name
-                        }
-
-                        #[inline]
-                        fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
-                            if <Self as crate::ast::AstToken>::can_cast_from(crate::SyntaxToken::kind(syntax)) {
-                                // Safety: `Self` is `#[repr(transparent)]` around a `SyntaxToken`
-                                //         so `&SyntaxToken` can be transmuted into an `&Self`
-                                let node = unsafe {
-                                    ::core::mem::transmute::<&crate::SyntaxToken, &Self>(syntax)
-                                };
-
-                                ::core::option::Option::Some(
-                                    ::std::borrow::Cow::Borrowed(node),
-                                )
-                            } else {
-                                ::core::option::Option::None
-                            }
-                        }
-
-                        #[inline]
-                        fn syntax(&self) -> &crate::SyntaxToken {
-                            &self.syntax
-                        }
-                    }
-                });
-            }
-        }
-    }
-
-    for Enum {
-        camel_case_name,
-        snake_case_name,
-        screaming_snake_case_name,
-        variants,
-        kind,
-    } in enums
-    {
-        let doc_str = format!(
-            " {}, {}, {}, {:?}",
-            camel_case_name, snake_case_name, screaming_snake_case_name, kind
-        );
-        let syntax = match kind {
-            NodeKind::Syntax => format_ident!("SyntaxNode"),
-            NodeKind::Token => format_ident!("SyntaxToken"),
-        };
-        let variants = variants.into_iter().map(
-            |EnumVariant {
-                 variant_name,
-                 variant_type,
-             }| {
-                quote! {
-                    #variant_name(#variant_type),
-                }
-            },
-        );
-
-        ast.extend(quote! {
-            #[doc = #doc_str]
-            #[derive(
-                ::core::fmt::Debug,
-                ::core::clone::Clone,
-                ::core::cmp::PartialEq,
-                ::core::cmp::Eq,
-                ::core::hash::Hash,
-            )]
-            pub enum #camel_case_name {
-                #(#variants)*
-            }
-        });
-
-        match kind {
-            NodeKind::Syntax => {
-                ast.extend(quote! {
-                    impl crate::ast::AstNode for #camel_case_name {
-                        #[inline]
-                        fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-                            kind == crate::SyntaxKind::#screaming_snake_case_name
-                        }
-
-                        #[inline]
-                        fn cast(syntax: &crate::SyntaxNo
-                            de) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
-                            if <Self as crate::ast::AstNode>::can_cast_from(crate::SyntaxNode::kind(syntax)) {
-                                // Safety: `Self` is `#[repr(transparent)]` around a `SyntaxNode`
-                                //         so `&SyntaxNode` can be transmuted into an `&Self`
-                                let node = unsafe {
-                                    ::core::mem::transmute::<&crate::SyntaxNode, &Self>(syntax)
-                                };
-
-                                ::core::option::Option::Some(
-                                    ::std::borrow::Cow::Borrowed(node),
-                                )
-                            } else {
-                                ::core::option::Option::None
-                            }
-                        }
-
-                        #[inline]
-                        fn syntax(&self) -> &crate::SyntaxNode {
-                            &self.syntax
-                        }
-                    }
-                });
-            }
-
-            NodeKind::Token => {
-                ast.extend(quote! {
-                    impl crate::ast::AstToken for #camel_case_name {
-                        #[inline]
-                        fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-                            kind == crate::SyntaxKind::#screaming_snake_case_name
-                        }
-
-                        #[inline]
-                        fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
-                            if <Self as crate::ast::AstToken>::can_cast_from(crate::SyntaxToken::kind(syntax)) {
-                                // Safety: `Self` is `#[repr(transparent)]` around a `SyntaxToken`
-                                //         so `&SyntaxToken` can be transmuted into an `&Self`
-                                let node = unsafe {
-                                    ::core::mem::transmute::<&crate::SyntaxToken, &Self>(syntax)
-                                };
-
-                                ::core::option::Option::Some(
-                                    ::std::borrow::Cow::Borrowed(node),
-                                )
-                            } else {
-                                ::core::option::Option::None
-                            }
-                        }
-
-                        #[inline]
-                        fn syntax(&self) -> &crate::SyntaxToken {
-                            &self.syntax
-                        }
-                    }
-                });
-            }
-        }
-    }
-
-    fs2::update_formatted(
-        project_root().join("crates/ddlog-syntax/src/ast/generated/new.rs"),
-        &ast.to_string(),
-        CodegenMode::Run,
-    )?;
-
-    let generator = AstGenerator::new(&grammar, mode)?;
-
-    // Sort the tokens so that their ordering is consistent across runs
-    let mut tokens: Vec<_> = grammar
-        .iter()
-        .map(|node| &*grammar[node].name)
-        .filter(|&token| {
-            let lowercase = token.to_snake_case();
-
-            !matches!(&*lowercase, "number" | "string")
-                && !KEYWORDS.contains(&&*lowercase)
-                && NAMED_TOKENS
-                    .iter()
-                    .all(|&(_, named_token)| token.to_shouty_snake_case() != named_token)
-        })
-        .chain(grammar.tokens().map(|token| &*grammar[token].name))
-        .chain(EXTRA_TOKENS.iter().copied())
-        .collect();
-    tokens.sort_unstable();
-    tokens.dedup();
-
-    generate_syntax_kind(&tokens, mode)?;
-    let token_ast = generator.node_ast()?;
-    generator.token_ast(token_ast)?;
-    generator.ast_visitors()?;
-
-    match mode {
-        CodegenMode::Run => println!("finished running code generation"),
-        CodegenMode::Check => println!("finished checking generated code"),
-    }
-    Ok(())
-}
-
 fn generate_syntax_kind(tokens: &[&str], mode: CodegenMode) -> Result<()> {
     let target_path = project_root().join("crates/ddlog-syntax/src/syntax_kind/generated.rs");
 
@@ -1338,9 +1203,9 @@ fn generate_syntax_kind(tokens: &[&str], mode: CodegenMode) -> Result<()> {
         pub enum SyntaxKind {
             #(#variants)*
 
-            /// An error within the syntax tree
-            // Note: This must be the last variant of the enum so that it has
-            //       the highest discriminant
+/// An error within the syntax tree
+// Note: This must be the last variant of the enum so that it has
+//       the highest discriminant
             #[error]
             ERROR = #error_idx,
         }
@@ -1359,13 +1224,13 @@ fn generate_syntax_kind(tokens: &[&str], mode: CodegenMode) -> Result<()> {
 
             for (idx, _) in remainder.char_indices() {
                 match remainder.get(idx..idx + 2) {
-                    Some("*/") if nesting == 0 => {
+                    Some("* /") if nesting == 0 => {
                         lexer.bump(idx + 2);
 
                         return true;
                     }
-                    Some("*/") => nesting -= 1,
-                    Some("/*") => nesting += 1,
+                    Some("* /") => nesting -= 1,
+                    Some("/ *") => nesting += 1,
 
                     Some(_) => continue,
                     None => break,
@@ -1491,7 +1356,7 @@ fn trait_implementations() -> TokenStream {
                     if kind > Self::ERROR as u16 {
                         invalid_syntax_kind(kind)
                     } else {
-                        // Safety: `kind` is a valid `SyntaxKind`
+// Safety: `kind` is a valid `SyntaxKind`
                         unsafe { ::core::mem::transmute::<u16, Self>(kind) }
                     }
                 }
@@ -1504,7 +1369,7 @@ fn trait_implementations() -> TokenStream {
                     if kind > Self::ERROR as u16 {
                         invalid_syntax_kind(kind)
                     } else {
-                        // Safety: `kind` is a valid `SyntaxKind`
+// Safety: `kind` is a valid `SyntaxKind`
                         unsafe { ::core::mem::transmute::<u16, Self>(kind) }
                     }
                 }
@@ -1689,3 +1554,4 @@ fn rust_keywords() -> Vec<Ident> {
         format_ident!("dyn"),
     ]
 }
+*/

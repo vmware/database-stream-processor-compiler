@@ -6,7 +6,7 @@ use logos::Logos;
 #[test]
 fn syntax_kind_conversion() {
     assert_eq!(SyntaxKind::from(u16::from(ERROR)), ERROR);
-    assert_eq!(SyntaxKind::from(u16::from(T![function])), T![function]);
+    assert_eq!(SyntaxKind::from(u16::from(T![fn])), T![fn]);
 }
 
 #[track_caller]
@@ -27,7 +27,7 @@ fn whitespace() {
 
 #[test]
 fn function_keyword() {
-    check("function", T![function]);
+    check("function", T![fn]);
 }
 
 #[test]

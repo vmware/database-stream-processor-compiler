@@ -54,7 +54,7 @@ impl Debug for TokenSet {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_set()
             .entries(
-                (0..SyntaxKind::highest() as u16)
+                (0..SyntaxKind::MAXIMUM_DISCRIMINANT)
                     .map(SyntaxKind::from)
                     .filter(|&kind| self.contains(kind)),
             )
@@ -75,7 +75,7 @@ impl Display for TokenSet {
 
         f.debug_set()
             .entries(
-                (0..SyntaxKind::highest() as u16)
+                (0..SyntaxKind::MAXIMUM_DISCRIMINANT)
                     .map(SyntaxKind::from)
                     .filter(|&kind| self.contains(kind))
                     .map(DisplayKind),

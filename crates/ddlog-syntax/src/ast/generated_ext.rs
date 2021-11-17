@@ -1,5 +1,5 @@
 use crate::ast::{
-    nodes::{Attributes, FunctionDef},
+    nodes::{Attribute, FunctionDef},
     AstNode, AstToken,
 };
 use cstree::TextRange;
@@ -42,15 +42,13 @@ impl FunctionDef {
     }
 }
 
-impl Attributes {
+impl Attribute {
     /// Returns `true` if any of the underlying attributes are `deprecated`
-    pub fn any_are_deprecated(&self, interner: &Interner) -> bool {
-        for attribute in self.attributes() {
-            for pair in attribute.attr_pairs() {
-                if let Some(ident) = pair.ident() {
-                    if ident.lexical_eq("deprecated", interner) {
-                        return true;
-                    }
+    pub fn is_deprecated(&self, interner: &Interner) -> bool {
+        for pair in self.attr_pairs() {
+            if let Some(name) = pair.name().and_then(|name| name.ident()) {
+                if name.lexical_eq("deprecated", interner) {
+                    return true;
                 }
             }
         }

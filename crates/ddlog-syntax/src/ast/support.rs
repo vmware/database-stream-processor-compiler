@@ -76,6 +76,14 @@ where
 }
 
 #[inline]
+pub(super) fn nth_child<N, const IDX: usize>(parent: &SyntaxNode) -> Option<Cow<'_, N>>
+where
+    N: AstNode + Clone,
+{
+    parent.children().filter_map(N::cast).nth(IDX)
+}
+
+#[inline]
 pub(super) fn children<N>(parent: &SyntaxNode) -> AstChildren<'_, N>
 where
     N: AstNode,
@@ -91,6 +99,17 @@ where
     parent
         .children_with_tokens()
         .find_map(|child| child.as_token().copied().and_then(T::cast))
+}
+
+#[inline]
+pub(super) fn nth_token<T, const IDX: usize>(parent: &SyntaxNode) -> Option<Cow<'_, T>>
+where
+    T: AstToken + Clone,
+{
+    parent
+        .children_with_tokens()
+        .filter_map(|child| child.as_token().copied().and_then(T::cast))
+        .nth(IDX)
 }
 
 #[inline]

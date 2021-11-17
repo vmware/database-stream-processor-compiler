@@ -1,8 +1,14 @@
+use anyhow::Result;
 use heck::{CamelCase, ShoutySnakeCase, SnakeCase};
-use proc_macro2::{Ident, Span};
+use proc_macro2::{Ident, Span, TokenStream};
+use quote::{format_ident, quote};
+use std::convert::TryInto;
 use ungrammar::{Grammar, Rule};
 
-const EXTRA_TOKENS: &[&str] = &["comment", "whitespace", "eof", "tombstone"];
+/// The maximum number of allowed SyntaxKind variants
+const MAXIMUM_SYNTAX_KINDS: usize = u16::MAX as usize;
+
+const EXTRA_TOKENS: &[&str] = &["comment", "whitespace", "eof", "tombstone", "error"];
 
 const NAMED_TOKENS: &[(&str, &str)] = &[
     ("=", "EQ"),
@@ -47,46 +53,61 @@ const NAMED_TOKENS: &[(&str, &str)] = &[
     ("::", "DOUBLE_COLON"),
     ("=>", "RIGHT_ROCKET"),
     ("&=", "AMPERSAND_EQ"),
+    ("string_literal", "STRING_LITERAL"),
+    ("number_literal", "NUMBER_LITERAL"),
 ];
 
 const FUNKY_CHARS: &[&str] = &["(", ")", "{", "}", "[", "]", "#[", "/*", "*/"];
 
-const KEYWORDS: &[&str] = &[
-    "function", "let", "match", "input", "output", "relation", "struct", "for", "while", "loop",
-    "apply", "extern", "and", "or", "if", "else", "return", "break", "true", "false", "multiset",
-    "stream", "enum", "const", "as", "type", "abstract", "final", "async", "await", "unsafe",
-    "static",
+// Sourced from https://doc.rust-lang.org/reference/keywords.html
+const RUST_KEYWORDS: &[&str] = &[
+    "Self", "abstract", "as", "async", "await", "become", "box", "break", "const", "continue",
+    "crate", "do", "dyn", "else", "enum", "extern", "false", "final", "fn", "for", "if", "impl",
+    "in", "let", "loop", "macro", "match", "mod", "move", "mut", "override", "priv", "pub", "ref",
+    "return", "self", "static", "struct", "super", "trait", "true", "try", "type", "typeof",
+    "union", "unsafe", "unsized", "use", "virtual", "where", "while", "yield",
 ];
 
-pub fn from_grammar(grammar: &Grammar) -> (Vec<Struct>, Vec<Enum>) {
+type StructuredGrammar = (Vec<Struct>, Vec<Enum>, Vec<SyntaxKindEntry>, u16);
+
+pub fn from_grammar(grammar: &Grammar) -> Result<StructuredGrammar> {
     assert_constants_are_unique();
 
     let nodes: Vec<_> = grammar.iter().map(|node| &grammar[node]).collect();
-    dbg!(&nodes);
 
     let (mut structs, mut enums) = (Vec::new(), Vec::new());
-
     for token in grammar
         .tokens()
         .map(|token| &*grammar[token].name)
         .chain(EXTRA_TOKENS.iter().copied())
     {
-        structs.push(Struct {
-            camel_case_name: camel_case_name(token),
-            snake_case_name: snake_case_name(token),
-            screaming_snake_case_name: screaming_snake_case_name(token),
-            kind: NodeKind::Token,
+        structs.push(if RUST_KEYWORDS.contains(&token) {
+            let kw = format!("{}_kw", token);
+
+            Struct {
+                raw_name: token.to_owned(),
+                camel_case_name: Ident::new(&kw.to_camel_case(), Span::mixed_site()),
+                snake_case_name: Ident::new(&kw.to_snake_case(), Span::mixed_site()),
+                screaming_snake_case_name: Ident::new(
+                    &kw.to_shouty_snake_case(),
+                    Span::mixed_site(),
+                ),
+                kind: NodeKind::Token,
+            }
+        } else {
+            Struct {
+                raw_name: token.to_owned(),
+                camel_case_name: camel_case_name(token),
+                snake_case_name: snake_case_name(token),
+                screaming_snake_case_name: screaming_snake_case_name(token),
+                kind: NodeKind::Token,
+            }
         });
     }
 
     for node in nodes {
-        let is_syntax_node = rule_is_syntax_node(&node.rule);
+        let is_syntax_node = rule_is_syntax_node(&node.rule, true);
         let is_enum = rule_is_enum(&node.rule);
-
-        println!(
-            "{:?} = syntax node: {}, enum: {}",
-            node, is_syntax_node, is_enum,
-        );
 
         let kind = if is_syntax_node {
             NodeKind::Syntax
@@ -95,7 +116,13 @@ pub fn from_grammar(grammar: &Grammar) -> (Vec<Struct>, Vec<Enum>) {
         };
 
         if is_enum {
-            let variants = if let Rule::Alt(variants) = &node.rule {
+            let kind = if all_variants_are_tokens(&node.rule) {
+                EnumKind::NodeOfTokens
+            } else {
+                EnumKind::NodeOfNodes
+            };
+
+            let mut variants: Vec<_> = if let Rule::Alt(variants) = &node.rule {
                 variants
                     .iter()
                     .map(|rule| rule_to_enum_variant(grammar, rule))
@@ -103,16 +130,19 @@ pub fn from_grammar(grammar: &Grammar) -> (Vec<Struct>, Vec<Enum>) {
             } else {
                 panic!();
             };
+            variants.sort_unstable_by_key(|variant| variant.variant_name.to_string());
 
             enums.push(Enum {
+                raw_name: node.name.clone(),
                 camel_case_name: camel_case_name(&node.name),
                 snake_case_name: snake_case_name(&node.name),
                 screaming_snake_case_name: screaming_snake_case_name(&node.name),
-                kind,
                 variants,
+                kind,
             });
         } else {
             structs.push(Struct {
+                raw_name: node.name.clone(),
                 camel_case_name: camel_case_name(&node.name),
                 snake_case_name: snake_case_name(&node.name),
                 screaming_snake_case_name: screaming_snake_case_name(&node.name),
@@ -123,32 +153,134 @@ pub fn from_grammar(grammar: &Grammar) -> (Vec<Struct>, Vec<Enum>) {
 
     structs.sort_unstable_by_key(|s| s.camel_case_name.clone());
     enums.sort_unstable_by_key(|e| e.camel_case_name.clone());
-    dbg!(structs, enums)
+
+    let (syntax_kinds, maximum_syntax_discriminant) = collect_syntax_kinds(&structs, &enums)?;
+
+    Ok((structs, enums, syntax_kinds, maximum_syntax_discriminant))
 }
 
-fn rule_is_syntax_node(rule: &Rule) -> bool {
-    fn rule_is_syntax_node_inner(rule: &Rule, top_level: bool) -> bool {
-        match rule {
-            Rule::Token(_) => false,
-
-            // Labeled nodes always require a node
-            Rule::Labeled { .. } => true, // rule_is_syntax_node_inner(&**rule, false),
-
-            // All of these rules imply the need for a `SyntaxNode`
-            Rule::Node(_) | Rule::Seq(_) | Rule::Opt(_) | Rule::Rep(_) => true,
-
-            // Alternatives are only valid as a `SyntaxToken` if it's the top-level item
-            // and all alternatives are tokens
-            Rule::Alt(alternatives) if top_level => alternatives
+fn collect_syntax_kinds(structs: &[Struct], enums: &[Enum]) -> Result<(Vec<SyntaxKindEntry>, u16)> {
+    let mut syntax_kinds: Vec<_> = structs
+        .iter()
+        .map(|s| (s.raw_name.clone(), s.screaming_snake_case_name.clone()))
+        // TODO: This may be correct?
+        // .chain(enums.iter().filter_map(|e| {
+        //     if e.kind == EnumKind::NodeOfTokens {
+        //         Some((e.raw_name.clone(), e.screaming_snake_case_name.clone()))
+        //     } else {
+        //         None
+        //     }
+        // }))
+        .chain(
+            enums
                 .iter()
-                .any(|rule| rule_is_syntax_node_inner(rule, false)),
+                .map(|e| (e.raw_name.clone(), e.screaming_snake_case_name.clone())),
+        )
+        .map(|(raw_name, screaming_snake_case)| {
+            let debug_string = screaming_snake_case.to_string();
 
-            // Non top-leveled alternatives are always syntax nodes
-            Rule::Alt(_) => true,
-        }
+            let display_string = if RUST_KEYWORDS.contains(&&*raw_name)
+                || NAMED_TOKENS
+                    .iter()
+                    .any(|&(named_token, _)| named_token == raw_name)
+            {
+                raw_name.clone()
+            } else {
+                debug_string.clone()
+            };
+
+            let macro_ident = if RUST_KEYWORDS.contains(&&*raw_name) {
+                let ident = format_ident!("{}", raw_name);
+                Some(quote! { #ident })
+            } else if FUNKY_CHARS.contains(&&*raw_name) {
+                let char_count = raw_name.chars().count();
+                assert!(char_count >= 1);
+
+                Some(if char_count == 1 {
+                    let char = raw_name.chars().next().unwrap();
+
+                    quote! { #char }
+                } else {
+                    quote! { #raw_name }
+                })
+            } else if NAMED_TOKENS
+                .iter()
+                .any(|&(named_token, _)| named_token == raw_name)
+            {
+                Some(raw_name.parse().unwrap())
+            } else {
+                None
+            };
+
+            SyntaxKindEntry {
+                raw_name,
+                screaming_snake_case,
+                debug_string,
+                display_string,
+                // We initialize everything with a zero discriminant until we've sorted the variants
+                discriminant: 0,
+                macro_ident,
+            }
+        })
+        .collect();
+
+    // Make sure we have less than MAXIMUM_SYNTAX_KINDS variants
+    if syntax_kinds.len() > MAXIMUM_SYNTAX_KINDS as usize {
+        anyhow::bail!(
+            "tried to create more than {} SyntaxKind variants (total variants: {})",
+            MAXIMUM_SYNTAX_KINDS,
+            syntax_kinds.len(),
+        );
     }
 
-    rule_is_syntax_node_inner(rule, true)
+    // Sort the syntax kinds lexicographically
+    syntax_kinds.sort_unstable_by_key(|kind| kind.screaming_snake_case.clone());
+
+    // Make sure there's no duplicates
+    if let Some(duplicates) = syntax_kinds
+        .windows(2)
+        .find(|kinds| kinds[0].screaming_snake_case == kinds[1].screaming_snake_case)
+    {
+        anyhow::bail!(
+            "found two occurrences of the '{}' SyntaxKind",
+            duplicates[0].screaming_snake_case,
+        );
+    }
+
+    // Give all the syntax kinds explicit discriminants
+    for (idx, kind) in syntax_kinds.iter_mut().enumerate() {
+        // We've already made sure that there's less than or equal to `MAXIMUM_SYNTAX_KINDS`
+        // variants, so this should fit fine
+        kind.discriminant = idx.try_into().unwrap();
+    }
+
+    let maximum_syntax_discriminant = (syntax_kinds.len() - 1).try_into().unwrap();
+
+    Ok((syntax_kinds, maximum_syntax_discriminant))
+}
+
+fn rule_is_syntax_node(rule: &Rule, top_level: bool) -> bool {
+    match rule {
+        Rule::Token(_) => top_level,
+
+        // Labeled nodes always require a node
+        Rule::Labeled { rule, .. } => rule_is_syntax_node(&**rule, false),
+
+        // All of these rules imply the need for a `SyntaxNode`
+        Rule::Node(_) | Rule::Seq(_) | Rule::Opt(_) | Rule::Rep(_) => true,
+
+        // All alternatives are syntax nodes
+        Rule::Alt(_) => true,
+    }
+}
+
+fn all_variants_are_tokens(rule: &Rule) -> bool {
+    if let Rule::Alt(variants) = rule {
+        // TODO: Do we need to account for labeled variants?
+        variants.iter().any(|rule| matches!(rule, Rule::Token(_)))
+    } else {
+        panic!("called `all_variants_are_tokens()` on a non-alt rule")
+    }
 }
 
 fn rule_is_enum(rule: &Rule) -> bool {
@@ -156,34 +288,37 @@ fn rule_is_enum(rule: &Rule) -> bool {
 }
 
 fn rule_to_enum_variant(grammar: &Grammar, rule: &Rule) -> EnumVariant {
-    match rule {
+    let (variant_name, variant_type, syntax_kind, snake_case) = match rule {
         &Rule::Node(node) => {
             let node = &grammar[node];
-            let name = camel_case_name(&node.name);
+            let variant_name = camel_case_name(&node.name);
+            let variant_type = quote![crate::ast::nodes::#variant_name];
+            let syntax_kind = screaming_snake_case_name(&node.name);
+            let snake_case = node.name.to_snake_case();
 
-            EnumVariant {
-                variant_name: name.clone(),
-                // TODO: Do a lookup to figure out the type's path and store
-                // that instead of an ident
-                variant_type: name,
-            }
+            (variant_name, variant_type, syntax_kind, snake_case)
         }
 
         &Rule::Token(token) => {
             let token = &grammar[token];
-            let name = camel_case_name(&token.name);
+            let variant_name = camel_case_name(&token.name);
+            let variant_type = quote![crate::ast::tokens::#variant_name];
+            let syntax_kind = screaming_snake_case_name(&token.name);
+            let snake_case = token.name.to_snake_case();
 
-            EnumVariant {
-                variant_name: name.clone(),
-                // TODO: Do a lookup to figure out the type's path and store
-                // that instead of an ident
-                variant_type: name,
-            }
+            (variant_name, variant_type, syntax_kind, snake_case)
         }
 
         Rule::Labeled { .. } | Rule::Seq(_) | Rule::Alt(_) | Rule::Opt(_) | Rule::Rep(_) => {
             todo!("error")
         }
+    };
+
+    EnumVariant {
+        variant_name,
+        variant_type,
+        syntax_kind,
+        snake_case,
     }
 }
 
@@ -204,7 +339,7 @@ fn camel_case_name(token: &str) -> Ident {
 fn snake_case_name(token: &str) -> Ident {
     if let Some(&(_, symbol)) = NAMED_TOKENS.iter().find(|&&(symbol, _)| symbol == token) {
         Ident::new(&symbol.to_snake_case(), Span::mixed_site())
-    } else if KEYWORDS.contains(&token) {
+    } else if RUST_KEYWORDS.contains(&token) {
         Ident::new(
             &format!("{}_token", token.to_snake_case()),
             Span::mixed_site(),
@@ -246,9 +381,9 @@ fn assert_constants_are_unique() {
         .all(|&c| FUNKY_CHARS.iter().filter(|&&c2| c2 == c).count() == 1);
     assert!(funky_chars);
 
-    let keywords = KEYWORDS
+    let keywords = RUST_KEYWORDS
         .iter()
-        .all(|&kw| KEYWORDS.iter().filter(|&&kw2| kw2 == kw).count() == 1);
+        .all(|&kw| RUST_KEYWORDS.iter().filter(|&&kw2| kw2 == kw).count() == 1);
     assert!(keywords);
 
     let named_tokens = NAMED_TOKENS.iter().all(|&(token, _)| {
@@ -272,7 +407,20 @@ fn assert_constants_are_unique() {
 }
 
 #[derive(Debug)]
+pub struct SyntaxKindEntry {
+    pub raw_name: String,
+    /// The variant's name in SCREAMING_SNAKE_CASE
+    pub screaming_snake_case: Ident,
+    pub debug_string: String,
+    pub display_string: String,
+    /// The variant's discriminant within the enum
+    pub discriminant: u16,
+    pub macro_ident: Option<TokenStream>,
+}
+
+#[derive(Debug)]
 pub struct Struct {
+    pub raw_name: String,
     pub camel_case_name: Ident,
     pub snake_case_name: Ident,
     pub screaming_snake_case_name: Ident,
@@ -281,17 +429,28 @@ pub struct Struct {
 
 #[derive(Debug)]
 pub struct Enum {
+    pub raw_name: String,
     pub camel_case_name: Ident,
     pub snake_case_name: Ident,
     pub screaming_snake_case_name: Ident,
     pub variants: Vec<EnumVariant>,
-    pub kind: NodeKind,
+    pub kind: EnumKind,
 }
 
 #[derive(Debug)]
 pub struct EnumVariant {
     pub variant_name: Ident,
-    pub variant_type: Ident,
+    pub variant_type: TokenStream,
+    pub syntax_kind: Ident,
+    pub snake_case: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum EnumKind {
+    /// This is an enum where all variants are tokens
+    NodeOfTokens,
+    /// This is an enum where all variants are other syntax nodes
+    NodeOfNodes,
 }
 
 #[derive(Debug)]
