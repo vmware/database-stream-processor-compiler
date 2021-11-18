@@ -10,44 +10,34 @@ Item =
     | TypeAlias
     // TODO: Relations & Clauses
 
-FunctionDef = Attribute* Modifier* keyword:'fn' name:FunctionName Generics args:FunctionArgs ret:FunctionReturn? body:Block
-FunctionName = 'ident'
+FunctionDef = Attribute* Modifier* keyword:'fn' name:'ident' Generics args:FunctionArgs ret:FunctionReturn? body:Block
 FunctionArgs = '(' args:FunctionArg* ')'
 FunctionArg = Attribute* binding:Pattern ':' ty:Type ','*
 FunctionReturn = '->' return_ty:Type
 
-StructDef = Attribute* Modifier* keyword:'struct' name:StructName fields:StructFields
-StructName = 'ident'
+StructDef = Attribute* Modifier* keyword:'struct' name:'ident' fields:StructFields
 StructFields = BracketedStructFields | TupleStructFields
 BracketedStructFields = '{' fields:BracketedStructField* '}'
-BracketedStructField = name:StructFieldName ':' ty:Type ','*
-StructFieldName = 'ident'
+BracketedStructField = name:'ident' ':' ty:Type ','*
 TupleStructFields = '(' TupleStructField* ')'
 TupleStructField = ty:Type ','*
 
-EnumDef = Attribute* Modifier* keyword:'enum' name:EnumName variants:EnumVariants
-EnumName = 'ident'
+EnumDef = Attribute* Modifier* keyword:'enum' name:'ident' variants:EnumVariants
 EnumVariants = '{' variants:EnumVariant* '}'
-EnumVariant = EnumVariantName EnumVariantBody
+EnumVariant = variant:'ident' EnumVariantBody
 EnumVariantBody = VariantTuple | VariantStruct
-EnumVariantName = 'ident'
 VariantTuple = '(' VariantTupleElem* ')'
 VariantTupleElem = ty:Type ','*
 VariantStruct = '{' fields:VariantStructField* '}'
-VariantStructField = name:VariantStructFieldName ':' ty:Type ','*
-VariantStructFieldName = 'ident'
+VariantStructField = name:'ident' ':' ty:Type ','*
 
-ConstDef = Attribute* Modifier* keyword:'const' name:ConstName '=' ConstValue ';'
-// TODO: Could be a pattern
-ConstName = 'ident'
-ConstValue = value:Expr
+// TODO: Could be a pattern instead of an ident
+ConstDef = Attribute* Modifier* keyword:'const' name:'ident' '=' value:Expr ';'
 
-UseDef = Attribute* Modifier* keyword:'use' UseTree ';'
-UseTree = Path UseBranchOrAlias?
+UseDef = Attribute* Modifier* keyword:'use' Path UseBranchOrAlias? ';'
 UseBranchOrAlias = UseBranch | UseAlias
-UseAlias = 'as' UseAliasName
-UseAliasName = 'ident'
-UseBranch = '{' (UseTree ','*)* '}'
+UseAlias = 'as' alias:'ident'
+UseBranch = '{' (Path UseBranchOrAlias? ','*)* '}'
 
 // TODO: `impl Trait for Type { ... }`
 ImplBlock = Attribute* Modifier* keyword:'impl' target:Type contents:ImplBlockContents
@@ -56,8 +46,7 @@ ImplBlockContents = '{' Item* '}'
 TypeAlias =  Attribute* Modifier* keyword:'type' alias:Type '=' original:Type ';'*
 
 Attribute = '#[' AttrPair* ']'
-AttrPair = name:AttrName ('=' Expr ','*)?
-AttrName = 'ident'
+AttrPair = name:'ident' ('=' Expr ','*)?
 
 Modifier = 'pub' // 'input' | 'output'
 
@@ -65,13 +54,11 @@ Pattern = VarRef | TuplePattern | StructPattern
 TuplePattern = '(' elements:TuplePatternElem* ')'
 TuplePatternElem = Pattern ','*
 StructPattern = '{' fields:StructPatternField* '}'
-StructPatternField = name:StructPatternFieldName (':' alias:Pattern)? ','*
-StructPatternFieldName = 'ident'
+StructPatternField = name:'ident' (':' alias:Pattern)? ','*
 
 Type = GenericType | TupleType | FunctionType
-Path = '::'? head:PathSegment tail:PathTail*
-PathTail = '::' tail:PathSegment
-PathSegment = 'ident'
+Path = '::'? head:'ident' tail:PathTail*
+PathTail = '::' tail:'ident'
 
 GenericType = Path Generics?
 Generics = '<' generics:GenericArg* '>'
