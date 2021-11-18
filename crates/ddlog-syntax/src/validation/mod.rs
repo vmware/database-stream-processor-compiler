@@ -1,12 +1,12 @@
-mod extra_commas;
-mod modifiers;
+// mod extra_commas;
+// mod modifiers;
 
 use crate::{
     visitor::{self, RuleCtx},
     AstVisitor, SyntaxNode,
 };
-use extra_commas::ExtraCommas;
-use modifiers::ModifierValidator;
+// use extra_commas::ExtraCommas;
+// use modifiers::ModifierValidator;
 
 pub fn run_validators(node: &SyntaxNode, ctx: &mut RuleCtx) {
     let validators = validators();
@@ -17,5 +17,6 @@ pub fn run_validators(node: &SyntaxNode, ctx: &mut RuleCtx) {
 }
 
 fn validators() -> Vec<Box<dyn AstVisitor>> {
-    vec![Box::new(ModifierValidator), Box::new(ExtraCommas)]
+    // vec![Box::new(ModifierValidator), Box::new(ExtraCommas)]
+    Vec::new()
 }

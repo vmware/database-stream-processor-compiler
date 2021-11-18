@@ -1,11 +1,10 @@
 use crate::{
     parser::{CompletedMarker, Marker, Parser},
     SyntaxKind::{
-        self, ATTRIBUTE, ATTRIBUTES, ATTR_PAIR, FUNCTION_ARG, FUNCTION_ARGS, FUNCTION_DEF,
-        FUNCTION_NAME, FUNCTION_RETURN, FUNCTION_RETURN_TYPE, FUNCTION_TYPE, FUNCTION_TYPE_ARG,
-        FUNCTION_TYPE_ARGS, GENERICS, GENERIC_ARG, GENERIC_TYPE, IDENT, ITEM, MODIFIERS,
-        RECORD_FIELD, RECORD_NAME, RECORD_TYPE, RELATION_DEF, REL_COL, REL_COLS, REL_KW, REL_NAME,
-        TUPLE_TYPE, TUPLE_TYPE_ELEM, TYPE, TYPE_BODY, TYPE_DEF, TYPE_NAME, VAR_REF,
+        self, ATTRIBUTE, ATTR_PAIR, FUNCTION_ARG, FUNCTION_ARGS, FUNCTION_DEF, FUNCTION_NAME,
+        FUNCTION_RETURN, FUNCTION_RETURN_TYPE, FUNCTION_TYPE, FUNCTION_TYPE_ARG,
+        FUNCTION_TYPE_ARGS, GENERICS, GENERIC_ARG, GENERIC_TYPE, IDENT, STRUCT_DEF, STRUCT_NAME,
+        TUPLE_TYPE, TUPLE_TYPE_ELEM, VAR_REF,
     },
     TokenSet,
 };
@@ -16,32 +15,28 @@ use ddlog_diagnostics::{Diagnostic, Label};
 
 const ITEM_RECOVERY: TokenSet = token_set! {
     T!['}'],
-    T![function],
-    T![extern],
-    T![typedef],
-    T![input],
-    T![output],
-    T![relation],
-    T![multiset],
-    T![stream],
-    // T![import],
+    T![fn],
+    T![pub],
+    T![use],
+    T![type],
+    T![enum],
+    T![impl],
+    T![const],
+    T![struct],
 };
 
 const MODIFIER_KEYWORDS: TokenSet = token_set! {
-    T![input],
-    T![output],
-    T![extern],
+    T![pub],
 };
 
 impl Parser<'_, '_> {
     // test block_comments
-    // - relation Foo()
     // - /*
     // -     /*
     // -         Hello
     // -     */
     // - */
-    // - function bar() {}
+    // - fn bar() {}
     pub(crate) fn items(&mut self) {
         let current_set = self.recovery_set;
         self.recovery_set = current_set.union(ITEM_RECOVERY);
@@ -60,7 +55,6 @@ impl Parser<'_, '_> {
         tracing::trace!(current = %self.current(), peek = %self.peek(), "parsing item");
 
         let item = self.start();
-        let inner_item = self.start();
 
         self.attributes();
         // We eat any modifiers given to us, even though they aren't
@@ -70,11 +64,12 @@ impl Parser<'_, '_> {
         self.modifiers();
 
         match self.peek() {
-            T![function] => self.function_def(inner_item),
-            T![relation] | T![multiset] | T![stream] => self.relation_def(inner_item),
-            T![typedef] => self.typedef(inner_item),
-
-            // TODO: `import`
+            T![fn] => self.function_def(item),
+            T![struct] => self.struct_def(item),
+            // TODO: Enums
+            // TODO: Constants
+            // TODO: Impl blocks
+            // TODO: Type aliases
 
             // TODO: Errors
             kind => {
@@ -91,22 +86,19 @@ impl Parser<'_, '_> {
                     );
                 self.push_error(error);
 
-                inner_item.abandon(self);
                 item.abandon(self);
 
-                return None;
+                None
             }
-        };
-
-        Some(item.complete(self, ITEM))
+        }
     }
 
     // test function_definitions
-    // - function foo() {}
-    // - function foo1(bar: Baz) {}
-    // - function foo2(bar: Baz, bing: Bang) {}
+    // - fn foo() {}
+    // - fn foo1(bar: Baz) {}
+    // - fn foo2(bar: Baz, bing: Bang) {}
     fn function_def(&mut self, function: Marker) -> Option<CompletedMarker> {
-        self.expect(T![function]);
+        self.expect(T![fn]);
 
         let current_set = self.recovery_set;
         self.recovery_set = current_set.add(T!['(']);
@@ -116,7 +108,7 @@ impl Parser<'_, '_> {
         self.function_args();
 
         // test function_ret_ty
-        // - function foo(): Bar {}
+        // - fn foo(): Bar {}
         if self.at(T![:]) {
             let ret = self.start();
 
@@ -132,7 +124,7 @@ impl Parser<'_, '_> {
     }
 
     // test function_args
-    // - function foo(bar: Baz, bing: Bang) {}
+    // - fn foo(bar: Baz, bing: Bang) {}
     fn function_args(&mut self) -> Option<CompletedMarker> {
         let args = self.start();
         self.expect(T!['(']);
@@ -146,6 +138,7 @@ impl Parser<'_, '_> {
         Some(args.complete(self, FUNCTION_ARGS))
     }
 
+    /*
     // test basic_relation
     // - relation Something()
     // test relation_with_multiple_modifiers
@@ -194,10 +187,11 @@ impl Parser<'_, '_> {
 
         Some(columns.complete(self, REL_COLS))
     }
+    */
 
-    fn typedef(&mut self, typedef: Marker) -> Option<CompletedMarker> {
-        self.expect(T![typedef]);
-        self.identifier(TYPE_NAME);
+    fn struct_def(&mut self, struct_def: Marker) -> Option<CompletedMarker> {
+        self.expect(T![struct]);
+        self.identifier(STRUCT_NAME);
 
         self.expect(T![=]);
 
@@ -206,10 +200,10 @@ impl Parser<'_, '_> {
 
             self.record_type();
 
-            body.complete(self, TYPE_BODY);
+            body.complete(self, STRUCT_FIELDS);
         }
 
-        Some(typedef.complete(self, TYPE_DEF))
+        Some(struct_def.complete(self, STRUCT_DEF))
     }
 
     // test typedefs
@@ -266,7 +260,7 @@ impl Parser<'_, '_> {
         match self.current() {
             IDENT => self.type_name(),
             T!['('] => self.tuple_type(),
-            T![function] => self.function_type(),
+            T![fn] => self.function_type(),
 
             // FIXME: Error
             _ => {
@@ -325,14 +319,14 @@ impl Parser<'_, '_> {
     }
 
     // test function_types
-    // - function foo(bar: function(Bar, Baz): Bing) {}
-    // - relation Foo(bar: function(Bar, Baz,): Bing,)
-    // - function foo(bar: function(Bar)) {}
-    // - relation Foo(bar: function(Bar,))
+    // - fn foo(bar: fn(Bar, Baz): Bing) {}
+    // - fn Foo(bar: fn(Bar, Baz,): Bing,)
+    // - fn foo(bar: fn(Bar)) {}
+    // - fn Foo(bar: fn(Bar,))
     fn function_type(&mut self) -> Option<CompletedMarker> {
         let function = self.start();
 
-        self.expect(T![function]);
+        self.expect(T![fn]);
 
         {
             let args = self.start();
@@ -394,7 +388,7 @@ impl Parser<'_, '_> {
     // - #[something = 10,,,]
     // - #[something_else = 10,,,]
     // - #[something_again = wheee,,,]
-    // - function foobaz() {}
+    // - fn foobaz() {}
     fn attributes(&mut self) -> CompletedMarker {
         let attributes = self.start();
 
@@ -409,10 +403,10 @@ impl Parser<'_, '_> {
     }
 
     // test attribute
-    // - #[something = something_else] function foo() {}
-    // - #[something = 10,,,] function foobar() {}
-    // - #[by_val] function foobar() {}
-    // - #[by_val, from_val] function foobar() {}
+    // - #[something = something_else] fn foo() {}
+    // - #[something = 10,,,] fn foobar() {}
+    // - #[by_val] fn foobar() {}
+    // - #[by_val, from_val] fn foobar() {}
     fn attribute(&mut self) -> Option<CompletedMarker> {
         let attribute = self.start();
 

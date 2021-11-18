@@ -1,8 +1,8 @@
 use crate::{
     parser::{CompletedMarker, Parser},
     SyntaxKind::{
-        self, BIN_EXPR, BIN_OP, EXPR, IDENT, LITERAL, NUMBER, PAREN_EXPR, UNARY_EXPR, UNARY_OP,
-        VAR_REF,
+        self, BIN_EXPR, BIN_OP, BOOL, IDENT, NUMBER, NUMBER_LITERAL, PAREN_EXPR, STRING_LITERAL,
+        UNARY_EXPR, UNARY_OP, VAR_REF,
     },
     TokenSet,
 };
@@ -39,14 +39,7 @@ impl Parser<'_, '_> {
     // test(expr) parentheses_affect_precedence
     // - 5 * (2 + 1)
     pub(super) fn expr(&mut self) -> Option<CompletedMarker> {
-        let expr = self.start();
-
-        if self.expr_inner(0).is_some() {
-            Some(expr.complete(self, EXPR))
-        } else {
-            expr.abandon(self);
-            None
-        }
+        self.expr_inner(0)
     }
 
     /// The innards of [`Parser::expr()`], does all of the actual work
@@ -160,13 +153,37 @@ impl Parser<'_, '_> {
     // test(expr) bool_false
     // - false
     pub(super) fn literal(&mut self) -> Option<CompletedMarker> {
-        if !self.at_set(LITERAL_TOKENS) {
-            return None;
-        }
-
         let literal = self.start();
-        self.bump();
-        Some(literal.complete(self, LITERAL))
+
+        // Numbers
+        if self.at(NUMBER_LITERAL) {
+            self.bump();
+            Some(literal.complete(self, NUMBER_LITERAL))
+
+        // Strings
+        } else if self.at(STRING_LITERAL) {
+            self.bump();
+            Some(literal.complete(self, STRING_LITERAL))
+
+        // `true`
+        } else if self.at(T![true]) {
+            let bool = self.start();
+            self.bump();
+            bool.complete(self, T![true]);
+            Some(literal.complete(self, BOOL))
+
+        // `false`
+        } else if self.at(T![false]) {
+            let bool = self.start();
+            self.bump();
+            bool.complete(self, T![false]);
+            Some(literal.complete(self, BOOL))
+
+        // Non-literals
+        } else {
+            literal.abandon(self);
+            None
+        }
     }
 
     // TODO: Move to utils

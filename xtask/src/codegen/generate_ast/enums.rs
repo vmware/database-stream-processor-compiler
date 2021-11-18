@@ -1,12 +1,14 @@
 use crate::codegen::generate_ast::parser::{EnumVariant, NodeKind};
-use proc_macro2::{Ident, Span, TokenStream};
+use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
 
 pub fn ast_node_of_nodes(camel_case_name: &Ident, variants: &[EnumVariant]) -> TokenStream {
-    let syntax_kinds = get_syntax_kinds(variants);
-    let cast_arms = generate_cast_arms(NodeKind::Syntax, variants);
+    let can_cast_from = generate_can_cast_from(variants);
+    let cast_arms = generate_cast_arms(variants);
     let syntax_arms = generate_syntax_arms(NodeKind::Syntax, variants);
     let user_casts = generate_ast_user_casts(variants);
+    let from_impls = generate_enum_from_impls(camel_case_name, variants);
+    let try_from_impls = generate_enum_try_from_impls(camel_case_name, variants);
 
     quote! {
         impl #camel_case_name {
@@ -16,7 +18,7 @@ pub fn ast_node_of_nodes(camel_case_name: &Ident, variants: &[EnumVariant]) -> T
         impl crate::ast::AstNode for #camel_case_name {
             #[inline]
             fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-                ::core::matches!(kind, #(crate::SyntaxKind::#syntax_kinds)|*)
+                #(#can_cast_from)||*
             }
 
             #[inline]
@@ -34,10 +36,15 @@ pub fn ast_node_of_nodes(camel_case_name: &Ident, variants: &[EnumVariant]) -> T
                 }
             }
         }
+
+        #(#from_impls)*
+        #(#try_from_impls)*
     }
 }
 
+/// Generate utility checking and casting methods for enums
 fn generate_ast_user_casts(variants: &[EnumVariant]) -> impl Iterator<Item = TokenStream> + '_ {
+    // Generate `.is_variant() -> bool` methods
     let is_checks = variants.iter().map(|variant| {
         let method_name = format_ident!("is_{}", variant.snake_case);
         let variant = &variant.variant_name;
@@ -49,6 +56,7 @@ fn generate_ast_user_casts(variants: &[EnumVariant]) -> impl Iterator<Item = Tok
         }
     });
 
+    // Generate `.as_variant() -> Option<&Variant>` methods
     let as_casts = variants.iter().map(|variant| {
         let method_name = format_ident!("as_{}", variant.snake_case);
         let (variant, variant_type) = (&variant.variant_name, &variant.variant_type);
@@ -64,6 +72,7 @@ fn generate_ast_user_casts(variants: &[EnumVariant]) -> impl Iterator<Item = Tok
         }
     });
 
+    // Generate `.into_variant() -> Result<&Variant, Parent>` methods
     let into_casts = variants.iter().map(|variant| {
         let method_name = format_ident!("into_{}", variant.snake_case);
         let (variant, variant_type) = (&variant.variant_name, &variant.variant_type);
@@ -80,6 +89,50 @@ fn generate_ast_user_casts(variants: &[EnumVariant]) -> impl Iterator<Item = Tok
     });
 
     is_checks.chain(as_casts).chain(into_casts)
+}
+
+/// Generate `From` implementations for each variant type to the parent enum (`From<Child> for Parent`)
+fn generate_enum_try_from_impls<'a>(
+    parent_enum: &'a Ident,
+    variants: &'a [EnumVariant],
+) -> impl Iterator<Item = TokenStream> + 'a {
+    variants.iter().map(move |variant| {
+        let (variant, variant_type) = (&variant.variant_name, &variant.variant_type);
+
+        quote! {
+            impl ::core::convert::From<#variant_type> for #parent_enum {
+                #[inline]
+                fn from(value: #variant_type) -> Self {
+                    Self::#variant(value)
+                }
+            }
+        }
+    })
+}
+
+/// Generate `TryFrom` implementations for each variant type from the parent enum (`TryFrom<Parent> for Child`)
+fn generate_enum_from_impls<'a>(
+    parent_enum: &'a Ident,
+    variants: &'a [EnumVariant],
+) -> impl Iterator<Item = TokenStream> + 'a {
+    variants.iter().map(move |variant| {
+        let (variant, variant_type) = (&variant.variant_name, &variant.variant_type);
+
+        quote! {
+            impl ::core::convert::TryFrom<#parent_enum> for #variant_type {
+                type Error = #parent_enum;
+
+                #[inline]
+                fn try_from(value: #parent_enum) -> ::core::result::Result<Self, Self::Error> {
+                    if let #parent_enum::#variant(this) = value {
+                        ::core::result::Result::Ok(this)
+                    } else {
+                        ::core::result::Result::Err(value)
+                    }
+                }
+            }
+        }
+    })
 }
 
 pub fn ast_node_of_tokens(camel_case_name: &Ident, syntax_kind_name: &Ident) -> TokenStream {
@@ -115,47 +168,32 @@ pub fn ast_node_of_tokens(camel_case_name: &Ident, syntax_kind_name: &Ident) -> 
     }
 }
 
-fn get_syntax_kinds(variants: &[EnumVariant]) -> impl Iterator<Item = &Ident> + '_ {
-    variants.iter().map(|variant| &variant.syntax_kind)
+fn generate_can_cast_from(variants: &[EnumVariant]) -> impl Iterator<Item = TokenStream> + '_ {
+    variants.iter().map(|variant| {
+        let variant_type = &variant.variant_type;
+
+        quote! {
+            <#variant_type as crate::ast::AstNode>::can_cast_from(kind)
+        }
+    })
 }
 
-fn generate_cast_arms(
-    parent_kind: NodeKind,
-    variants: &[EnumVariant],
-) -> impl Iterator<Item = TokenStream> + '_ {
-    let (parent_cast_trait, kind_ident) = match parent_kind {
-        NodeKind::Syntax => (
-            quote![crate::ast::AstNode],
-            Ident::new("SyntaxNode", Span::mixed_site()),
-        ),
-        NodeKind::Token => (
-            quote![crate::ast::AstToken],
-            Ident::new("SyntaxToken", Span::mixed_site()),
-        ),
-    };
-
+/// Generate the arms of the match statement within `AstNode::cast()`
+fn generate_cast_arms(variants: &[EnumVariant]) -> impl Iterator<Item = TokenStream> + '_ {
     variants.iter().map(move |variant| {
         let EnumVariant {
             variant_name,
             variant_type,
-            syntax_kind,
             ..
         } = variant;
 
-        // let cast_trait = match kind {
-        //     NodeKind::Syntax => quote![crate::ast::AstNode],
-        //     NodeKind::Token => quote![crate::ast::AstToken],
-        // };
         let cast_trait = quote![crate::ast::AstNode];
 
         quote! {
-            crate::SyntaxKind::#syntax_kind => {
-                ::std::debug_assert!(<Self as #parent_cast_trait>::can_cast_from(
-                    crate::#kind_ident::kind(syntax),
-                ));
-
+            kind if <#variant_type as #cast_trait>::can_cast_from(kind) => {
                 let node = match <#variant_type as #cast_trait>::cast(syntax) {
                     ::core::option::Option::Some(node) => ::std::borrow::Cow::into_owned(node),
+
                     ::core::option::Option::None => if ::core::cfg!(debug_assertions) {
                         ::core::unreachable!()
                     } else {
@@ -174,6 +212,7 @@ fn generate_cast_arms(
     })
 }
 
+/// Generate the arms of the match statement to get the inner syntax nodes from variants
 fn generate_syntax_arms(
     kind: NodeKind,
     variants: &[EnumVariant],

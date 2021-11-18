@@ -9,6 +9,7 @@ use anyhow::Result;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 
+mod accessors;
 mod enums;
 mod parser;
 mod structs;
@@ -31,6 +32,7 @@ pub fn generate_ast(mode: CodegenMode) -> Result<()> {
         camel_case_name,
         screaming_snake_case_name,
         kind,
+        children,
         ..
     } in structs
     {
@@ -50,6 +52,9 @@ pub fn generate_ast(mode: CodegenMode) -> Result<()> {
         match kind {
             NodeKind::Syntax => {
                 node_ast.extend(decl);
+
+                let accessors = accessors::node_accessors(&camel_case_name, &children);
+                node_ast.extend(accessors);
 
                 let ast_node_impl =
                     structs::ast_node_for_struct(&camel_case_name, &screaming_snake_case_name);

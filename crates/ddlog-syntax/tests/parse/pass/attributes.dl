@@ -2,4 +2,4 @@
 #[something = 10,,,]
 #[something_else = 10,,,]
 #[something_again = wheee,,,]
-function foobaz() {}
+fn foobaz() {}

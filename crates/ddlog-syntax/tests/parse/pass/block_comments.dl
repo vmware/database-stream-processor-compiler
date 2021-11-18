@@ -1,8 +1,7 @@
 // kind:item validate:false pass:true ignore:false
-relation Foo()
 /*
     /*
         Hello
     */
 */
-function bar() {}
+fn bar() {}

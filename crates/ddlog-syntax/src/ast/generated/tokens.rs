@@ -84,21 +84,21 @@ impl crate::ast::AstToken for AmpersandEq {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct And {
+pub struct AndToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for And {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`AND`]
+impl crate::ast::AstToken for AndToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`AND_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`AND`]: crate::SyntaxKind::AND
+    /// [`AND_TOKEN`]: crate::SyntaxKind::AND_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::AND
+        kind == crate::SyntaxKind::AND_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`AND`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`AND_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`AND`]: crate::SyntaxKind::AND
+    /// [`AND_TOKEN`]: crate::SyntaxKind::AND_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -123,21 +123,21 @@ impl crate::ast::AstToken for And {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct AsKw {
+pub struct AsToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for AsKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`AS_KW`]
+impl crate::ast::AstToken for AsToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`AS_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`AS_KW`]: crate::SyntaxKind::AS_KW
+    /// [`AS_TOKEN`]: crate::SyntaxKind::AS_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::AS_KW
+        kind == crate::SyntaxKind::AS_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`AS_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`AS_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`AS_KW`]: crate::SyntaxKind::AS_KW
+    /// [`AS_TOKEN`]: crate::SyntaxKind::AS_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -201,21 +201,21 @@ impl crate::ast::AstToken for Bang {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct BreakKw {
+pub struct BreakToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for BreakKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`BREAK_KW`]
+impl crate::ast::AstToken for BreakToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`BREAK_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`BREAK_KW`]: crate::SyntaxKind::BREAK_KW
+    /// [`BREAK_TOKEN`]: crate::SyntaxKind::BREAK_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::BREAK_KW
+        kind == crate::SyntaxKind::BREAK_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`BREAK_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`BREAK_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`BREAK_KW`]: crate::SyntaxKind::BREAK_KW
+    /// [`BREAK_TOKEN`]: crate::SyntaxKind::BREAK_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -435,21 +435,21 @@ impl crate::ast::AstToken for Comment {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct ConstKw {
+pub struct ConstToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for ConstKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`CONST_KW`]
+impl crate::ast::AstToken for ConstToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`CONST_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`CONST_KW`]: crate::SyntaxKind::CONST_KW
+    /// [`CONST_TOKEN`]: crate::SyntaxKind::CONST_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::CONST_KW
+        kind == crate::SyntaxKind::CONST_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`CONST_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`CONST_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`CONST_KW`]: crate::SyntaxKind::CONST_KW
+    /// [`CONST_TOKEN`]: crate::SyntaxKind::CONST_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -474,21 +474,21 @@ impl crate::ast::AstToken for ConstKw {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct ContinueKw {
+pub struct ContinueToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for ContinueKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`CONTINUE_KW`]
+impl crate::ast::AstToken for ContinueToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`CONTINUE_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`CONTINUE_KW`]: crate::SyntaxKind::CONTINUE_KW
+    /// [`CONTINUE_TOKEN`]: crate::SyntaxKind::CONTINUE_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::CONTINUE_KW
+        kind == crate::SyntaxKind::CONTINUE_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`CONTINUE_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`CONTINUE_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`CONTINUE_KW`]: crate::SyntaxKind::CONTINUE_KW
+    /// [`CONTINUE_TOKEN`]: crate::SyntaxKind::CONTINUE_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -591,21 +591,21 @@ impl crate::ast::AstToken for DoubleColon {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct ElseKw {
+pub struct DoubleDot {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for ElseKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`ELSE_KW`]
+impl crate::ast::AstToken for DoubleDot {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`DOUBLE_DOT`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`ELSE_KW`]: crate::SyntaxKind::ELSE_KW
+    /// [`DOUBLE_DOT`]: crate::SyntaxKind::DOUBLE_DOT
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::ELSE_KW
+        kind == crate::SyntaxKind::DOUBLE_DOT
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`ELSE_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`DOUBLE_DOT`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`ELSE_KW`]: crate::SyntaxKind::ELSE_KW
+    /// [`DOUBLE_DOT`]: crate::SyntaxKind::DOUBLE_DOT
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -630,21 +630,99 @@ impl crate::ast::AstToken for ElseKw {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct EnumKw {
+pub struct DoubleDotEq {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for EnumKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`ENUM_KW`]
+impl crate::ast::AstToken for DoubleDotEq {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`DOUBLE_DOT_EQ`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`ENUM_KW`]: crate::SyntaxKind::ENUM_KW
+    /// [`DOUBLE_DOT_EQ`]: crate::SyntaxKind::DOUBLE_DOT_EQ
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::ENUM_KW
+        kind == crate::SyntaxKind::DOUBLE_DOT_EQ
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`ENUM_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`DOUBLE_DOT_EQ`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`ENUM_KW`]: crate::SyntaxKind::ENUM_KW
+    /// [`DOUBLE_DOT_EQ`]: crate::SyntaxKind::DOUBLE_DOT_EQ
+    /// [`SyntaxKind`]: crate::SyntaxKind
+    #[inline]
+    fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
+        if <Self as crate::ast::AstToken>::can_cast_from(crate::SyntaxToken::kind(syntax)) {
+            let node = unsafe { ::core::mem::transmute::<&crate::SyntaxToken, &Self>(syntax) };
+            ::core::option::Option::Some(::std::borrow::Cow::Borrowed(node))
+        } else {
+            ::core::option::Option::None
+        }
+    }
+    ///Returns a reference to the inner [`SyntaxToken`][crate::SyntaxToken]
+    #[inline]
+    fn syntax(&self) -> &crate::SyntaxToken {
+        &self.syntax
+    }
+}
+#[derive(
+    :: core :: fmt :: Debug,
+    :: core :: clone :: Clone,
+    :: core :: cmp :: PartialEq,
+    :: core :: cmp :: Eq,
+    :: core :: hash :: Hash,
+)]
+#[repr(transparent)]
+pub struct ElseToken {
+    syntax: crate::SyntaxToken,
+}
+impl crate::ast::AstToken for ElseToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`ELSE_TOKEN`]
+    /// [`SyntaxKind`]: crate::SyntaxKind
+    /// [`ELSE_TOKEN`]: crate::SyntaxKind::ELSE_TOKEN
+    #[inline]
+    fn can_cast_from(kind: crate::SyntaxKind) -> bool {
+        kind == crate::SyntaxKind::ELSE_TOKEN
+    }
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`ELSE_TOKEN`] [`SyntaxKind`]
+    /// [`Some`]: std::option::Option::Some
+    /// [`SyntaxToken`]: crate::SyntaxToken
+    /// [`ELSE_TOKEN`]: crate::SyntaxKind::ELSE_TOKEN
+    /// [`SyntaxKind`]: crate::SyntaxKind
+    #[inline]
+    fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
+        if <Self as crate::ast::AstToken>::can_cast_from(crate::SyntaxToken::kind(syntax)) {
+            let node = unsafe { ::core::mem::transmute::<&crate::SyntaxToken, &Self>(syntax) };
+            ::core::option::Option::Some(::std::borrow::Cow::Borrowed(node))
+        } else {
+            ::core::option::Option::None
+        }
+    }
+    ///Returns a reference to the inner [`SyntaxToken`][crate::SyntaxToken]
+    #[inline]
+    fn syntax(&self) -> &crate::SyntaxToken {
+        &self.syntax
+    }
+}
+#[derive(
+    :: core :: fmt :: Debug,
+    :: core :: clone :: Clone,
+    :: core :: cmp :: PartialEq,
+    :: core :: cmp :: Eq,
+    :: core :: hash :: Hash,
+)]
+#[repr(transparent)]
+pub struct EnumToken {
+    syntax: crate::SyntaxToken,
+}
+impl crate::ast::AstToken for EnumToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`ENUM_TOKEN`]
+    /// [`SyntaxKind`]: crate::SyntaxKind
+    /// [`ENUM_TOKEN`]: crate::SyntaxKind::ENUM_TOKEN
+    #[inline]
+    fn can_cast_from(kind: crate::SyntaxKind) -> bool {
+        kind == crate::SyntaxKind::ENUM_TOKEN
+    }
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`ENUM_TOKEN`] [`SyntaxKind`]
+    /// [`Some`]: std::option::Option::Some
+    /// [`SyntaxToken`]: crate::SyntaxToken
+    /// [`ENUM_TOKEN`]: crate::SyntaxKind::ENUM_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -825,21 +903,21 @@ impl crate::ast::AstToken for Error {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct FalseKw {
+pub struct FalseToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for FalseKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`FALSE_KW`]
+impl crate::ast::AstToken for FalseToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`FALSE_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`FALSE_KW`]: crate::SyntaxKind::FALSE_KW
+    /// [`FALSE_TOKEN`]: crate::SyntaxKind::FALSE_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::FALSE_KW
+        kind == crate::SyntaxKind::FALSE_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`FALSE_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`FALSE_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`FALSE_KW`]: crate::SyntaxKind::FALSE_KW
+    /// [`FALSE_TOKEN`]: crate::SyntaxKind::FALSE_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -864,21 +942,21 @@ impl crate::ast::AstToken for FalseKw {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct FnKw {
+pub struct FnToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for FnKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`FN_KW`]
+impl crate::ast::AstToken for FnToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`FN_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`FN_KW`]: crate::SyntaxKind::FN_KW
+    /// [`FN_TOKEN`]: crate::SyntaxKind::FN_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::FN_KW
+        kind == crate::SyntaxKind::FN_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`FN_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`FN_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`FN_KW`]: crate::SyntaxKind::FN_KW
+    /// [`FN_TOKEN`]: crate::SyntaxKind::FN_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -903,21 +981,21 @@ impl crate::ast::AstToken for FnKw {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct ForKw {
+pub struct ForToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for ForKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`FOR_KW`]
+impl crate::ast::AstToken for ForToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`FOR_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`FOR_KW`]: crate::SyntaxKind::FOR_KW
+    /// [`FOR_TOKEN`]: crate::SyntaxKind::FOR_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::FOR_KW
+        kind == crate::SyntaxKind::FOR_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`FOR_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`FOR_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`FOR_KW`]: crate::SyntaxKind::FOR_KW
+    /// [`FOR_TOKEN`]: crate::SyntaxKind::FOR_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -1020,21 +1098,21 @@ impl crate::ast::AstToken for Ident {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct IfKw {
+pub struct IfToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for IfKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`IF_KW`]
+impl crate::ast::AstToken for IfToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`IF_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`IF_KW`]: crate::SyntaxKind::IF_KW
+    /// [`IF_TOKEN`]: crate::SyntaxKind::IF_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::IF_KW
+        kind == crate::SyntaxKind::IF_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`IF_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`IF_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`IF_KW`]: crate::SyntaxKind::IF_KW
+    /// [`IF_TOKEN`]: crate::SyntaxKind::IF_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -1059,21 +1137,21 @@ impl crate::ast::AstToken for IfKw {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct ImplKw {
+pub struct ImplToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for ImplKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`IMPL_KW`]
+impl crate::ast::AstToken for ImplToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`IMPL_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`IMPL_KW`]: crate::SyntaxKind::IMPL_KW
+    /// [`IMPL_TOKEN`]: crate::SyntaxKind::IMPL_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::IMPL_KW
+        kind == crate::SyntaxKind::IMPL_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`IMPL_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`IMPL_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`IMPL_KW`]: crate::SyntaxKind::IMPL_KW
+    /// [`IMPL_TOKEN`]: crate::SyntaxKind::IMPL_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -1098,21 +1176,21 @@ impl crate::ast::AstToken for ImplKw {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct InKw {
+pub struct InToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for InKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`IN_KW`]
+impl crate::ast::AstToken for InToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`IN_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`IN_KW`]: crate::SyntaxKind::IN_KW
+    /// [`IN_TOKEN`]: crate::SyntaxKind::IN_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::IN_KW
+        kind == crate::SyntaxKind::IN_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`IN_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`IN_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`IN_KW`]: crate::SyntaxKind::IN_KW
+    /// [`IN_TOKEN`]: crate::SyntaxKind::IN_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -1332,21 +1410,21 @@ impl crate::ast::AstToken for LParen {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct LetKw {
+pub struct LetToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for LetKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`LET_KW`]
+impl crate::ast::AstToken for LetToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`LET_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`LET_KW`]: crate::SyntaxKind::LET_KW
+    /// [`LET_TOKEN`]: crate::SyntaxKind::LET_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::LET_KW
+        kind == crate::SyntaxKind::LET_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`LET_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`LET_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`LET_KW`]: crate::SyntaxKind::LET_KW
+    /// [`LET_TOKEN`]: crate::SyntaxKind::LET_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -1371,21 +1449,21 @@ impl crate::ast::AstToken for LetKw {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct LoopKw {
+pub struct LoopToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for LoopKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`LOOP_KW`]
+impl crate::ast::AstToken for LoopToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`LOOP_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`LOOP_KW`]: crate::SyntaxKind::LOOP_KW
+    /// [`LOOP_TOKEN`]: crate::SyntaxKind::LOOP_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::LOOP_KW
+        kind == crate::SyntaxKind::LOOP_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`LOOP_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`LOOP_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`LOOP_KW`]: crate::SyntaxKind::LOOP_KW
+    /// [`LOOP_TOKEN`]: crate::SyntaxKind::LOOP_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -1410,21 +1488,21 @@ impl crate::ast::AstToken for LoopKw {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct MatchKw {
+pub struct MatchToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for MatchKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`MATCH_KW`]
+impl crate::ast::AstToken for MatchToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`MATCH_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`MATCH_KW`]: crate::SyntaxKind::MATCH_KW
+    /// [`MATCH_TOKEN`]: crate::SyntaxKind::MATCH_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::MATCH_KW
+        kind == crate::SyntaxKind::MATCH_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`MATCH_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`MATCH_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`MATCH_KW`]: crate::SyntaxKind::MATCH_KW
+    /// [`MATCH_TOKEN`]: crate::SyntaxKind::MATCH_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -1605,21 +1683,21 @@ impl crate::ast::AstToken for NumberLiteral {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct Or {
+pub struct OrToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for Or {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`OR`]
+impl crate::ast::AstToken for OrToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`OR_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`OR`]: crate::SyntaxKind::OR
+    /// [`OR_TOKEN`]: crate::SyntaxKind::OR_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::OR
+        kind == crate::SyntaxKind::OR_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`OR`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`OR_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`OR`]: crate::SyntaxKind::OR
+    /// [`OR_TOKEN`]: crate::SyntaxKind::OR_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -1878,21 +1956,21 @@ impl crate::ast::AstToken for PlusEq {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct PubKw {
+pub struct PubToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for PubKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`PUB_KW`]
+impl crate::ast::AstToken for PubToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`PUB_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`PUB_KW`]: crate::SyntaxKind::PUB_KW
+    /// [`PUB_TOKEN`]: crate::SyntaxKind::PUB_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::PUB_KW
+        kind == crate::SyntaxKind::PUB_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`PUB_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`PUB_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`PUB_KW`]: crate::SyntaxKind::PUB_KW
+    /// [`PUB_TOKEN`]: crate::SyntaxKind::PUB_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -2112,21 +2190,21 @@ impl crate::ast::AstToken for RParen {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct ReturnKw {
+pub struct ReturnToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for ReturnKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`RETURN_KW`]
+impl crate::ast::AstToken for ReturnToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`RETURN_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`RETURN_KW`]: crate::SyntaxKind::RETURN_KW
+    /// [`RETURN_TOKEN`]: crate::SyntaxKind::RETURN_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::RETURN_KW
+        kind == crate::SyntaxKind::RETURN_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`RETURN_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`RETURN_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`RETURN_KW`]: crate::SyntaxKind::RETURN_KW
+    /// [`RETURN_TOKEN`]: crate::SyntaxKind::RETURN_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -2619,21 +2697,21 @@ impl crate::ast::AstToken for StringLiteral {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct StructKw {
+pub struct StructToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for StructKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`STRUCT_KW`]
+impl crate::ast::AstToken for StructToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`STRUCT_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`STRUCT_KW`]: crate::SyntaxKind::STRUCT_KW
+    /// [`STRUCT_TOKEN`]: crate::SyntaxKind::STRUCT_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::STRUCT_KW
+        kind == crate::SyntaxKind::STRUCT_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`STRUCT_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`STRUCT_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`STRUCT_KW`]: crate::SyntaxKind::STRUCT_KW
+    /// [`STRUCT_TOKEN`]: crate::SyntaxKind::STRUCT_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -2697,21 +2775,21 @@ impl crate::ast::AstToken for Tombstone {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct TrueKw {
+pub struct TrueToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for TrueKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`TRUE_KW`]
+impl crate::ast::AstToken for TrueToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`TRUE_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`TRUE_KW`]: crate::SyntaxKind::TRUE_KW
+    /// [`TRUE_TOKEN`]: crate::SyntaxKind::TRUE_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::TRUE_KW
+        kind == crate::SyntaxKind::TRUE_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`TRUE_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`TRUE_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`TRUE_KW`]: crate::SyntaxKind::TRUE_KW
+    /// [`TRUE_TOKEN`]: crate::SyntaxKind::TRUE_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -2736,21 +2814,21 @@ impl crate::ast::AstToken for TrueKw {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct TypeKw {
+pub struct TypeToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for TypeKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`TYPE_KW`]
+impl crate::ast::AstToken for TypeToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`TYPE_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`TYPE_KW`]: crate::SyntaxKind::TYPE_KW
+    /// [`TYPE_TOKEN`]: crate::SyntaxKind::TYPE_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::TYPE_KW
+        kind == crate::SyntaxKind::TYPE_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`TYPE_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`TYPE_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`TYPE_KW`]: crate::SyntaxKind::TYPE_KW
+    /// [`TYPE_TOKEN`]: crate::SyntaxKind::TYPE_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -2775,21 +2853,21 @@ impl crate::ast::AstToken for TypeKw {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct UseKw {
+pub struct UseToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for UseKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`USE_KW`]
+impl crate::ast::AstToken for UseToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`USE_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`USE_KW`]: crate::SyntaxKind::USE_KW
+    /// [`USE_TOKEN`]: crate::SyntaxKind::USE_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::USE_KW
+        kind == crate::SyntaxKind::USE_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`USE_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`USE_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`USE_KW`]: crate::SyntaxKind::USE_KW
+    /// [`USE_TOKEN`]: crate::SyntaxKind::USE_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -2814,21 +2892,21 @@ impl crate::ast::AstToken for UseKw {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
-pub struct WhileKw {
+pub struct WhileToken {
     syntax: crate::SyntaxToken,
 }
-impl crate::ast::AstToken for WhileKw {
-    /// Returns `true` if the given [`SyntaxKind`] is a [`WHILE_KW`]
+impl crate::ast::AstToken for WhileToken {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`WHILE_TOKEN`]
     /// [`SyntaxKind`]: crate::SyntaxKind
-    /// [`WHILE_KW`]: crate::SyntaxKind::WHILE_KW
+    /// [`WHILE_TOKEN`]: crate::SyntaxKind::WHILE_TOKEN
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
-        kind == crate::SyntaxKind::WHILE_KW
+        kind == crate::SyntaxKind::WHILE_TOKEN
     }
-    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`WHILE_KW`] [`SyntaxKind`]
+    /// Returns [`Some`] if the given [`SyntaxToken`] has the [`WHILE_TOKEN`] [`SyntaxKind`]
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxToken`]: crate::SyntaxToken
-    /// [`WHILE_KW`]: crate::SyntaxKind::WHILE_KW
+    /// [`WHILE_TOKEN`]: crate::SyntaxKind::WHILE_TOKEN
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxToken) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {

@@ -1,5 +1,5 @@
 // kind:item validate:false pass:true ignore:false
-#[something = something_else] function foo() {}
-#[something = 10,,,] function foobar() {}
-#[by_val] function foobar() {}
-#[by_val, from_val] function foobar() {}
+#[something = something_else] fn foo() {}
+#[something = 10,,,] fn foobar() {}
+#[by_val] fn foobar() {}
+#[by_val, from_val] fn foobar() {}

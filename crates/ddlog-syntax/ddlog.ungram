@@ -23,7 +23,7 @@ BracketedStructFields = '{' fields:BracketedStructField* '}'
 BracketedStructField = name:StructFieldName ':' ty:Type ','*
 StructFieldName = 'ident'
 TupleStructFields = '(' TupleStructField* ')'
-TupleStructField = Type ','*
+TupleStructField = ty:Type ','*
 
 EnumDef = Attribute* Modifier* keyword:'enum' name:EnumName variants:EnumVariants
 EnumName = 'ident'
@@ -32,7 +32,7 @@ EnumVariant = EnumVariantName EnumVariantBody
 EnumVariantBody = VariantTuple | VariantStruct
 EnumVariantName = 'ident'
 VariantTuple = '(' VariantTupleElem* ')'
-VariantTupleElem = Type ','*
+VariantTupleElem = ty:Type ','*
 VariantStruct = '{' fields:VariantStructField* '}'
 VariantStructField = name:VariantStructFieldName ':' ty:Type ','*
 VariantStructFieldName = 'ident'
@@ -50,7 +50,7 @@ UseAliasName = 'ident'
 UseBranch = '{' (UseTree ','*)* '}'
 
 // TODO: `impl Trait for Type { ... }`
-ImplBlock = Attribute* Modifier* keyword:'impl' Type contents:ImplBlockContents
+ImplBlock = Attribute* Modifier* keyword:'impl' target:Type contents:ImplBlockContents
 ImplBlockContents = '{' Item* '}'
 
 TypeAlias =  Attribute* Modifier* keyword:'type' alias:Type '=' original:Type ';'*
@@ -75,21 +75,21 @@ PathSegment = 'ident'
 
 GenericType = Path Generics?
 Generics = '<' generics:GenericArg* '>'
-GenericArg = Type ','*
+GenericArg = ty:Type ','*
 
 TupleType = '(' elements:TupleTypeElem* ')'
-TupleTypeElem = Type ','*
+TupleTypeElem = ty:Type ','*
 
 FunctionType = 'fn' args:FunctionTypeArgs ret:FunctionReturnType?
 FunctionTypeArgs = '(' args:FunctionTypeArg* ')'
-FunctionTypeArg = Type ','*
-FunctionReturnType = '->' Type
+FunctionTypeArg = ty:Type ','*
+FunctionReturnType = '->' ty:Type
 
 Block = '{' statements:Stmt* '}'
 Stmt = ExprStmt | VarDecl
 
 ExprStmt = Expr ';'*
-VarDecl = 'let' binding:Pattern (':' Type)? '=' value:Expr ';'*
+VarDecl = 'let' binding:Pattern (':' ty:Type)? '=' value:Expr ';'*
 
 Expr =
     Literal
@@ -115,6 +115,7 @@ Expr =
     | StructInitExpr
     | TupleInitExpr
     | ArrayInitExpr
+    | RangeExpr
     // TODO: `if let` and `while let` expressions
 
 VarRef = 'ident'
@@ -148,7 +149,7 @@ AssignOp =
 ParenExpr = '(' inner:Expr ')'
 
 ClosureExpr = start_pipe:'|' args:ClosureArg* end_pipe:'|' body:Expr
-ClosureArg = binding:Pattern (':' Type)? ','*
+ClosureArg = binding:Pattern (':' ty:Type)? ','*
 
 FieldAccess = Expr '.' FieldAccessor
 FieldAccessor = FieldAccessorName | Number
@@ -167,6 +168,9 @@ TupleExprElem = Expr ','*
 
 ArrayInitExpr = '[' ArrayExprElem ']'
 ArrayExprElem = Expr ','*
+
+RangeExpr = start:Expr? RangeOp end:Expr?
+RangeOp = '..' | '..='
 
 // TODO: Floats
 Literal = Bool | Number | String

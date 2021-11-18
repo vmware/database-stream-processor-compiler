@@ -1,8 +1,8 @@
 use anyhow::Result;
 use heck::{CamelCase, ShoutySnakeCase, SnakeCase};
-use proc_macro2::{Ident, Span, TokenStream};
+use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
-use std::convert::TryInto;
+use std::{collections::HashMap, convert::TryInto, panic};
 use ungrammar::{Grammar, Rule};
 
 /// The maximum number of allowed SyntaxKind variants
@@ -49,23 +49,23 @@ const NAMED_TOKENS: &[(&str, &str)] = &[
     ("<=", "L_ANGLE_EQ"),
     (">=", "R_ANGLE_EQ"),
     ("#[", "HASH_BRACK"),
+    ("..", "DOUBLE_DOT"),
     ("->", "RIGHT_ARROW"),
     ("::", "DOUBLE_COLON"),
     ("=>", "RIGHT_ROCKET"),
     ("&=", "AMPERSAND_EQ"),
-    ("string_literal", "STRING_LITERAL"),
-    ("number_literal", "NUMBER_LITERAL"),
+    ("..=", "DOUBLE_DOT_EQ"),
 ];
 
 const FUNKY_CHARS: &[&str] = &["(", ")", "{", "}", "[", "]", "#[", "/*", "*/"];
 
 // Sourced from https://doc.rust-lang.org/reference/keywords.html
-const RUST_KEYWORDS: &[&str] = &[
+pub(super) const KEYWORDS: &[&str] = &[
     "Self", "abstract", "as", "async", "await", "become", "box", "break", "const", "continue",
     "crate", "do", "dyn", "else", "enum", "extern", "false", "final", "fn", "for", "if", "impl",
     "in", "let", "loop", "macro", "match", "mod", "move", "mut", "override", "priv", "pub", "ref",
     "return", "self", "static", "struct", "super", "trait", "true", "try", "type", "typeof",
-    "union", "unsafe", "unsized", "use", "virtual", "where", "while", "yield",
+    "union", "unsafe", "unsized", "use", "virtual", "where", "while", "yield", "and", "or",
 ];
 
 type StructuredGrammar = (Vec<Struct>, Vec<Enum>, Vec<SyntaxKindEntry>, u16);
@@ -81,27 +81,14 @@ pub fn from_grammar(grammar: &Grammar) -> Result<StructuredGrammar> {
         .map(|token| &*grammar[token].name)
         .chain(EXTRA_TOKENS.iter().copied())
     {
-        structs.push(if RUST_KEYWORDS.contains(&token) {
-            let kw = format!("{}_kw", token);
-
-            Struct {
-                raw_name: token.to_owned(),
-                camel_case_name: Ident::new(&kw.to_camel_case(), Span::mixed_site()),
-                snake_case_name: Ident::new(&kw.to_snake_case(), Span::mixed_site()),
-                screaming_snake_case_name: Ident::new(
-                    &kw.to_shouty_snake_case(),
-                    Span::mixed_site(),
-                ),
-                kind: NodeKind::Token,
-            }
-        } else {
-            Struct {
-                raw_name: token.to_owned(),
-                camel_case_name: camel_case_name(token),
-                snake_case_name: snake_case_name(token),
-                screaming_snake_case_name: screaming_snake_case_name(token),
-                kind: NodeKind::Token,
-            }
+        structs.push(Struct {
+            raw_name: token.to_owned(),
+            camel_case_name: camel_case_name(token),
+            snake_case_name: snake_case_name(token),
+            screaming_snake_case_name: screaming_snake_case_name(token),
+            kind: NodeKind::Token,
+            // Direct tokens have no children
+            children: Vec::new(),
         });
     }
 
@@ -141,12 +128,175 @@ pub fn from_grammar(grammar: &Grammar) -> Result<StructuredGrammar> {
                 kind,
             });
         } else {
+            fn children_inner(
+                grammar: &Grammar,
+                rule: &Rule,
+                kind: ChildKind,
+                children: &mut Vec<StructChild>,
+            ) {
+                match rule {
+                    Rule::Labeled { label, rule } => {
+                        fn child_type(grammar: &Grammar, rule: &Rule) -> (NodeKind, TokenStream) {
+                            match rule {
+                                &Rule::Node(node)
+                                    if rule_is_syntax_node(&grammar[node].rule, true) =>
+                                {
+                                    let node_type = camel_case_name(&grammar[node].name);
+                                    (NodeKind::Syntax, quote![crate::ast::nodes::#node_type])
+                                }
+                                &Rule::Node(node) => {
+                                    let token_type = camel_case_name(&grammar[node].name);
+                                    (NodeKind::Token, quote![crate::ast::tokens::#token_type])
+                                }
+                                &Rule::Token(token) => {
+                                    let token_type = camel_case_name(&grammar[token].name);
+                                    (NodeKind::Token, quote![crate::ast::tokens::#token_type])
+                                }
+                                Rule::Opt(rule) | Rule::Rep(rule) => child_type(grammar, &**rule),
+
+                                _ => panic!(),
+                            }
+                        }
+
+                        let (node_kind, child_type) = child_type(grammar, rule);
+                        children.push(StructChild {
+                            snake_case_name: snake_case_name(label),
+                            child_type,
+                            node_kind,
+                            kind,
+                            index: 0,
+                        });
+                    }
+
+                    &Rule::Node(node) => {
+                        let node = &grammar[node];
+                        let node_type = camel_case_name(&node.name);
+
+                        let (node_kind, child_type) = if rule_is_syntax_node(rule, true) {
+                            (NodeKind::Syntax, quote![crate::ast::nodes::#node_type])
+                        } else {
+                            (NodeKind::Token, quote![crate::ast::tokens::#node_type])
+                        };
+
+                        children.push(StructChild {
+                            snake_case_name: snake_case_name(&node.name),
+                            child_type,
+                            node_kind,
+                            kind,
+                            index: 0,
+                        });
+                    }
+
+                    &Rule::Token(token) => {
+                        let token = &grammar[token];
+                        let token_type = camel_case_name(&token.name);
+
+                        children.push(StructChild {
+                            snake_case_name: snake_case_name(&token.name),
+                            child_type: quote![crate::ast::tokens::#token_type],
+                            node_kind: NodeKind::Token,
+                            kind,
+                            index: 0,
+                        });
+                    }
+
+                    Rule::Opt(rule) => {
+                        children_inner(
+                            grammar,
+                            rule,
+                            if matches!(kind, ChildKind::Repeated) {
+                                ChildKind::Repeated
+                            } else {
+                                ChildKind::Optional
+                            },
+                            children,
+                        );
+                    }
+
+                    Rule::Rep(rule) => {
+                        children_inner(grammar, rule, ChildKind::Repeated, children);
+                    }
+
+                    rule @ (Rule::Seq(_) | Rule::Alt(_)) => println!("{:?}", rule),
+                }
+            }
+
+            let mut children = Vec::new();
+            match &node.rule {
+                &Rule::Node(node) => {
+                    let node = &grammar[node];
+                    let node_type = camel_case_name(&node.name);
+
+                    let (kind, child_type) = if rule_is_syntax_node(&node.rule, true) {
+                        (NodeKind::Syntax, quote![crate::ast::nodes::#node_type])
+                    } else {
+                        (NodeKind::Token, quote![crate::ast::tokens::#node_type])
+                    };
+
+                    children.push(StructChild {
+                        snake_case_name: snake_case_name(&node.name),
+                        child_type,
+                        node_kind: kind,
+                        kind: ChildKind::Normal,
+                        index: 0,
+                    });
+                }
+
+                &Rule::Token(token) => {
+                    let token = &grammar[token];
+                    let token_type = camel_case_name(&token.name);
+
+                    children.push(StructChild {
+                        snake_case_name: snake_case_name(&token.name),
+                        child_type: quote![crate::ast::tokens::#token_type],
+                        node_kind: NodeKind::Token,
+                        kind: ChildKind::Normal,
+                        index: 0,
+                    });
+                }
+
+                Rule::Seq(sequence) => {
+                    children.reserve(sequence.len());
+                    for rule in sequence {
+                        children_inner(grammar, rule, ChildKind::Normal, &mut children);
+                    }
+                }
+
+                Rule::Opt(rule) => {
+                    children_inner(grammar, rule, ChildKind::Optional, &mut children);
+                }
+
+                Rule::Rep(rule) => {
+                    children_inner(grammar, rule, ChildKind::Repeated, &mut children);
+                }
+
+                Rule::Alt(_) => println!("top level alternative"),
+
+                Rule::Labeled { rule, .. } => {
+                    children_inner(grammar, rule, ChildKind::Normal, &mut children)
+                }
+            }
+
+            // Iterate through children and generate their indexes
+            // This will make the 1st occurrence of a given type have the index zero
+            // and all others will have an incremented offset to use `nth_{child, token}` with
+            let mut child_indices = HashMap::new();
+            for child in &mut children {
+                let index = *child_indices
+                    .entry(child.child_type.to_string())
+                    .and_modify(|index| *index += 1)
+                    .or_default();
+
+                child.index = index;
+            }
+
             structs.push(Struct {
                 raw_name: node.name.clone(),
                 camel_case_name: camel_case_name(&node.name),
                 snake_case_name: snake_case_name(&node.name),
                 screaming_snake_case_name: screaming_snake_case_name(&node.name),
                 kind,
+                children,
             });
         }
     }
@@ -163,23 +313,17 @@ fn collect_syntax_kinds(structs: &[Struct], enums: &[Enum]) -> Result<(Vec<Synta
     let mut syntax_kinds: Vec<_> = structs
         .iter()
         .map(|s| (s.raw_name.clone(), s.screaming_snake_case_name.clone()))
-        // TODO: This may be correct?
-        // .chain(enums.iter().filter_map(|e| {
-        //     if e.kind == EnumKind::NodeOfTokens {
-        //         Some((e.raw_name.clone(), e.screaming_snake_case_name.clone()))
-        //     } else {
-        //         None
-        //     }
-        // }))
-        .chain(
-            enums
-                .iter()
-                .map(|e| (e.raw_name.clone(), e.screaming_snake_case_name.clone())),
-        )
+        .chain(enums.iter().filter_map(|e| {
+            if e.kind == EnumKind::NodeOfTokens {
+                Some((e.raw_name.clone(), e.screaming_snake_case_name.clone()))
+            } else {
+                None
+            }
+        }))
         .map(|(raw_name, screaming_snake_case)| {
             let debug_string = screaming_snake_case.to_string();
 
-            let display_string = if RUST_KEYWORDS.contains(&&*raw_name)
+            let display_string = if KEYWORDS.contains(&&*raw_name)
                 || NAMED_TOKENS
                     .iter()
                     .any(|&(named_token, _)| named_token == raw_name)
@@ -189,7 +333,7 @@ fn collect_syntax_kinds(structs: &[Struct], enums: &[Enum]) -> Result<(Vec<Synta
                 debug_string.clone()
             };
 
-            let macro_ident = if RUST_KEYWORDS.contains(&&*raw_name) {
+            let macro_ident = if KEYWORDS.contains(&&*raw_name) {
                 let ident = format_ident!("{}", raw_name);
                 Some(quote! { #ident })
             } else if FUNKY_CHARS.contains(&&*raw_name) {
@@ -323,49 +467,68 @@ fn rule_to_enum_variant(grammar: &Grammar, rule: &Rule) -> EnumVariant {
 }
 
 fn camel_case_name(token: &str) -> Ident {
+    let camel_case = token.to_camel_case();
+
     if let Some(&(_, symbol)) = NAMED_TOKENS.iter().find(|&&(symbol, _)| symbol == token) {
-        Ident::new(&symbol.to_camel_case(), Span::mixed_site())
-    } else if !token.chars().all(|char| char.is_alphabetic()) || token.is_empty() {
+        format_ident!("{}", symbol.to_camel_case())
+    } else if KEYWORDS.contains(&token) {
+        format_ident!("{}Token", camel_case)
+    } else if !token
+        .chars()
+        .all(|char| char.is_alphabetic() || char == '_')
+        || token.is_empty()
+    {
         // TODO: Bail w/ error
         panic!(
             "non-ascii token {:?}, consider adding to the `NAMED_TOKENS` constant in xtask",
             token,
         );
     } else {
-        Ident::new(&token.to_camel_case(), Span::mixed_site())
+        format_ident!("{}", camel_case)
     }
 }
 
 fn snake_case_name(token: &str) -> Ident {
+    let snake = token.to_snake_case();
+
     if let Some(&(_, symbol)) = NAMED_TOKENS.iter().find(|&&(symbol, _)| symbol == token) {
-        Ident::new(&symbol.to_snake_case(), Span::mixed_site())
-    } else if RUST_KEYWORDS.contains(&token) {
-        Ident::new(
-            &format!("{}_token", token.to_snake_case()),
-            Span::mixed_site(),
-        )
-    } else if !token.chars().all(|char| char.is_alphabetic()) || token.is_empty() {
+        format_ident!("{}", symbol.to_snake_case())
+    } else if KEYWORDS.contains(&token) {
+        format_ident!("{}_token", snake)
+    } else if !token
+        .chars()
+        .all(|char| char.is_alphabetic() || char == '_')
+        || token.is_empty()
+    {
         // TODO: Bail w/ error
         panic!(
             "non-ascii token {:?}, consider adding to the `NAMED_TOKENS` constant in xtask",
             token,
         );
     } else {
-        Ident::new(&token.to_snake_case(), Span::mixed_site())
+        format_ident!("{}", snake)
     }
 }
 
 fn screaming_snake_case_name(token: &str) -> Ident {
+    let screaming = token.to_shouty_snake_case();
+
     if let Some(&(_, symbol)) = NAMED_TOKENS.iter().find(|&&(symbol, _)| symbol == token) {
-        Ident::new(&symbol.to_shouty_snake_case(), Span::mixed_site())
-    } else if !token.chars().all(|char| char.is_alphabetic()) || token.is_empty() {
+        format_ident!("{}", symbol.to_shouty_snake_case())
+    } else if KEYWORDS.contains(&token) {
+        format_ident!("{}_TOKEN", screaming)
+    } else if !token
+        .chars()
+        .all(|char| char.is_alphabetic() || char == '_')
+        || token.is_empty()
+    {
         // TODO: Bail w/ error
         panic!(
             "non-ascii token {:?}, consider adding to the `NAMED_TOKENS` constant in xtask",
             token,
         );
     } else {
-        Ident::new(&token.to_shouty_snake_case(), Span::mixed_site())
+        format_ident!("{}", screaming)
     }
 }
 
@@ -381,9 +544,9 @@ fn assert_constants_are_unique() {
         .all(|&c| FUNKY_CHARS.iter().filter(|&&c2| c2 == c).count() == 1);
     assert!(funky_chars);
 
-    let keywords = RUST_KEYWORDS
+    let keywords = KEYWORDS
         .iter()
-        .all(|&kw| RUST_KEYWORDS.iter().filter(|&&kw2| kw2 == kw).count() == 1);
+        .all(|&kw| KEYWORDS.iter().filter(|&&kw2| kw2 == kw).count() == 1);
     assert!(keywords);
 
     let named_tokens = NAMED_TOKENS.iter().all(|&(token, _)| {
@@ -425,6 +588,23 @@ pub struct Struct {
     pub snake_case_name: Ident,
     pub screaming_snake_case_name: Ident,
     pub kind: NodeKind,
+    pub children: Vec<StructChild>,
+}
+
+#[derive(Debug)]
+pub struct StructChild {
+    pub snake_case_name: Ident,
+    pub child_type: TokenStream,
+    pub node_kind: NodeKind,
+    pub kind: ChildKind,
+    pub index: usize,
+}
+
+#[derive(Debug)]
+pub enum ChildKind {
+    Normal,
+    Repeated,
+    Optional,
 }
 
 #[derive(Debug)]
