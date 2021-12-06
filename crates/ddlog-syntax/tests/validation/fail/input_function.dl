@@ -1,2 +1,0 @@
-// kind:item validate:true pass:false ignore:false
-extern input function foo() {}

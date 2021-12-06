@@ -1,3 +1,0 @@
-// kind:item validate:false pass:true ignore:false
-stream Bar()
-multiset Foo()

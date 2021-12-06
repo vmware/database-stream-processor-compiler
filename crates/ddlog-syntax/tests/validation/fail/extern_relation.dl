@@ -1,7 +1,0 @@
-// kind:item validate:true pass:false ignore:false
-input extern relation Foo()
-input extern extern relation Foo()
-input extern multiset Foo()
-input extern extern multiset Foo()
-input extern stream Foo()
-input extern extern stream Foo()

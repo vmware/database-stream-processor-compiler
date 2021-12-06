@@ -199,7 +199,6 @@ fn extract_comment_blocks(
 struct Test {
     pub name: String,
     pub code: String,
-    pub kind: TestKind,
     pub pass: bool,
 }
 
@@ -265,7 +264,6 @@ fn collect_tests(source: &str, all_validate: bool) -> Vec<Test> {
         tests.push(Test {
             name: name.trim().to_owned(),
             code,
-            kind,
             pass,
         })
     }
@@ -329,8 +327,6 @@ fn existing_tests(dir: &Path, ok: bool) -> Result<HashMap<String, (PathBuf, Test
         let test = Test {
             name: name.clone(),
             code: text,
-            // TODO: Allow specifying kind within tests
-            kind: TestKind::Item,
             pass: ok,
         };
 

@@ -1,52 +1,46 @@
 ROOT@0..94
   COMMENT@0..50 "// kind:stmt validate ..."
   WHITESPACE@50..51 "\n"
-  STMT@51..66
-    VAR_DECL@51..65
-      VAR@51..54 "var"
-      WHITESPACE@54..55 " "
-      VAR_REF@55..58
-        IDENT@55..58 "foo"
-      WHITESPACE@58..59 " "
-      EQ@59..60 "="
-      WHITESPACE@60..61 " "
-      EXPR@61..64
-        VAR_REF@61..64
-          IDENT@61..64 "bar"
-      SEMICOLON@64..65 ";"
-    WHITESPACE@65..66 "\n"
-  STMT@66..94
-    VAR_DECL@66..93
-      VAR@66..69 "var"
-      WHITESPACE@69..70 " "
-      VAR_REF@70..73
-        IDENT@70..73 "baz"
-      WHITESPACE@73..74 " "
-      EQ@74..75 "="
-      WHITESPACE@75..76 " "
-      EXPR@76..92
-        BIN_EXPR@76..92
-          LITERAL@76..77
-            NUMBER@76..77 "1"
-          WHITESPACE@77..78 " "
-          BIN_OP@78..79
-            PLUS@78..79 "+"
-          WHITESPACE@79..80 " "
-          BIN_EXPR@80..92
-            LITERAL@80..83
-              NUMBER@80..83 "100"
-            WHITESPACE@83..84 " "
-            BIN_OP@84..85
-              PLUS@84..85 "+"
-            WHITESPACE@85..86 " "
-            BLOCK@86..92
-              L_CURLY@86..87 "{"
-              WHITESPACE@87..88 " "
-              STMT@88..91
-                EXPR@88..91
-                  LITERAL@88..90
-                    NUMBER@88..90 "10"
-                  WHITESPACE@90..91 " "
-              R_CURLY@91..92 "}"
-      SEMICOLON@92..93 ";"
-    WHITESPACE@93..94 "\n"
+  VAR_DECL@51..65
+    LET_TOKEN@51..54 "let"
+    WHITESPACE@54..55 " "
+    VAR_REF@55..58
+      IDENT@55..58 "foo"
+    WHITESPACE@58..59 " "
+    EQ@59..60 "="
+    WHITESPACE@60..61 " "
+    VAR_REF@61..64
+      IDENT@61..64 "bar"
+    SEMICOLON@64..65 ";"
+  WHITESPACE@65..66 "\n"
+  VAR_DECL@66..93
+    LET_TOKEN@66..69 "let"
+    WHITESPACE@69..70 " "
+    VAR_REF@70..73
+      IDENT@70..73 "baz"
+    WHITESPACE@73..74 " "
+    EQ@74..75 "="
+    WHITESPACE@75..76 " "
+    BIN_EXPR@76..92
+      NUMBER_LITERAL@76..77
+        NUMBER_LITERAL@76..77 "1"
+      WHITESPACE@77..78 " "
+      BIN_OP@78..79
+        PLUS@78..79 "+"
+      WHITESPACE@79..80 " "
+      BIN_EXPR@80..92
+        NUMBER_LITERAL@80..83
+          NUMBER_LITERAL@80..83 "100"
+        WHITESPACE@83..84 " "
+        BIN_OP@84..85
+          PLUS@84..85 "+"
+        WHITESPACE@85..86 " "
+        BLOCK@86..92
+          L_CURLY@86..87 "{"
+          WHITESPACE@87..88 " "
+          NUMBER_LITERAL@88..90
+            NUMBER_LITERAL@88..90 "10"
+          WHITESPACE@90..91 " "
+          R_CURLY@91..92 "}"
+    SEMICOLON@92..93 ";"
+  WHITESPACE@93..94 "\n"

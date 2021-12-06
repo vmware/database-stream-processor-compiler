@@ -18,9 +18,9 @@ FunctionReturn = '->' return_ty:Type
 StructDef = Attribute* Modifier* keyword:'struct' name:'ident' fields:StructFields
 StructFields = BracketedStructFields | TupleStructFields
 BracketedStructFields = '{' fields:BracketedStructField* '}'
-BracketedStructField = name:'ident' ':' ty:Type ','*
-TupleStructFields = '(' TupleStructField* ')'
-TupleStructField = ty:Type ','*
+BracketedStructField = Attribute* Modifier* name:'ident' ':' ty:Type ','*
+TupleStructFields = '(' TupleStructField* ')' ';'*
+TupleStructField = Attribute* Modifier* ty:Type ','*
 
 EnumDef = Attribute* Modifier* keyword:'enum' name:'ident' variants:EnumVariants
 EnumVariants = '{' variants:EnumVariant* '}'

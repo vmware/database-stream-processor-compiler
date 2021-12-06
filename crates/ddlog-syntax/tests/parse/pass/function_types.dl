@@ -1,5 +1,5 @@
 // kind:item validate:false pass:true ignore:false
-fn foo(bar: fn(Bar, Baz): Bing) {}
-fn Foo(bar: fn(Bar, Baz,): Bing,)
+fn foo(bar: fn(Bar, Baz) -> Bing) {}
+fn Foo(bar: fn(Bar, Baz,) -> Bing,)
 fn foo(bar: fn(Bar)) {}
-fn Foo(bar: fn(Bar,))
+fn Foo(bar: fn(Bar,)) -> fn(Bong, Bang) {}

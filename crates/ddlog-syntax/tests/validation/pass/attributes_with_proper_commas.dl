@@ -3,4 +3,4 @@
 #[foo = bar,]
 #[foo = bar, bar = baz, bing = bop,]
 #[foo = bar, bar = baz, bing = bop]
-function foo() {}
+fn foo() {}

@@ -1,0 +1,21 @@
+ROOT@0..82
+  COMMENT@0..50 "// kind:expr validate ..."
+  WHITESPACE@50..51 "\n"
+  VAR_REF@51..52
+    IDENT@51..52 "a"
+  WHITESPACE@52..53 "\n"
+  VAR_REF@53..57
+    IDENT@53..57 "abcd"
+  WHITESPACE@57..58 "\n"
+  VAR_REF@58..66
+    IDENT@58..66 "abcd1245"
+  WHITESPACE@66..67 "\n"
+  VAR_REF@67..68
+    IDENT@67..68 "_"
+  WHITESPACE@68..69 "\n"
+  VAR_REF@69..73
+    IDENT@69..73 "_135"
+  WHITESPACE@73..74 "\n"
+  VAR_REF@74..81
+    IDENT@74..81 "_dsg434"
+  WHITESPACE@81..82 "\n"

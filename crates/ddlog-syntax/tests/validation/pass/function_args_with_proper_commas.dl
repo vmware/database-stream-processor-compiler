@@ -1,5 +1,5 @@
 // kind:item validate:true pass:true ignore:false
-function foo(bar: Baz) {}
-function foo(bar: Baz,) {}
-function foo(bar: Baz, foo: Bar, bing: Bop) {}
-function foo(bar: Baz, foo: Bar, bing: Bop,) {}
+fn foo(bar: Baz) {}
+fn foo(bar: Baz,) {}
+fn foo(bar: Baz, foo: Bar, bing: Bop) {}
+fn foo(bar: Baz, foo: Bar, bing: Bop,) {}

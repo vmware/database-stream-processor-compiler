@@ -3,6 +3,7 @@ name: Pipeline
 on: [push, pull_request]
 
 # TODO: Miri, code coverage and security audits
+# TODO: Artifact sharing
 jobs:
   # Check everything for formatting
   format:

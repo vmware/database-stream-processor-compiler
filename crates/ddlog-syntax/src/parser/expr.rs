@@ -48,12 +48,12 @@ impl Parser<'_, '_> {
     /// to parse operator precedence
     // FIXME: Make this iterative instead of recursive
     // FIXME: This needs to be totally restructured, this fundamentally
-    //        mis-structured
+    //        hinders using pratt parsing
     fn expr_inner(&mut self, mut current_precedence: u8) -> Option<CompletedMarker> {
         let _frame = self.stack_frame();
         let mut lhs = match self.peek() {
-            IDENT => self.identifier(VAR_REF).unwrap(),
-            NUMBER | T![true] | T![false] => self.literal().unwrap(),
+            IDENT => self.var_ref()?,
+            NUMBER_LITERAL | T![true] | T![false] => self.literal()?,
             operator @ (T![-] | T![!]) => self.unary_expr(operator)?,
             T!['('] => self.parentheses()?,
             T!['{'] => self.block(false)?,
@@ -186,30 +186,35 @@ impl Parser<'_, '_> {
         }
     }
 
+    // test(expr) var_ref
+    // - a
+    // - abcd
+    // - abcd1245
+    // - _
+    // - _135
+    // - _dsg434
+    fn var_ref(&mut self) -> Option<CompletedMarker> {
+        let var = self.start();
+        self.ident();
+        Some(var.complete(self, VAR_REF))
+    }
+
     // TODO: Move to utils
     // test(expr) var_refs
     // - foo1245__
     // test(expr) underline_var
     // - _
-    pub(super) fn identifier(&mut self, wrapper: SyntaxKind) -> Option<CompletedMarker> {
-        let marker = self.start();
-        match self.current() {
-            IDENT => self.bump(),
-
-            _ => {
-                let error = Diagnostic::error()
-                    .with_message("expected an identifier")
-                    .with_label(
-                        Label::primary(self.current_span()).with_message("expected an identifier"),
-                    );
-                self.error(error);
-
-                marker.abandon(self);
-                return None;
-            }
+    pub(super) fn ident(&mut self) {
+        if self.at(IDENT) {
+            self.bump();
+        } else {
+            let error = Diagnostic::error()
+                .with_message("expected an identifier")
+                .with_label(
+                    Label::primary(self.current_span()).with_message("expected an identifier"),
+                );
+            self.error(error);
         }
-
-        Some(marker.complete(self, wrapper))
     }
 }
 
@@ -233,7 +238,6 @@ fn infix_precedence(operand: SyntaxKind) -> Option<u8> {
         T![<<] | T![>>] => 7,
         T![+] | T![-] => 8,
         T![*] | T![/] | T![%] => 9,
-
         _ => return None,
     };
 

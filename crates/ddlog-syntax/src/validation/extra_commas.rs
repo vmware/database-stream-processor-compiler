@@ -20,7 +20,7 @@ impl ExtraCommas {
     // - #[foo = bar,]
     // - #[foo = bar, bar = baz, bing = bop,]
     // - #[foo = bar, bar = baz, bing = bop]
-    // - function foo() {}
+    // - fn foo() {}
     fn check_attributes(&self, attributes: &Attributes, ctx: &mut RuleCtx) -> Option<()> {
         for attribute in attributes.attributes() {
             let total_pairs = attribute.attr_pairs().count();
@@ -30,9 +30,7 @@ impl ExtraCommas {
                 // If there's no commas where commas were expected, error
                 // test_err missing_attribute_commas
                 // - #[foo = bar bar = baz]
-                // - function foo() {}
-                // - #[foo = bar bar = baz]
-                // - relation Foo()
+                // - fn foo() {}
                 if total_commas == 0 && pair_idx + 1 != total_pairs {
                     let span = pair.syntax().trimmed_span(ctx.file_id).end_span();
 
@@ -45,9 +43,7 @@ impl ExtraCommas {
                 // if there's too many commas, error
                 // test_err too_many_attribute_commas
                 // - #[foo = bar,, bar = baz]
-                // - function foo() {}
-                // - #[foo = bar,,,,, bar = baz]
-                // - relation Foo()
+                // - fn foo() {}
                 } else if total_commas > 1 {
                     // Gather the spans of the extraneous commas
                     let span = pair
@@ -75,10 +71,10 @@ impl ExtraCommas {
     }
 
     // test function_args_with_proper_commas
-    // - function foo(bar: Baz) {}
-    // - function foo(bar: Baz,) {}
-    // - function foo(bar: Baz, foo: Bar, bing: Bop) {}
-    // - function foo(bar: Baz, foo: Bar, bing: Bop,) {}
+    // - fn foo(bar: Baz) {}
+    // - fn foo(bar: Baz,) {}
+    // - fn foo(bar: Baz, foo: Bar, bing: Bop) {}
+    // - fn foo(bar: Baz, foo: Bar, bing: Bop,) {}
     fn check_function_args(&mut self, args: &FunctionArgs, ctx: &mut RuleCtx) -> Option<()> {
         let total_args = args.args().count();
         for (pair_idx, arg) in args.args().enumerate() {
@@ -86,7 +82,7 @@ impl ExtraCommas {
 
             // If there's no commas where commas were expected, error
             // test_err missing_function_arg_commas
-            // - function foo(foo: Bar bar: Baz) {}
+            // - fn foo(foo: Bar bar: Baz) {}
             if total_commas == 0 && pair_idx + 1 != total_args {
                 let span = arg.syntax().trimmed_span(ctx.file_id).end_span();
 
@@ -98,7 +94,7 @@ impl ExtraCommas {
 
             // if there's too many commas, error
             // test_err too_many_function_arg_commas
-            // - function foo(foo: Bar,, bar: Baz) {}
+            // - fn foo(foo: Bar,, bar: Baz) {}
             } else if total_commas > 1 {
                 // Gather the spans of the extraneous commas
                 let span = arg
@@ -123,75 +119,6 @@ impl ExtraCommas {
 
         Some(())
     }
-
-    // test relation_columns_with_proper_commas
-    // - relation foo(bar: Baz)
-    // - relation foo(bar: Baz,)
-    // - relation foo(bar: Baz, foo: Bar, bing: Bop)
-    // - relation foo(bar: Baz, foo: Bar, bing: Bop,)
-    // - multiset foo(bar: Baz)
-    // - multiset foo(bar: Baz,)
-    // - multiset foo(bar: Baz, foo: Bar, bing: Bop)
-    // - multiset foo(bar: Baz, foo: Bar, bing: Bop,)
-    // - stream foo(bar: Baz)
-    // - stream foo(bar: Baz,)
-    // - stream foo(bar: Baz, foo: Bar, bing: Bop)
-    // - stream foo(bar: Baz, foo: Bar, bing: Bop,)
-    fn check_relation_columns(&mut self, relation: &RelationDef, ctx: &mut RuleCtx) -> Option<()> {
-        let columns = relation.columns()?;
-        let relation_kind = match relation.keyword().as_deref() {
-            Some(RelKw::Multiset(_)) => "multiset",
-            Some(RelKw::Stream(_)) => "stream",
-            Some(RelKw::Relation(_)) | None => "relation",
-        };
-
-        let total_columns = columns.columns().count();
-        for (column_idx, column) in columns.columns().enumerate() {
-            let total_commas = column.commas().count();
-
-            // If there's no commas where commas were expected, error
-            // test_err missing_column_commas
-            // - relation Foo(foo: Bar bar: Baz)
-            // - multiset Foo(foo: Bar bar: Baz)
-            // - stream Foo(foo: Bar bar: Baz)
-            if total_commas == 0 && column_idx + 1 != total_columns {
-                let span = column.syntax().trimmed_span(ctx.file_id).end_span();
-
-                let error = Diagnostic::error()
-                    .with_message(format!("missing comma between {} columns", relation_kind))
-                    .with_label(Label::primary(span).with_message("expected a comma here"));
-
-                ctx.diagnostics.push(error);
-
-            // if there's too many commas, error
-            // test_err too_many_column_commas
-            // - relation foo(foo: Bar,, bar: Baz)
-            // - multiset foo(foo: Bar,, bar: Baz)
-            // - stream foo(foo: Bar,, bar: Baz)
-            } else if total_commas > 1 {
-                // Gather the spans of the extraneous commas
-                let span = column
-                    .commas()
-                    .skip(1)
-                    .map(|comma| comma.span(ctx.file_id))
-                    .reduce(|acc, span| acc.merge(span))?;
-
-                // Properly pluralize the message
-                let message = if total_commas == 2 {
-                    "remove this comma"
-                } else {
-                    "remove these commas"
-                };
-                let error = Diagnostic::error()
-                    .with_message(format!("too many commas between {} columns", relation_kind))
-                    .with_label(Label::primary(span).with_message(message));
-
-                ctx.diagnostics.push(error);
-            }
-        }
-
-        Some(())
-    }
 }
 
 impl AstVisitor for ExtraCommas {
@@ -206,7 +133,7 @@ impl AstVisitor for ExtraCommas {
             match node {
                 Attributes(attributes) => self.check_attributes(&*attributes, ctx),
                 FunctionArgs(args) => self.check_function_args(&*args, ctx),
-                RelationDef(relation) => self.check_relation_columns(&*relation, ctx),
+                // TODO: Struct & enum defs
 
                 _ => Some(()),
             }

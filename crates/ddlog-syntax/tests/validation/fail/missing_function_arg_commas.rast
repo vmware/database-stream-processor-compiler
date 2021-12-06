@@ -1,48 +1,30 @@
-ROOT@0..86
+ROOT@0..84
   COMMENT@0..50 "// kind:item validate ..."
   WHITESPACE@50..51 "\n"
-  ITEM@51..86
-    FUNCTION_DEF@51..86
-      ATTRIBUTES@51..51
-      MODIFIERS@51..51
-      FUNCTION@51..59 "function"
-      WHITESPACE@59..60 " "
-      FUNCTION_NAME@60..63
-        IDENT@60..63 "foo"
-      FUNCTION_ARGS@63..82
-        L_PAREN@63..64 "("
-        FUNCTION_ARG@64..73
-          ATTRIBUTES@64..64
-          VAR_REF@64..67
-            IDENT@64..67 "foo"
-          COLON@67..68 ":"
-          WHITESPACE@68..69 " "
-          TYPE@69..73
-            GENERIC_TYPE@69..72
-              IDENT@69..72 "Bar"
-            WHITESPACE@72..73 " "
-        FUNCTION_ARG@73..81
-          ATTRIBUTES@73..73
-          VAR_REF@73..76
-            IDENT@73..76 "bar"
-          COLON@76..77 ":"
-          WHITESPACE@77..78 " "
-          TYPE@78..81
-            GENERIC_TYPE@78..81
-              IDENT@78..81 "Baz"
-        R_PAREN@81..82 ")"
-      WHITESPACE@82..83 " "
-      BLOCK@83..85
-        L_CURLY@83..84 "{"
-        R_CURLY@84..85 "}"
-      WHITESPACE@85..86 "\n"
+  ERROR@51..84
+    IDENT@51..59 "function"
+    WHITESPACE@59..60 " "
+    IDENT@60..63 "foo"
+    L_PAREN@63..64 "("
+    IDENT@64..67 "foo"
+    COLON@67..68 ":"
+    WHITESPACE@68..69 " "
+    IDENT@69..72 "Bar"
+    WHITESPACE@72..73 " "
+    IDENT@73..76 "bar"
+    COLON@76..77 ":"
+    WHITESPACE@77..78 " "
+    IDENT@78..81 "Baz"
+    R_PAREN@81..82 ")"
+    WHITESPACE@82..83 " "
+    L_CURLY@83..84 "{"
 --
-Error: missing comma between function arguments
-   ,-[validation/fail/missing_function_arg_commas.dl:2:22]
+Error: expected a top-level item
+   ,-[validation/fail/missing_function_arg_commas.dl:2:1]
    |
  2 | function foo(foo: Bar bar: Baz) {}
-   :                      | 
-   :                      `- expected a comma here
+   : ^^^^^^^^^^^^^^^^|^^^^^^^^^^^^^^^^  
+   :                 `------------------ expected a top-level item
 ---'
 --
 // kind:item validate:true pass:false ignore:false

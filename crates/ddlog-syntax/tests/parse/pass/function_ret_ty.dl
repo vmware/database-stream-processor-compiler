@@ -1,2 +1,2 @@
 // kind:item validate:false pass:true ignore:false
-fn foo(): Bar {}
+fn foo() -> Bar {}

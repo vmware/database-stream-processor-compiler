@@ -1,3 +1,2 @@
 // kind:item validate:false pass:true ignore:false
-function foo(bar: Bar<Baz>) {}
-relation Foo(bar: Bar<Baz>)
+fn foo(bar: Bar<Baz>) {}

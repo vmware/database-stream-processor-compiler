@@ -359,7 +359,7 @@ pub mod checks {
     /// This will probably never be used, but just in case
     const MIN_MAJOR_RUST_VERSION: usize = 1;
     /// The latest stable Rust version, feel free to open PRs to update it
-    const MIN_MINOR_RUST_VERSION: usize = 55;
+    const MIN_MINOR_RUST_VERSION: usize = 57;
 
     pub fn cargo_exists() -> Result<()> {
         let output = Command::new("cargo")

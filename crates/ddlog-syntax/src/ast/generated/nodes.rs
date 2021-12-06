@@ -242,6 +242,18 @@ impl AttrPair {
     ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::Ident>> {
         crate::ast::support::token(&self.syntax)
     }
+    #[inline]
+    pub fn eq(&self) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::Eq>> {
+        crate::ast::support::token(&self.syntax)
+    }
+    #[inline]
+    pub fn expr(&self) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::Expr>> {
+        crate::ast::support::child(&self.syntax)
+    }
+    #[inline]
+    pub fn commas(&self) -> crate::ast::support::TokenChildren<'_, crate::ast::tokens::Comma> {
+        crate::ast::support::token_children(&self.syntax)
+    }
 }
 impl crate::ast::AstNode for AttrPair {
     /// Returns `true` if the given [`SyntaxKind`] is a [`ATTR_PAIR`]
@@ -400,10 +412,8 @@ impl Block {
         crate::ast::support::token(&self.syntax)
     }
     #[inline]
-    pub fn statements(
-        &self,
-    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::Stmt>> {
-        crate::ast::support::child(&self.syntax)
+    pub fn statements(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::Stmt> {
+        crate::ast::support::children(&self.syntax)
     }
     #[inline]
     pub fn r_curly(
@@ -452,6 +462,14 @@ pub struct BracketedStructField {
     syntax: crate::SyntaxNode,
 }
 impl BracketedStructField {
+    #[inline]
+    pub fn attributes(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::Attribute> {
+        crate::ast::support::children(&self.syntax)
+    }
+    #[inline]
+    pub fn modifiers(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::Modifier> {
+        crate::ast::support::children(&self.syntax)
+    }
     #[inline]
     pub fn name(
         &self,
@@ -522,9 +540,8 @@ impl BracketedStructFields {
     #[inline]
     pub fn fields(
         &self,
-    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::BracketedStructField>>
-    {
-        crate::ast::support::child(&self.syntax)
+    ) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::BracketedStructField> {
+        crate::ast::support::children(&self.syntax)
     }
     #[inline]
     pub fn r_curly(
@@ -631,6 +648,16 @@ impl ClosureArg {
         crate::ast::support::child(&self.syntax)
     }
     #[inline]
+    pub fn colon(
+        &self,
+    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::Colon>> {
+        crate::ast::support::token(&self.syntax)
+    }
+    #[inline]
+    pub fn ty(&self) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::Type>> {
+        crate::ast::support::child(&self.syntax)
+    }
+    #[inline]
     pub fn commas(&self) -> crate::ast::support::TokenChildren<'_, crate::ast::tokens::Comma> {
         crate::ast::support::token_children(&self.syntax)
     }
@@ -682,10 +709,8 @@ impl ClosureExpr {
         crate::ast::support::token(&self.syntax)
     }
     #[inline]
-    pub fn args(
-        &self,
-    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::ClosureArg>> {
-        crate::ast::support::child(&self.syntax)
+    pub fn args(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::ClosureArg> {
+        crate::ast::support::children(&self.syntax)
     }
     #[inline]
     pub fn end_pipe(
@@ -1040,10 +1065,8 @@ impl EnumVariants {
         crate::ast::support::token(&self.syntax)
     }
     #[inline]
-    pub fn variants(
-        &self,
-    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::EnumVariant>> {
-        crate::ast::support::child(&self.syntax)
+    pub fn variants(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::EnumVariant> {
+        crate::ast::support::children(&self.syntax)
     }
     #[inline]
     pub fn r_curly(
@@ -1386,10 +1409,8 @@ impl FunctionArgs {
         crate::ast::support::token(&self.syntax)
     }
     #[inline]
-    pub fn args(
-        &self,
-    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::FunctionArg>> {
-        crate::ast::support::child(&self.syntax)
+    pub fn args(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::FunctionArg> {
+        crate::ast::support::children(&self.syntax)
     }
     #[inline]
     pub fn r_paren(
@@ -1449,10 +1470,8 @@ impl FunctionCall {
         crate::ast::support::token(&self.syntax)
     }
     #[inline]
-    pub fn args(
-        &self,
-    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::FunctionCallArg>> {
-        crate::ast::support::child(&self.syntax)
+    pub fn args(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::FunctionCallArg> {
+        crate::ast::support::children(&self.syntax)
     }
     #[inline]
     pub fn r_paren(
@@ -1852,10 +1871,8 @@ impl FunctionTypeArgs {
         crate::ast::support::token(&self.syntax)
     }
     #[inline]
-    pub fn args(
-        &self,
-    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::FunctionTypeArg>> {
-        crate::ast::support::child(&self.syntax)
+    pub fn args(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::FunctionTypeArg> {
+        crate::ast::support::children(&self.syntax)
     }
     #[inline]
     pub fn r_paren(
@@ -2011,10 +2028,8 @@ impl Generics {
         crate::ast::support::token(&self.syntax)
     }
     #[inline]
-    pub fn generics(
-        &self,
-    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::GenericArg>> {
-        crate::ast::support::child(&self.syntax)
+    pub fn generics(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::GenericArg> {
+        crate::ast::support::children(&self.syntax)
     }
     #[inline]
     pub fn r_angle(
@@ -2648,10 +2663,8 @@ impl Path {
         crate::ast::support::token(&self.syntax)
     }
     #[inline]
-    pub fn tail(
-        &self,
-    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::PathTail>> {
-        crate::ast::support::child(&self.syntax)
+    pub fn tails(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::PathTail> {
+        crate::ast::support::children(&self.syntax)
     }
 }
 impl crate::ast::AstNode for Path {
@@ -3070,8 +3083,8 @@ impl StructInitExpr {
     #[inline]
     pub fn fields(
         &self,
-    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::StructInitField>> {
-        crate::ast::support::child(&self.syntax)
+    ) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::StructInitField> {
+        crate::ast::support::children(&self.syntax)
     }
     #[inline]
     pub fn r_curly(
@@ -3127,6 +3140,16 @@ impl StructInitField {
         crate::ast::support::token(&self.syntax)
     }
     #[inline]
+    pub fn colon(
+        &self,
+    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::Colon>> {
+        crate::ast::support::token(&self.syntax)
+    }
+    #[inline]
+    pub fn value(&self) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::Expr>> {
+        crate::ast::support::child(&self.syntax)
+    }
+    #[inline]
     pub fn commas(&self) -> crate::ast::support::TokenChildren<'_, crate::ast::tokens::Comma> {
         crate::ast::support::token_children(&self.syntax)
     }
@@ -3180,8 +3203,8 @@ impl StructPattern {
     #[inline]
     pub fn fields(
         &self,
-    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::StructPatternField>> {
-        crate::ast::support::child(&self.syntax)
+    ) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::StructPatternField> {
+        crate::ast::support::children(&self.syntax)
     }
     #[inline]
     pub fn r_curly(
@@ -3235,6 +3258,18 @@ impl StructPatternField {
         &self,
     ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::Ident>> {
         crate::ast::support::token(&self.syntax)
+    }
+    #[inline]
+    pub fn colon(
+        &self,
+    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::Colon>> {
+        crate::ast::support::token(&self.syntax)
+    }
+    #[inline]
+    pub fn alias(
+        &self,
+    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::Pattern>> {
+        crate::ast::support::child(&self.syntax)
     }
     #[inline]
     pub fn commas(&self) -> crate::ast::support::TokenChildren<'_, crate::ast::tokens::Comma> {
@@ -3337,10 +3372,8 @@ impl TupleInitExpr {
         crate::ast::support::token(&self.syntax)
     }
     #[inline]
-    pub fn elems(
-        &self,
-    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::TupleExprElem>> {
-        crate::ast::support::child(&self.syntax)
+    pub fn elems(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::TupleExprElem> {
+        crate::ast::support::children(&self.syntax)
     }
     #[inline]
     pub fn r_paren(
@@ -3398,8 +3431,8 @@ impl TuplePattern {
     #[inline]
     pub fn elements(
         &self,
-    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::TuplePatternElem>> {
-        crate::ast::support::child(&self.syntax)
+    ) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::TuplePatternElem> {
+        crate::ast::support::children(&self.syntax)
     }
     #[inline]
     pub fn r_paren(
@@ -3500,6 +3533,14 @@ pub struct TupleStructField {
 }
 impl TupleStructField {
     #[inline]
+    pub fn attributes(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::Attribute> {
+        crate::ast::support::children(&self.syntax)
+    }
+    #[inline]
+    pub fn modifiers(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::Modifier> {
+        crate::ast::support::children(&self.syntax)
+    }
+    #[inline]
     pub fn ty(&self) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::Type>> {
         crate::ast::support::child(&self.syntax)
     }
@@ -3566,6 +3607,12 @@ impl TupleStructFields {
     ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::RParen>> {
         crate::ast::support::token(&self.syntax)
     }
+    #[inline]
+    pub fn semicolons(
+        &self,
+    ) -> crate::ast::support::TokenChildren<'_, crate::ast::tokens::Semicolon> {
+        crate::ast::support::token_children(&self.syntax)
+    }
 }
 impl crate::ast::AstNode for TupleStructFields {
     /// Returns `true` if the given [`SyntaxKind`] is a [`TUPLE_STRUCT_FIELDS`]
@@ -3616,8 +3663,8 @@ impl TupleType {
     #[inline]
     pub fn elements(
         &self,
-    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::TupleTypeElem>> {
-        crate::ast::support::child(&self.syntax)
+    ) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::TupleTypeElem> {
+        crate::ast::support::children(&self.syntax)
     }
     #[inline]
     pub fn r_paren(
@@ -3899,6 +3946,20 @@ impl UseBranch {
         crate::ast::support::token(&self.syntax)
     }
     #[inline]
+    pub fn paths(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::Path> {
+        crate::ast::support::children(&self.syntax)
+    }
+    #[inline]
+    pub fn use_branch_or_alias(
+        &self,
+    ) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::UseBranchOrAlias> {
+        crate::ast::support::children(&self.syntax)
+    }
+    #[inline]
+    pub fn commas(&self) -> crate::ast::support::TokenChildren<'_, crate::ast::tokens::Comma> {
+        crate::ast::support::token_children(&self.syntax)
+    }
+    #[inline]
     pub fn r_curly(
         &self,
     ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::RCurly>> {
@@ -4029,6 +4090,16 @@ impl VarDecl {
         crate::ast::support::child(&self.syntax)
     }
     #[inline]
+    pub fn colon(
+        &self,
+    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::Colon>> {
+        crate::ast::support::token(&self.syntax)
+    }
+    #[inline]
+    pub fn ty(&self) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::Type>> {
+        crate::ast::support::child(&self.syntax)
+    }
+    #[inline]
     pub fn eq(&self) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::Eq>> {
         crate::ast::support::token(&self.syntax)
     }
@@ -4139,8 +4210,8 @@ impl VariantStruct {
     #[inline]
     pub fn fields(
         &self,
-    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::VariantStructField>> {
-        crate::ast::support::child(&self.syntax)
+    ) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::VariantStructField> {
+        crate::ast::support::children(&self.syntax)
     }
     #[inline]
     pub fn r_curly(

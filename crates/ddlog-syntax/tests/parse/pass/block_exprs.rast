@@ -1,50 +1,41 @@
 ROOT@0..79
   COMMENT@0..50 "// kind:expr validate ..."
   WHITESPACE@50..51 "\n"
-  EXPR@51..79
-    BIN_EXPR@51..79
-      BLOCK@51..57
-        L_CURLY@51..52 "{"
-        WHITESPACE@52..53 " "
-        STMT@53..56
-          EXPR@53..56
-            LITERAL@53..55
-              NUMBER@53..55 "10"
-            WHITESPACE@55..56 " "
-        R_CURLY@56..57 "}"
-      WHITESPACE@57..58 " "
-      BIN_OP@58..59
-        MINUS@58..59 "-"
-      WHITESPACE@59..60 " "
-      BLOCK@60..78
-        L_CURLY@60..61 "{"
-        STMT@61..77
-          BLOCK@61..77
-            L_CURLY@61..62 "{"
-            WHITESPACE@62..63 " "
-            STMT@63..76
-              EXPR@63..76
-                BIN_EXPR@63..76
-                  LITERAL@63..64
-                    NUMBER@63..64 "5"
-                  WHITESPACE@64..65 " "
-                  BIN_OP@65..66
-                    PLUS@65..66 "+"
-                  WHITESPACE@66..67 " "
-                  PAREN_EXPR@67..75
-                    L_PAREN@67..68 "("
-                    EXPR@68..74
-                      BLOCK@68..74
-                        L_CURLY@68..69 "{"
-                        WHITESPACE@69..70 " "
-                        STMT@70..73
-                          EXPR@70..73
-                            LITERAL@70..72
-                              NUMBER@70..72 "99"
-                            WHITESPACE@72..73 " "
-                        R_CURLY@73..74 "}"
-                    R_PAREN@74..75 ")"
-                  WHITESPACE@75..76 " "
-            R_CURLY@76..77 "}"
-        R_CURLY@77..78 "}"
-      WHITESPACE@78..79 "\n"
+  BIN_EXPR@51..79
+    BLOCK@51..57
+      L_CURLY@51..52 "{"
+      WHITESPACE@52..53 " "
+      NUMBER_LITERAL@53..55
+        NUMBER_LITERAL@53..55 "10"
+      WHITESPACE@55..56 " "
+      R_CURLY@56..57 "}"
+    WHITESPACE@57..58 " "
+    BIN_OP@58..59
+      MINUS@58..59 "-"
+    WHITESPACE@59..60 " "
+    BLOCK@60..78
+      L_CURLY@60..61 "{"
+      BLOCK@61..77
+        L_CURLY@61..62 "{"
+        WHITESPACE@62..63 " "
+        BIN_EXPR@63..76
+          NUMBER_LITERAL@63..64
+            NUMBER_LITERAL@63..64 "5"
+          WHITESPACE@64..65 " "
+          BIN_OP@65..66
+            PLUS@65..66 "+"
+          WHITESPACE@66..67 " "
+          PAREN_EXPR@67..75
+            L_PAREN@67..68 "("
+            BLOCK@68..74
+              L_CURLY@68..69 "{"
+              WHITESPACE@69..70 " "
+              NUMBER_LITERAL@70..72
+                NUMBER_LITERAL@70..72 "99"
+              WHITESPACE@72..73 " "
+              R_CURLY@73..74 "}"
+            R_PAREN@74..75 ")"
+          WHITESPACE@75..76 " "
+        R_CURLY@76..77 "}"
+      R_CURLY@77..78 "}"
+    WHITESPACE@78..79 "\n"

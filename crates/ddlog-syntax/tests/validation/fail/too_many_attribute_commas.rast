@@ -1,103 +1,81 @@
-ROOT@0..137
+ROOT@0..131
   COMMENT@0..50 "// kind:item validate ..."
   WHITESPACE@50..51 "\n"
-  ITEM@51..94
-    FUNCTION_DEF@51..94
-      ATTRIBUTES@51..76
-        ATTRIBUTE@51..75
-          HASH_BRACK@51..53 "#["
-          ATTR_PAIR@53..64
-            IDENT@53..56 "foo"
-            WHITESPACE@56..57 " "
-            EQ@57..58 "="
-            WHITESPACE@58..59 " "
-            EXPR@59..62
-              VAR_REF@59..62
-                IDENT@59..62 "bar"
-            COMMA@62..63 ","
-            COMMA@63..64 ","
-          WHITESPACE@64..65 " "
-          ATTR_PAIR@65..74
-            IDENT@65..68 "bar"
-            WHITESPACE@68..69 " "
-            EQ@69..70 "="
-            WHITESPACE@70..71 " "
-            EXPR@71..74
-              VAR_REF@71..74
-                IDENT@71..74 "baz"
-          R_BRACK@74..75 "]"
-        WHITESPACE@75..76 "\n"
-      MODIFIERS@76..76
-      FUNCTION@76..84 "function"
-      WHITESPACE@84..85 " "
-      FUNCTION_NAME@85..88
-        IDENT@85..88 "foo"
-      FUNCTION_ARGS@88..90
-        L_PAREN@88..89 "("
-        R_PAREN@89..90 ")"
-      WHITESPACE@90..91 " "
-      BLOCK@91..93
-        L_CURLY@91..92 "{"
-        R_CURLY@92..93 "}"
-      WHITESPACE@93..94 "\n"
-  ITEM@94..137
-    RELATION_DEF@94..137
-      ATTRIBUTES@94..122
-        ATTRIBUTE@94..121
-          HASH_BRACK@94..96 "#["
-          ATTR_PAIR@96..110
-            IDENT@96..99 "foo"
-            WHITESPACE@99..100 " "
-            EQ@100..101 "="
-            WHITESPACE@101..102 " "
-            EXPR@102..105
-              VAR_REF@102..105
-                IDENT@102..105 "bar"
-            COMMA@105..106 ","
-            COMMA@106..107 ","
-            COMMA@107..108 ","
-            COMMA@108..109 ","
-            COMMA@109..110 ","
-          WHITESPACE@110..111 " "
-          ATTR_PAIR@111..120
-            IDENT@111..114 "bar"
-            WHITESPACE@114..115 " "
-            EQ@115..116 "="
-            WHITESPACE@116..117 " "
-            EXPR@117..120
-              VAR_REF@117..120
-                IDENT@117..120 "baz"
-          R_BRACK@120..121 "]"
-        WHITESPACE@121..122 "\n"
-      MODIFIERS@122..122
-      REL_KW@122..130
-        RELATION@122..130 "relation"
-      WHITESPACE@130..131 " "
-      REL_NAME@131..134
-        IDENT@131..134 "Foo"
-      REL_COLS@134..136
-        L_PAREN@134..135 "("
-        R_PAREN@135..136 ")"
-      WHITESPACE@136..137 "\n"
+  FUNCTION_DEF@51..88
+    ATTRIBUTE@51..75
+      HASH_BRACK@51..53 "#["
+      ATTR_PAIR@53..64
+        IDENT@53..56 "foo"
+        WHITESPACE@56..57 " "
+        EQ@57..58 "="
+        WHITESPACE@58..59 " "
+        VAR_REF@59..62
+          IDENT@59..62 "bar"
+        COMMA@62..63 ","
+        COMMA@63..64 ","
+      WHITESPACE@64..65 " "
+      ATTR_PAIR@65..74
+        IDENT@65..68 "bar"
+        WHITESPACE@68..69 " "
+        EQ@69..70 "="
+        WHITESPACE@70..71 " "
+        VAR_REF@71..74
+          IDENT@71..74 "baz"
+      R_BRACK@74..75 "]"
+    WHITESPACE@75..76 "\n"
+    FN_TOKEN@76..78 "fn"
+    WHITESPACE@78..79 " "
+    IDENT@79..82 "foo"
+    FUNCTION_ARGS@82..84
+      L_PAREN@82..83 "("
+      R_PAREN@83..84 ")"
+    WHITESPACE@84..85 " "
+    BLOCK@85..87
+      L_CURLY@85..86 "{"
+      R_CURLY@86..87 "}"
+    WHITESPACE@87..88 "\n"
+  ATTRIBUTE@88..115
+    HASH_BRACK@88..90 "#["
+    ATTR_PAIR@90..104
+      IDENT@90..93 "foo"
+      WHITESPACE@93..94 " "
+      EQ@94..95 "="
+      WHITESPACE@95..96 " "
+      VAR_REF@96..99
+        IDENT@96..99 "bar"
+      COMMA@99..100 ","
+      COMMA@100..101 ","
+      COMMA@101..102 ","
+      COMMA@102..103 ","
+      COMMA@103..104 ","
+    WHITESPACE@104..105 " "
+    ATTR_PAIR@105..114
+      IDENT@105..108 "bar"
+      WHITESPACE@108..109 " "
+      EQ@109..110 "="
+      WHITESPACE@110..111 " "
+      VAR_REF@111..114
+        IDENT@111..114 "baz"
+    R_BRACK@114..115 "]"
+  WHITESPACE@115..116 "\n"
+  ERROR@116..130
+    IDENT@116..124 "relation"
+    WHITESPACE@124..125 " "
+    IDENT@125..128 "Foo"
+    L_PAREN@128..129 "("
+    R_PAREN@129..130 ")"
+  WHITESPACE@130..131 "\n"
 --
-Error: too many commas between attribute pairs
-   ,-[validation/fail/too_many_attribute_commas.dl:2:13]
+Error: expected a top-level item
+   ,-[validation/fail/too_many_attribute_commas.dl:5:1]
    |
- 2 | #[foo = bar,, bar = baz]
-   :             |  
-   :             `-- remove this comma
----'
---
-Error: too many commas between attribute pairs
-   ,-[validation/fail/too_many_attribute_commas.dl:4:13]
-   |
- 4 | #[foo = bar,,,,, bar = baz]
-   :             ^^|^  
-   :               `--- remove these commas
+ 5 | relation Foo()
+   : ^^^^^^^|^^^^^^  
+   :        `-------- expected a top-level item
 ---'
 --
 // kind:item validate:true pass:false ignore:false
 #[foo = bar,, bar = baz]
-function foo() {}
+fn foo() {}
 #[foo = bar,,,,, bar = baz]
 relation Foo()

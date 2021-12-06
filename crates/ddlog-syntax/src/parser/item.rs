@@ -1,9 +1,11 @@
 use crate::{
     parser::{CompletedMarker, Marker, Parser},
     SyntaxKind::{
-        self, ATTRIBUTE, ATTR_PAIR, FUNCTION_ARG, FUNCTION_ARGS, FUNCTION_DEF, FUNCTION_RETURN,
-        FUNCTION_RETURN_TYPE, FUNCTION_TYPE, FUNCTION_TYPE_ARG, FUNCTION_TYPE_ARGS, GENERICS,
-        GENERIC_ARG, GENERIC_TYPE, IDENT, STRUCT_DEF, TUPLE_TYPE, TUPLE_TYPE_ELEM, VAR_REF,
+        self, ATTRIBUTE, ATTR_PAIR, BRACKETED_STRUCT_FIELD, BRACKETED_STRUCT_FIELDS, FUNCTION_ARG,
+        FUNCTION_ARGS, FUNCTION_DEF, FUNCTION_RETURN, FUNCTION_RETURN_TYPE, FUNCTION_TYPE,
+        FUNCTION_TYPE_ARG, FUNCTION_TYPE_ARGS, GENERICS, GENERIC_ARG, GENERIC_TYPE, IDENT,
+        MODIFIER, STRUCT_DEF, STRUCT_FIELDS, TUPLE_STRUCT_FIELD, TUPLE_STRUCT_FIELDS, TUPLE_TYPE,
+        TUPLE_TYPE_ELEM, TYPE, VAR_REF,
     },
     TokenSet,
 };
@@ -101,21 +103,22 @@ impl Parser<'_, '_> {
 
         let current_set = self.recovery_set;
         self.recovery_set = current_set.add(T!['(']);
-        self.identifier(FUNCTION_NAME);
+        self.ident();
         self.recovery_set = current_set;
 
         self.function_args();
 
         // test function_ret_ty
-        // - fn foo(): Bar {}
-        if self.at(T![:]) {
+        // - fn foo() -> Bar {}
+        if self.at(T![->]) {
             let ret = self.start();
 
-            self.expect(T![:]);
+            self.expect(T![->]);
             self.ty();
 
             ret.complete(self, FUNCTION_RETURN);
         }
+        // TODO: Detect unicode arrows like →
 
         self.block(false);
 
@@ -137,108 +140,11 @@ impl Parser<'_, '_> {
         Some(args.complete(self, FUNCTION_ARGS))
     }
 
-    /*
-    // test basic_relation
-    // - relation Something()
-    // test relation_with_multiple_modifiers
-    // - input output relation Foo()
-    // - input output multiset Foo()
-    // - input output stream Foo()
-    // test lowercase_relation
-    // - relation foo()
-    // test_err unclosed_relation_args
-    // - relation Foo(
-    // test streams_and_sets
-    // - stream Bar()
-    // - multiset Foo()
-    fn relation_def(&mut self, relation: Marker) -> Option<CompletedMarker> {
-        let keyword = self.start();
-        if self.at(T![relation]) {
-            self.expect(T![relation]);
-        } else if self.at(T![multiset]) {
-            self.expect(T![multiset]);
-        } else if self.at(T![stream]) {
-            self.expect(T![stream]);
-        } else {
-            unreachable!()
-        }
-        keyword.complete(self, REL_KW);
-
-        self.identifier(REL_NAME);
-        self.relation_columns();
-
-        Some(relation.complete(self, RELATION_DEF))
-    }
-
-    // test relation_columns
-    // - relation Foo(bar: Baz, bing: Bang)
-    // - multiset Foo(bar: Baz, bing: Bang)
-    // - stream Foo(bar: Baz, bing: Bang)
-    fn relation_columns(&mut self) -> Option<CompletedMarker> {
-        let columns = self.start();
-        self.expect(T!['(']);
-
-        while !self.at(T![')']) && !self.at_end() {
-            self.argument(REL_COL);
-        }
-
-        self.expect(T![')']);
-
-        Some(columns.complete(self, REL_COLS))
-    }
-    */
-
-    fn struct_def(&mut self, struct_def: Marker) -> Option<CompletedMarker> {
-        self.expect(T![struct]);
-        self.identifier(STRUCT_NAME);
-
-        self.expect(T![=]);
-
-        {
-            let body = self.start();
-
-            self.record_type();
-
-            body.complete(self, STRUCT_FIELDS);
-        }
-
-        Some(struct_def.complete(self, STRUCT_DEF))
-    }
-
-    // test typedefs
-    // - typedef Foo = Bar
-    // TODO: Generic type aliases
-    fn record_type(&mut self) -> Option<CompletedMarker> {
-        let record = self.start();
-
-        self.identifier(RECORD_NAME);
-
-        if self.try_expect(T!['{']) {
-            while !self.at(T!['}']) {
-                let field = self.start();
-
-                self.pattern();
-                self.expect(T![:]);
-                self.ty();
-                self.eat_commas();
-
-                field.complete(self, RECORD_FIELD);
-            }
-            self.expect(T!['}']);
-        }
-
-        Some(record.complete(self, RECORD_TYPE))
-    }
-
     // test argument_attributes
-    // - function foo(
+    // - fn foo(
     // -     #[by_val]
     // -     bar: Baz,
     // - ) {}
-    // - relation Bar(
-    // -     #[by_val]
-    // -     bar: Baz,
-    // - )
     fn argument(&mut self, kind: SyntaxKind) -> Option<CompletedMarker> {
         let column = self.start();
 
@@ -249,6 +155,83 @@ impl Parser<'_, '_> {
         self.eat_commas();
 
         Some(column.complete(self, kind))
+    }
+
+    // test struct_defs
+    // - struct Foo {}
+    // - struct Foo1 {
+    // -     bar: usize,
+    // - }
+    // - struct Foo2 {
+    // -     bar: usize
+    // - }
+    // - struct TupleStruct();
+    // - struct TupleStruct(u8, u8, u8);
+    fn struct_def(&mut self, struct_def: Marker) -> Option<CompletedMarker> {
+        self.expect(T![struct]);
+        self.ident();
+
+        let fields = self.start();
+        if self.at(T!['{']) {
+            self.bracketed_struct_fields();
+        } else if self.at(T!['(']) {
+            self.tuple_struct_fields();
+        } else {
+            // TODO: Error handling
+        }
+        fields.complete(self, STRUCT_FIELDS);
+
+        Some(struct_def.complete(self, STRUCT_DEF))
+    }
+
+    fn bracketed_struct_fields(&mut self) -> Option<CompletedMarker> {
+        let fields = self.start();
+        self.expect(T!['{']);
+
+        while !self.at(T!['}']) {
+            // TODO: Error handling
+            self.bracketed_struct_field();
+        }
+
+        self.expect(T!['}']);
+        Some(fields.complete(self, BRACKETED_STRUCT_FIELDS))
+    }
+
+    fn bracketed_struct_field(&mut self) -> Option<CompletedMarker> {
+        let field = self.start();
+
+        // TODO: Error handling
+        self.ident();
+        self.eat(T![:]);
+        self.ty();
+        self.eat_commas();
+
+        Some(field.complete(self, BRACKETED_STRUCT_FIELD))
+    }
+
+    fn tuple_struct_fields(&mut self) -> Option<CompletedMarker> {
+        let fields = self.start();
+        self.expect(T!['(']);
+
+        while !self.at(T![')']) {
+            // TODO: Error handling
+            self.tuple_struct_field();
+        }
+
+        self.expect(T![')']);
+        self.eat_semicolons();
+
+        Some(fields.complete(self, TUPLE_STRUCT_FIELDS))
+    }
+
+    fn tuple_struct_field(&mut self) -> Option<CompletedMarker> {
+        let field = self.start();
+
+        // TODO: Error handling
+        self.ty();
+        self.eat_commas();
+
+        Some(field.complete(self, TUPLE_STRUCT_FIELD))
     }
 
     // TODO: Extend to full types
@@ -272,8 +255,7 @@ impl Parser<'_, '_> {
     }
 
     // test generic_types
-    // - function foo(bar: Bar<Baz>) {}
-    // - relation Foo(bar: Bar<Baz>)
+    // - fn foo(bar: Bar<Baz>) {}
     fn type_name(&mut self) -> Option<CompletedMarker> {
         let generic = self.start();
 
@@ -298,8 +280,7 @@ impl Parser<'_, '_> {
     }
 
     // test tuple_types
-    // - function foo(bar: (Bar, Baz)) {}
-    // - relation Foo(bar: (Bar, Baz,))
+    // - fn foo(bar: (Bar, Baz)) {}
     fn tuple_type(&mut self) -> Option<CompletedMarker> {
         let tuple = self.start();
         self.expect(T!['(']);
@@ -318,10 +299,10 @@ impl Parser<'_, '_> {
     }
 
     // test function_types
-    // - fn foo(bar: fn(Bar, Baz): Bing) {}
-    // - fn Foo(bar: fn(Bar, Baz,): Bing,)
+    // - fn foo(bar: fn(Bar, Baz) -> Bing) {}
+    // - fn Foo(bar: fn(Bar, Baz,) -> Bing,)
     // - fn foo(bar: fn(Bar)) {}
-    // - fn Foo(bar: fn(Bar,))
+    // - fn Foo(bar: fn(Bar,)) -> fn(Bong, Bang) {}
     fn function_type(&mut self) -> Option<CompletedMarker> {
         let function = self.start();
 
@@ -347,8 +328,8 @@ impl Parser<'_, '_> {
         {
             let ret = self.start();
 
-            // FIXME: Error recovery for missing `:`
-            if self.try_expect(T![:]) {
+            // FIXME: Error recovery for missing `->`
+            if self.try_expect(T![->]) {
                 self.ty();
             }
 
@@ -369,18 +350,37 @@ impl Parser<'_, '_> {
     }
 
     // test indiscriminantly_modify
-    // - input input input input input output extern output input relation Foo()
-    // - input input input input input output extern output input function foo() {}
-    // - extern extern extern relation Foo()
-    // - extern extern input extern stream Foo()
-    // - extern extern extern function foo() {}
-    fn modifiers(&mut self) -> CompletedMarker {
-        let modifiers = self.start();
+    // - pub pub pub pub pub fn foo() {}
+    fn modifiers(&mut self) {
         while self.at_set(MODIFIER_KEYWORDS) {
-            self.bump();
+            if self.modifier().is_none() {
+                break;
+            }
         }
+    }
 
-        modifiers.complete(self, MODIFIERS)
+    fn modifier(&mut self) -> Option<CompletedMarker> {
+        let modifier = self.start();
+        if self.at(T![pub]) {
+            self.bump();
+            Some(modifier.complete(self, MODIFIER))
+        } else {
+            tracing::trace!("unexpected token for modifier '{}'", self.current());
+
+            let error_start = self.current_span();
+            let error_end = self.error_eat_until(ITEM_RECOVERY);
+            let error_span = error_start.merge(error_end);
+
+            let error = Diagnostic::error()
+                .with_message("expected a modifier")
+                .with_label(
+                    Label::primary(error_span).with_message("expected a modifier like `pub`"),
+                );
+            self.push_error(error);
+
+            modifier.abandon(self);
+            None
+        }
     }
 
     // test attributes
@@ -388,17 +388,13 @@ impl Parser<'_, '_> {
     // - #[something_else = 10,,,]
     // - #[something_again = wheee,,,]
     // - fn foobaz() {}
-    fn attributes(&mut self) -> CompletedMarker {
-        let attributes = self.start();
-
+    fn attributes(&mut self) {
         while self.at(T!["#["]) {
             if self.attribute().is_none() {
                 // TODO: Error handling & recovery
                 break;
             }
         }
-
-        attributes.complete(self, ATTRIBUTES)
     }
 
     // test attribute

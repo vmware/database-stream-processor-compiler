@@ -1,21 +1,17 @@
 ROOT@0..61
   COMMENT@0..51 "// kind:expr validate ..."
   WHITESPACE@51..52 "\n"
-  EXPR@52..61
-    PAREN_EXPR@52..61
-      L_PAREN@52..53 "("
-      EXPR@53..61
-        PAREN_EXPR@53..60
-          L_PAREN@53..54 "("
-          EXPR@54..59
-            PAREN_EXPR@54..59
-              L_PAREN@54..55 "("
-              EXPR@55..58
-                LITERAL@55..58
-                  NUMBER@55..58 "100"
-              R_PAREN@58..59 ")"
-          R_PAREN@59..60 ")"
-        WHITESPACE@60..61 "\n"
+  PAREN_EXPR@52..61
+    L_PAREN@52..53 "("
+    PAREN_EXPR@53..60
+      L_PAREN@53..54 "("
+      PAREN_EXPR@54..59
+        L_PAREN@54..55 "("
+        NUMBER_LITERAL@55..58
+          NUMBER_LITERAL@55..58 "100"
+        R_PAREN@58..59 ")"
+      R_PAREN@59..60 ")"
+    WHITESPACE@60..61 "\n"
 --
 Error: expected ')' but instead the file ends
    ,-[parse/fail/unclosed_paren.dl:2:10]

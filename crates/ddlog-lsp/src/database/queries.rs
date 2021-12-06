@@ -1,7 +1,7 @@
 use crate::providers::document_symbols;
 use ddlog_diagnostics::{Diagnostic, FileId, Rope};
 use ddlog_syntax::{
-    ast::nodes::{FunctionArg, FunctionDef, RelCol, RelationDef},
+    ast::nodes::{BracketedStructField, FunctionArg, FunctionDef, StructDef},
     validation, RuleCtx, SyntaxNode,
 };
 use ddlog_utils::{Arc, ArcSlice};
@@ -88,14 +88,14 @@ pub trait DocumentSymbols: Source {
         arg: FunctionArg,
     ) -> Option<ArcSlice<DocumentSymbol>>;
 
-    #[salsa::invoke(document_symbols::document_relation)]
-    fn document_relation(&self, file: FileId, relation: RelationDef) -> DocumentSymbol;
+    #[salsa::invoke(document_symbols::document_struct)]
+    fn document_struct(&self, file: FileId, strct: StructDef) -> DocumentSymbol;
 
-    #[salsa::invoke(document_symbols::document_relation_column)]
-    fn document_relation_column(
+    #[salsa::invoke(document_symbols::document_struct_field)]
+    fn document_struct_field(
         &self,
         file: FileId,
-        column: RelCol,
+        field: BracketedStructField,
     ) -> Option<ArcSlice<DocumentSymbol>>;
 }
 

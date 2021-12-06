@@ -1,5 +1,5 @@
 // kind:item validate:false pass:true ignore:false
-function fibonacci(n: usize): usize {
+fn fibonacci(n: usize) -> usize {
     if n == 0 or n == 1 {
         return n;
     } else {

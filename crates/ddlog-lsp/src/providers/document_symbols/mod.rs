@@ -1,8 +1,8 @@
 mod database;
 
 pub(crate) use database::{
-    declarations, document_function, document_function_arg, document_relation,
-    document_relation_column, document_symbols,
+    declarations, document_function, document_function_arg, document_struct, document_struct_field,
+    document_symbols,
 };
 
 use crate::database::{DDlogDatabase, DocumentSymbols, Session};

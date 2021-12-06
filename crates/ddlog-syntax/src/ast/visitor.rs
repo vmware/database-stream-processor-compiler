@@ -1,6 +1,7 @@
 use crate::ast::nodes::{FunctionDef, Item, RelationDef, Root, TypeDef};
 use std::ops::Deref;
 
+// TODO: Automatically generate this
 #[allow(unused_variables)]
 pub trait AstVisitor {
     #[inline]

@@ -1,20 +1,18 @@
 ROOT@0..60
   COMMENT@0..50 "// kind:expr validate ..."
   WHITESPACE@50..51 "\n"
-  EXPR@51..60
-    UNARY_EXPR@51..60
-      UNARY_OP@51..52
-        MINUS@51..52 "-"
-      UNARY_EXPR@52..60
-        UNARY_OP@52..53
-          MINUS@52..53 "-"
-        PAREN_EXPR@53..59
-          L_PAREN@53..54 "("
-          EXPR@54..58
-            UNARY_EXPR@54..58
-              UNARY_OP@54..55
-                MINUS@54..55 "-"
-              LITERAL@55..58
-                NUMBER@55..58 "100"
-          R_PAREN@58..59 ")"
-        WHITESPACE@59..60 "\n"
+  UNARY_EXPR@51..60
+    UNARY_OP@51..52
+      MINUS@51..52 "-"
+    UNARY_EXPR@52..60
+      UNARY_OP@52..53
+        MINUS@52..53 "-"
+      PAREN_EXPR@53..59
+        L_PAREN@53..54 "("
+        UNARY_EXPR@54..58
+          UNARY_OP@54..55
+            MINUS@54..55 "-"
+          NUMBER_LITERAL@55..58
+            NUMBER_LITERAL@55..58 "100"
+        R_PAREN@58..59 ")"
+      WHITESPACE@59..60 "\n"

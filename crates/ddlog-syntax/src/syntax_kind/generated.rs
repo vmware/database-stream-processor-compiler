@@ -2,17 +2,22 @@
 #[allow(non_camel_case_types, clippy::upper_case_acronyms)]
 #[repr(u16)]
 pub enum SyntaxKind {
+    #[token("&")]
     AMPERSAND = 0u16,
+    #[token("&=")]
     AMPERSAND_EQ = 1u16,
+    #[token("and")]
     AND_TOKEN = 2u16,
     ARRAY_ACCESS = 3u16,
     ARRAY_EXPR_ELEM = 4u16,
     ARRAY_INIT_EXPR = 5u16,
     ASSIGN = 6u16,
     ASSIGN_OP = 7u16,
+    #[token("as")]
     AS_TOKEN = 8u16,
     ATTRIBUTE = 9u16,
     ATTR_PAIR = 10u16,
+    #[token("!")]
     BANG = 11u16,
     BIN_EXPR = 12u16,
     BIN_OP = 13u16,
@@ -21,159 +26,235 @@ pub enum SyntaxKind {
     BRACKETED_STRUCT_FIELD = 16u16,
     BRACKETED_STRUCT_FIELDS = 17u16,
     BREAK_EXPR = 18u16,
+    #[token("break")]
     BREAK_TOKEN = 19u16,
+    #[token("^")]
     CARET = 20u16,
+    #[token("^=")]
     CARET_EQ = 21u16,
     CLOSURE_ARG = 22u16,
     CLOSURE_EXPR = 23u16,
+    #[token(":")]
     COLON = 24u16,
+    #[token(",")]
     COMMA = 25u16,
     #[regex("//.*")]
     #[regex("///.*")]
     #[token("/*", lex_block_comment)]
     COMMENT = 26u16,
     CONST_DEF = 27u16,
+    #[token("const")]
     CONST_TOKEN = 28u16,
     CONTINUE_EXPR = 29u16,
+    #[token("continue")]
     CONTINUE_TOKEN = 30u16,
+    #[token(".")]
     DOT = 31u16,
+    #[token("::")]
     DOUBLE_COLON = 32u16,
+    #[token("..")]
     DOUBLE_DOT = 33u16,
+    #[token("..=")]
     DOUBLE_DOT_EQ = 34u16,
     ELSE_BLOCK = 35u16,
+    #[token("else")]
     ELSE_TOKEN = 36u16,
     ENUM_DEF = 37u16,
+    #[token("enum")]
     ENUM_TOKEN = 38u16,
     ENUM_VARIANT = 39u16,
     ENUM_VARIANTS = 40u16,
-    EOF = 41u16,
-    EQ = 42u16,
-    EQEQ = 43u16,
+    ENUM_VARIANT_BODY = 41u16,
+    #[token("eof")]
+    EOF = 42u16,
+    #[token("=")]
+    EQ = 43u16,
+    #[token("==")]
+    EQEQ = 44u16,
     #[error]
-    ERROR = 44u16,
-    EXPR_STMT = 45u16,
-    FALSE_TOKEN = 46u16,
-    FIELD_ACCESS = 47u16,
-    FIELD_ACCESSOR_NAME = 48u16,
-    FN_TOKEN = 49u16,
-    FOR_EXPR = 50u16,
-    FOR_TOKEN = 51u16,
-    FUNCTION_ARG = 52u16,
-    FUNCTION_ARGS = 53u16,
-    FUNCTION_CALL = 54u16,
-    FUNCTION_CALL_ARG = 55u16,
-    FUNCTION_DEF = 56u16,
-    FUNCTION_RETURN = 57u16,
-    FUNCTION_RETURN_TYPE = 58u16,
-    FUNCTION_TYPE = 59u16,
-    FUNCTION_TYPE_ARG = 60u16,
-    FUNCTION_TYPE_ARGS = 61u16,
-    GENERICS = 62u16,
-    GENERIC_ARG = 63u16,
-    GENERIC_TYPE = 64u16,
-    HASH_BRACK = 65u16,
+    ERROR = 45u16,
+    EXPR = 46u16,
+    EXPR_STMT = 47u16,
+    #[token("false")]
+    FALSE_TOKEN = 48u16,
+    FIELD_ACCESS = 49u16,
+    FIELD_ACCESSOR = 50u16,
+    FIELD_ACCESSOR_NAME = 51u16,
+    #[token("fn")]
+    FN_TOKEN = 52u16,
+    FOR_EXPR = 53u16,
+    #[token("for")]
+    FOR_TOKEN = 54u16,
+    FUNCTION_ARG = 55u16,
+    FUNCTION_ARGS = 56u16,
+    FUNCTION_CALL = 57u16,
+    FUNCTION_CALL_ARG = 58u16,
+    FUNCTION_DEF = 59u16,
+    FUNCTION_RETURN = 60u16,
+    FUNCTION_RETURN_TYPE = 61u16,
+    FUNCTION_TYPE = 62u16,
+    FUNCTION_TYPE_ARG = 63u16,
+    FUNCTION_TYPE_ARGS = 64u16,
+    GENERICS = 65u16,
+    GENERIC_ARG = 66u16,
+    GENERIC_TYPE = 67u16,
+    #[token("#[")]
+    HASH_BRACK = 68u16,
     #[regex("[A-Za-z_'][A-Za-z0-9_']*")]
-    IDENT = 66u16,
-    IF_BLOCK = 67u16,
-    IF_EXPR = 68u16,
-    IF_TOKEN = 69u16,
-    IMPL_BLOCK = 70u16,
-    IMPL_BLOCK_CONTENTS = 71u16,
-    IMPL_TOKEN = 72u16,
-    IN_TOKEN = 73u16,
-    LET_TOKEN = 74u16,
-    LOOP_EXPR = 75u16,
-    LOOP_TOKEN = 76u16,
-    L_ANGLE = 77u16,
-    L_ANGLE_EQ = 78u16,
-    L_BRACK = 79u16,
-    L_CURLY = 80u16,
-    L_PAREN = 81u16,
-    MATCH_ARM = 82u16,
-    MATCH_EXPR = 83u16,
-    MATCH_TOKEN = 84u16,
-    MINUS = 85u16,
-    MINUS_EQ = 86u16,
-    MODIFIER = 87u16,
-    NEQ = 88u16,
-    NUMBER = 89u16,
+    IDENT = 69u16,
+    IF_BLOCK = 70u16,
+    IF_EXPR = 71u16,
+    #[token("if")]
+    IF_TOKEN = 72u16,
+    IMPL_BLOCK = 73u16,
+    IMPL_BLOCK_CONTENTS = 74u16,
+    #[token("impl")]
+    IMPL_TOKEN = 75u16,
+    #[token("in")]
+    IN_TOKEN = 76u16,
+    ITEM = 77u16,
+    #[token("let")]
+    LET_TOKEN = 78u16,
+    LITERAL = 79u16,
+    LOOP_EXPR = 80u16,
+    #[token("loop")]
+    LOOP_TOKEN = 81u16,
+    #[token("<")]
+    L_ANGLE = 82u16,
+    #[token("<=")]
+    L_ANGLE_EQ = 83u16,
+    #[token("[")]
+    L_BRACK = 84u16,
+    #[token("{")]
+    L_CURLY = 85u16,
+    #[token("(")]
+    L_PAREN = 86u16,
+    MATCH_ARM = 87u16,
+    MATCH_EXPR = 88u16,
+    #[token("match")]
+    MATCH_TOKEN = 89u16,
+    #[token("-")]
+    MINUS = 90u16,
+    #[token("-=")]
+    MINUS_EQ = 91u16,
+    MODIFIER = 92u16,
+    #[token("!=")]
+    NEQ = 93u16,
+    NUMBER = 94u16,
     #[regex("[0-9][0-9_]*")]
     #[regex("0b[0-1][0-1_]*")]
     #[regex("0x[0-9a-fA-F][0-9a-fA-F_]*")]
-    NUMBER_LITERAL = 90u16,
-    OR_TOKEN = 91u16,
-    PAREN_EXPR = 92u16,
-    PATH = 93u16,
-    PATH_TAIL = 94u16,
-    PERCENT = 95u16,
-    PERCENT_EQ = 96u16,
-    PIPE = 97u16,
-    PIPE_EQ = 98u16,
-    PLUS = 99u16,
-    PLUS_EQ = 100u16,
-    PUB_TOKEN = 101u16,
-    QUALIFIED_REF = 102u16,
-    RANGE_EXPR = 103u16,
-    RANGE_OP = 104u16,
-    RETURN_TOKEN = 105u16,
-    RET_EXPR = 106u16,
-    RIGHT_ARROW = 107u16,
-    RIGHT_ROCKET = 108u16,
-    ROOT = 109u16,
-    R_ANGLE = 110u16,
-    R_ANGLE_EQ = 111u16,
-    R_BRACK = 112u16,
-    R_CURLY = 113u16,
-    R_PAREN = 114u16,
-    SEMICOLON = 115u16,
-    SHL = 116u16,
-    SHL_EQ = 117u16,
-    SHR = 118u16,
-    SHR_EQ = 119u16,
-    SLASH = 120u16,
-    SLASH_EQ = 121u16,
-    STAR = 122u16,
-    STAR_EQ = 123u16,
-    STRING = 124u16,
-    STRING_LITERAL = 125u16,
-    STRUCT_DEF = 126u16,
-    STRUCT_INIT_EXPR = 127u16,
-    STRUCT_INIT_FIELD = 128u16,
-    STRUCT_PATTERN = 129u16,
-    STRUCT_PATTERN_FIELD = 130u16,
-    STRUCT_TOKEN = 131u16,
-    TOMBSTONE = 132u16,
-    TRUE_TOKEN = 133u16,
-    TUPLE_EXPR_ELEM = 134u16,
-    TUPLE_INIT_EXPR = 135u16,
-    TUPLE_PATTERN = 136u16,
-    TUPLE_PATTERN_ELEM = 137u16,
-    TUPLE_STRUCT_FIELD = 138u16,
-    TUPLE_STRUCT_FIELDS = 139u16,
-    TUPLE_TYPE = 140u16,
-    TUPLE_TYPE_ELEM = 141u16,
-    TYPE_ALIAS = 142u16,
-    TYPE_TOKEN = 143u16,
-    UNARY_EXPR = 144u16,
-    UNARY_OP = 145u16,
-    USE_ALIAS = 146u16,
-    USE_BRANCH = 147u16,
-    USE_DEF = 148u16,
-    USE_TOKEN = 149u16,
-    VARIANT_STRUCT = 150u16,
-    VARIANT_STRUCT_FIELD = 151u16,
-    VARIANT_TUPLE = 152u16,
-    VARIANT_TUPLE_ELEM = 153u16,
-    VAR_DECL = 154u16,
-    VAR_REF = 155u16,
-    WHILE_EXPR = 156u16,
-    WHILE_TOKEN = 157u16,
+    NUMBER_LITERAL = 95u16,
+    #[token("or")]
+    OR_TOKEN = 96u16,
+    PAREN_EXPR = 97u16,
+    PATH = 98u16,
+    PATH_TAIL = 99u16,
+    PATTERN = 100u16,
+    #[token("%")]
+    PERCENT = 101u16,
+    #[token("%=")]
+    PERCENT_EQ = 102u16,
+    #[token("|")]
+    PIPE = 103u16,
+    #[token("|=")]
+    PIPE_EQ = 104u16,
+    #[token("+")]
+    PLUS = 105u16,
+    #[token("+=")]
+    PLUS_EQ = 106u16,
+    #[token("pub")]
+    PUB_TOKEN = 107u16,
+    QUALIFIED_REF = 108u16,
+    RANGE_EXPR = 109u16,
+    RANGE_OP = 110u16,
+    #[token("return")]
+    RETURN_TOKEN = 111u16,
+    RET_EXPR = 112u16,
+    #[token("->")]
+    RIGHT_ARROW = 113u16,
+    #[token("=>")]
+    RIGHT_ROCKET = 114u16,
+    ROOT = 115u16,
+    #[token(">")]
+    R_ANGLE = 116u16,
+    #[token(">=")]
+    R_ANGLE_EQ = 117u16,
+    #[token("]")]
+    R_BRACK = 118u16,
+    #[token("}")]
+    R_CURLY = 119u16,
+    #[token(")")]
+    R_PAREN = 120u16,
+    #[token(";")]
+    SEMICOLON = 121u16,
+    #[token("<<")]
+    SHL = 122u16,
+    #[token("<<=")]
+    SHL_EQ = 123u16,
+    #[token(">>")]
+    SHR = 124u16,
+    #[token(">>=")]
+    SHR_EQ = 125u16,
+    #[token("/")]
+    SLASH = 126u16,
+    #[token("/=")]
+    SLASH_EQ = 127u16,
+    #[token("*")]
+    STAR = 128u16,
+    #[token("*=")]
+    STAR_EQ = 129u16,
+    STMT = 130u16,
+    STRING = 131u16,
+    #[regex("\"[^\"]*\"")]
+    STRING_LITERAL = 132u16,
+    STRUCT_DEF = 133u16,
+    STRUCT_FIELDS = 134u16,
+    STRUCT_INIT_EXPR = 135u16,
+    STRUCT_INIT_FIELD = 136u16,
+    STRUCT_PATTERN = 137u16,
+    STRUCT_PATTERN_FIELD = 138u16,
+    #[token("struct")]
+    STRUCT_TOKEN = 139u16,
+    #[token("tombstone")]
+    TOMBSTONE = 140u16,
+    #[token("true")]
+    TRUE_TOKEN = 141u16,
+    TUPLE_EXPR_ELEM = 142u16,
+    TUPLE_INIT_EXPR = 143u16,
+    TUPLE_PATTERN = 144u16,
+    TUPLE_PATTERN_ELEM = 145u16,
+    TUPLE_STRUCT_FIELD = 146u16,
+    TUPLE_STRUCT_FIELDS = 147u16,
+    TUPLE_TYPE = 148u16,
+    TUPLE_TYPE_ELEM = 149u16,
+    TYPE = 150u16,
+    TYPE_ALIAS = 151u16,
+    #[token("type")]
+    TYPE_TOKEN = 152u16,
+    UNARY_EXPR = 153u16,
+    UNARY_OP = 154u16,
+    USE_ALIAS = 155u16,
+    USE_BRANCH = 156u16,
+    USE_BRANCH_OR_ALIAS = 157u16,
+    USE_DEF = 158u16,
+    #[token("use")]
+    USE_TOKEN = 159u16,
+    VARIANT_STRUCT = 160u16,
+    VARIANT_STRUCT_FIELD = 161u16,
+    VARIANT_TUPLE = 162u16,
+    VARIANT_TUPLE_ELEM = 163u16,
+    VAR_DECL = 164u16,
+    VAR_REF = 165u16,
+    WHILE_EXPR = 166u16,
+    #[token("while")]
+    WHILE_TOKEN = 167u16,
     #[regex("[\n\t\r ]+")]
-    WHITESPACE = 158u16,
+    WHITESPACE = 168u16,
 }
 impl SyntaxKind {
     /// The maximum discriminant of the [`SyntaxKind`] enum
-    pub const MAXIMUM_DISCRIMINANT: u16 = 158u16;
+    pub const MAXIMUM_DISCRIMINANT: u16 = 168u16;
 }
 fn lex_block_comment(lexer: &mut logos::Lexer<'_, SyntaxKind>) -> bool {
     let remainder = lexer.remainder();
@@ -240,13 +321,16 @@ impl ::core::fmt::Debug for SyntaxKind {
             Self::ENUM_TOKEN => ::core::fmt::Formatter::write_str(f, "ENUM_TOKEN"),
             Self::ENUM_VARIANT => ::core::fmt::Formatter::write_str(f, "ENUM_VARIANT"),
             Self::ENUM_VARIANTS => ::core::fmt::Formatter::write_str(f, "ENUM_VARIANTS"),
+            Self::ENUM_VARIANT_BODY => ::core::fmt::Formatter::write_str(f, "ENUM_VARIANT_BODY"),
             Self::EOF => ::core::fmt::Formatter::write_str(f, "EOF"),
             Self::EQ => ::core::fmt::Formatter::write_str(f, "EQ"),
             Self::EQEQ => ::core::fmt::Formatter::write_str(f, "EQEQ"),
             Self::ERROR => ::core::fmt::Formatter::write_str(f, "ERROR"),
+            Self::EXPR => ::core::fmt::Formatter::write_str(f, "EXPR"),
             Self::EXPR_STMT => ::core::fmt::Formatter::write_str(f, "EXPR_STMT"),
             Self::FALSE_TOKEN => ::core::fmt::Formatter::write_str(f, "FALSE_TOKEN"),
             Self::FIELD_ACCESS => ::core::fmt::Formatter::write_str(f, "FIELD_ACCESS"),
+            Self::FIELD_ACCESSOR => ::core::fmt::Formatter::write_str(f, "FIELD_ACCESSOR"),
             Self::FIELD_ACCESSOR_NAME => {
                 ::core::fmt::Formatter::write_str(f, "FIELD_ACCESSOR_NAME")
             }
@@ -279,7 +363,9 @@ impl ::core::fmt::Debug for SyntaxKind {
             }
             Self::IMPL_TOKEN => ::core::fmt::Formatter::write_str(f, "IMPL_TOKEN"),
             Self::IN_TOKEN => ::core::fmt::Formatter::write_str(f, "IN_TOKEN"),
+            Self::ITEM => ::core::fmt::Formatter::write_str(f, "ITEM"),
             Self::LET_TOKEN => ::core::fmt::Formatter::write_str(f, "LET_TOKEN"),
+            Self::LITERAL => ::core::fmt::Formatter::write_str(f, "LITERAL"),
             Self::LOOP_EXPR => ::core::fmt::Formatter::write_str(f, "LOOP_EXPR"),
             Self::LOOP_TOKEN => ::core::fmt::Formatter::write_str(f, "LOOP_TOKEN"),
             Self::L_ANGLE => ::core::fmt::Formatter::write_str(f, "L_ANGLE"),
@@ -300,6 +386,7 @@ impl ::core::fmt::Debug for SyntaxKind {
             Self::PAREN_EXPR => ::core::fmt::Formatter::write_str(f, "PAREN_EXPR"),
             Self::PATH => ::core::fmt::Formatter::write_str(f, "PATH"),
             Self::PATH_TAIL => ::core::fmt::Formatter::write_str(f, "PATH_TAIL"),
+            Self::PATTERN => ::core::fmt::Formatter::write_str(f, "PATTERN"),
             Self::PERCENT => ::core::fmt::Formatter::write_str(f, "PERCENT"),
             Self::PERCENT_EQ => ::core::fmt::Formatter::write_str(f, "PERCENT_EQ"),
             Self::PIPE => ::core::fmt::Formatter::write_str(f, "PIPE"),
@@ -329,9 +416,11 @@ impl ::core::fmt::Debug for SyntaxKind {
             Self::SLASH_EQ => ::core::fmt::Formatter::write_str(f, "SLASH_EQ"),
             Self::STAR => ::core::fmt::Formatter::write_str(f, "STAR"),
             Self::STAR_EQ => ::core::fmt::Formatter::write_str(f, "STAR_EQ"),
+            Self::STMT => ::core::fmt::Formatter::write_str(f, "STMT"),
             Self::STRING => ::core::fmt::Formatter::write_str(f, "STRING"),
             Self::STRING_LITERAL => ::core::fmt::Formatter::write_str(f, "STRING_LITERAL"),
             Self::STRUCT_DEF => ::core::fmt::Formatter::write_str(f, "STRUCT_DEF"),
+            Self::STRUCT_FIELDS => ::core::fmt::Formatter::write_str(f, "STRUCT_FIELDS"),
             Self::STRUCT_INIT_EXPR => ::core::fmt::Formatter::write_str(f, "STRUCT_INIT_EXPR"),
             Self::STRUCT_INIT_FIELD => ::core::fmt::Formatter::write_str(f, "STRUCT_INIT_FIELD"),
             Self::STRUCT_PATTERN => ::core::fmt::Formatter::write_str(f, "STRUCT_PATTERN"),
@@ -351,12 +440,16 @@ impl ::core::fmt::Debug for SyntaxKind {
             }
             Self::TUPLE_TYPE => ::core::fmt::Formatter::write_str(f, "TUPLE_TYPE"),
             Self::TUPLE_TYPE_ELEM => ::core::fmt::Formatter::write_str(f, "TUPLE_TYPE_ELEM"),
+            Self::TYPE => ::core::fmt::Formatter::write_str(f, "TYPE"),
             Self::TYPE_ALIAS => ::core::fmt::Formatter::write_str(f, "TYPE_ALIAS"),
             Self::TYPE_TOKEN => ::core::fmt::Formatter::write_str(f, "TYPE_TOKEN"),
             Self::UNARY_EXPR => ::core::fmt::Formatter::write_str(f, "UNARY_EXPR"),
             Self::UNARY_OP => ::core::fmt::Formatter::write_str(f, "UNARY_OP"),
             Self::USE_ALIAS => ::core::fmt::Formatter::write_str(f, "USE_ALIAS"),
             Self::USE_BRANCH => ::core::fmt::Formatter::write_str(f, "USE_BRANCH"),
+            Self::USE_BRANCH_OR_ALIAS => {
+                ::core::fmt::Formatter::write_str(f, "USE_BRANCH_OR_ALIAS")
+            }
             Self::USE_DEF => ::core::fmt::Formatter::write_str(f, "USE_DEF"),
             Self::USE_TOKEN => ::core::fmt::Formatter::write_str(f, "USE_TOKEN"),
             Self::VARIANT_STRUCT => ::core::fmt::Formatter::write_str(f, "VARIANT_STRUCT"),
@@ -421,13 +514,16 @@ impl ::core::fmt::Display for SyntaxKind {
             Self::ENUM_TOKEN => ::core::fmt::Formatter::write_str(f, "enum"),
             Self::ENUM_VARIANT => ::core::fmt::Formatter::write_str(f, "ENUM_VARIANT"),
             Self::ENUM_VARIANTS => ::core::fmt::Formatter::write_str(f, "ENUM_VARIANTS"),
+            Self::ENUM_VARIANT_BODY => ::core::fmt::Formatter::write_str(f, "ENUM_VARIANT_BODY"),
             Self::EOF => ::core::fmt::Formatter::write_str(f, "EOF"),
             Self::EQ => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '='),
             Self::EQEQ => ::core::fmt::Formatter::write_str(f, "=="),
             Self::ERROR => ::core::fmt::Formatter::write_str(f, "???"),
+            Self::EXPR => ::core::fmt::Formatter::write_str(f, "EXPR"),
             Self::EXPR_STMT => ::core::fmt::Formatter::write_str(f, "EXPR_STMT"),
             Self::FALSE_TOKEN => ::core::fmt::Formatter::write_str(f, "false"),
             Self::FIELD_ACCESS => ::core::fmt::Formatter::write_str(f, "FIELD_ACCESS"),
+            Self::FIELD_ACCESSOR => ::core::fmt::Formatter::write_str(f, "FIELD_ACCESSOR"),
             Self::FIELD_ACCESSOR_NAME => {
                 ::core::fmt::Formatter::write_str(f, "FIELD_ACCESSOR_NAME")
             }
@@ -460,7 +556,9 @@ impl ::core::fmt::Display for SyntaxKind {
             }
             Self::IMPL_TOKEN => ::core::fmt::Formatter::write_str(f, "impl"),
             Self::IN_TOKEN => ::core::fmt::Formatter::write_str(f, "in"),
+            Self::ITEM => ::core::fmt::Formatter::write_str(f, "ITEM"),
             Self::LET_TOKEN => ::core::fmt::Formatter::write_str(f, "let"),
+            Self::LITERAL => ::core::fmt::Formatter::write_str(f, "LITERAL"),
             Self::LOOP_EXPR => ::core::fmt::Formatter::write_str(f, "LOOP_EXPR"),
             Self::LOOP_TOKEN => ::core::fmt::Formatter::write_str(f, "loop"),
             Self::L_ANGLE => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '<'),
@@ -481,6 +579,7 @@ impl ::core::fmt::Display for SyntaxKind {
             Self::PAREN_EXPR => ::core::fmt::Formatter::write_str(f, "PAREN_EXPR"),
             Self::PATH => ::core::fmt::Formatter::write_str(f, "PATH"),
             Self::PATH_TAIL => ::core::fmt::Formatter::write_str(f, "PATH_TAIL"),
+            Self::PATTERN => ::core::fmt::Formatter::write_str(f, "PATTERN"),
             Self::PERCENT => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '%'),
             Self::PERCENT_EQ => ::core::fmt::Formatter::write_str(f, "%="),
             Self::PIPE => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '|'),
@@ -510,9 +609,11 @@ impl ::core::fmt::Display for SyntaxKind {
             Self::SLASH_EQ => ::core::fmt::Formatter::write_str(f, "/="),
             Self::STAR => <::core::fmt::Formatter as ::core::fmt::Write>::write_char(f, '*'),
             Self::STAR_EQ => ::core::fmt::Formatter::write_str(f, "*="),
+            Self::STMT => ::core::fmt::Formatter::write_str(f, "STMT"),
             Self::STRING => ::core::fmt::Formatter::write_str(f, "STRING"),
             Self::STRING_LITERAL => ::core::fmt::Formatter::write_str(f, "STRING_LITERAL"),
             Self::STRUCT_DEF => ::core::fmt::Formatter::write_str(f, "STRUCT_DEF"),
+            Self::STRUCT_FIELDS => ::core::fmt::Formatter::write_str(f, "STRUCT_FIELDS"),
             Self::STRUCT_INIT_EXPR => ::core::fmt::Formatter::write_str(f, "STRUCT_INIT_EXPR"),
             Self::STRUCT_INIT_FIELD => ::core::fmt::Formatter::write_str(f, "STRUCT_INIT_FIELD"),
             Self::STRUCT_PATTERN => ::core::fmt::Formatter::write_str(f, "STRUCT_PATTERN"),
@@ -532,12 +633,16 @@ impl ::core::fmt::Display for SyntaxKind {
             }
             Self::TUPLE_TYPE => ::core::fmt::Formatter::write_str(f, "TUPLE_TYPE"),
             Self::TUPLE_TYPE_ELEM => ::core::fmt::Formatter::write_str(f, "TUPLE_TYPE_ELEM"),
+            Self::TYPE => ::core::fmt::Formatter::write_str(f, "TYPE"),
             Self::TYPE_ALIAS => ::core::fmt::Formatter::write_str(f, "TYPE_ALIAS"),
             Self::TYPE_TOKEN => ::core::fmt::Formatter::write_str(f, "type"),
             Self::UNARY_EXPR => ::core::fmt::Formatter::write_str(f, "UNARY_EXPR"),
             Self::UNARY_OP => ::core::fmt::Formatter::write_str(f, "UNARY_OP"),
             Self::USE_ALIAS => ::core::fmt::Formatter::write_str(f, "USE_ALIAS"),
             Self::USE_BRANCH => ::core::fmt::Formatter::write_str(f, "USE_BRANCH"),
+            Self::USE_BRANCH_OR_ALIAS => {
+                ::core::fmt::Formatter::write_str(f, "USE_BRANCH_OR_ALIAS")
+            }
             Self::USE_DEF => ::core::fmt::Formatter::write_str(f, "USE_DEF"),
             Self::USE_TOKEN => ::core::fmt::Formatter::write_str(f, "use"),
             Self::VARIANT_STRUCT => ::core::fmt::Formatter::write_str(f, "VARIANT_STRUCT"),
@@ -572,7 +677,7 @@ const _: () = {
     #[inline(never)]
     fn invalid_syntax_kind(kind: u16) -> ! {
         ::core::panic!(
-            "invalid SyntaxKind '{}', must be within the range of 0..=158",
+            "invalid SyntaxKind '{}', must be within the range of 0..=168",
             kind,
         )
     }
@@ -580,7 +685,7 @@ const _: () = {
         #[inline]
         #[track_caller]
         fn from(kind: u16) -> Self {
-            if kind > 158u16 {
+            if kind > 168u16 {
                 invalid_syntax_kind(kind)
             } else {
                 unsafe { ::core::mem::transmute::<u16, Self>(kind) }
@@ -591,7 +696,7 @@ const _: () = {
         #[inline]
         #[track_caller]
         fn from(::cstree::SyntaxKind(kind): ::cstree::SyntaxKind) -> Self {
-            if kind > 158u16 {
+            if kind > 168u16 {
                 invalid_syntax_kind(kind)
             } else {
                 unsafe { ::core::mem::transmute::<u16, Self>(kind) }

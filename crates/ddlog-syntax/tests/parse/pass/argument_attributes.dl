@@ -1,9 +1,5 @@
 // kind:item validate:false pass:true ignore:false
-function foo(
+fn foo(
     #[by_val]
     bar: Baz,
 ) {}
-relation Bar(
-    #[by_val]
-    bar: Baz,
-)

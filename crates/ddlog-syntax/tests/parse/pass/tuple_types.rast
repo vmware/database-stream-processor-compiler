@@ -1,73 +1,34 @@
-ROOT@0..115
+ROOT@0..78
   COMMENT@0..50 "// kind:item validate ..."
   WHITESPACE@50..51 "\n"
-  ITEM@51..84
-    FUNCTION_DEF@51..84
-      ATTRIBUTES@51..51
-      MODIFIERS@51..51
-      FUNCTION@51..59 "function"
-      WHITESPACE@59..60 " "
-      FUNCTION_NAME@60..63
-        IDENT@60..63 "foo"
-      FUNCTION_ARGS@63..80
-        L_PAREN@63..64 "("
-        FUNCTION_ARG@64..79
-          ATTRIBUTES@64..64
-          VAR_REF@64..67
-            IDENT@64..67 "bar"
-          COLON@67..68 ":"
-          WHITESPACE@68..69 " "
-          TYPE@69..79
-            TUPLE_TYPE@69..79
-              L_PAREN@69..70 "("
-              TUPLE_TYPE_ELEM@70..74
-                TYPE@70..73
-                  GENERIC_TYPE@70..73
-                    IDENT@70..73 "Bar"
-                COMMA@73..74 ","
-              WHITESPACE@74..75 " "
-              TUPLE_TYPE_ELEM@75..78
-                TYPE@75..78
-                  GENERIC_TYPE@75..78
-                    IDENT@75..78 "Baz"
-              R_PAREN@78..79 ")"
-        R_PAREN@79..80 ")"
-      WHITESPACE@80..81 " "
-      BLOCK@81..83
-        L_CURLY@81..82 "{"
-        R_CURLY@82..83 "}"
-      WHITESPACE@83..84 "\n"
-  ITEM@84..115
-    RELATION_DEF@84..115
-      ATTRIBUTES@84..84
-      MODIFIERS@84..84
-      REL_KW@84..92
-        RELATION@84..92 "relation"
-      WHITESPACE@92..93 " "
-      REL_NAME@93..96
-        IDENT@93..96 "Foo"
-      REL_COLS@96..114
-        L_PAREN@96..97 "("
-        REL_COL@97..113
-          ATTRIBUTES@97..97
-          VAR_REF@97..100
-            IDENT@97..100 "bar"
-          COLON@100..101 ":"
-          WHITESPACE@101..102 " "
-          TYPE@102..113
-            TUPLE_TYPE@102..113
-              L_PAREN@102..103 "("
-              TUPLE_TYPE_ELEM@103..107
-                TYPE@103..106
-                  GENERIC_TYPE@103..106
-                    IDENT@103..106 "Bar"
-                COMMA@106..107 ","
-              WHITESPACE@107..108 " "
-              TUPLE_TYPE_ELEM@108..112
-                TYPE@108..111
-                  GENERIC_TYPE@108..111
-                    IDENT@108..111 "Baz"
-                COMMA@111..112 ","
-              R_PAREN@112..113 ")"
-        R_PAREN@113..114 ")"
-      WHITESPACE@114..115 "\n"
+  FUNCTION_DEF@51..78
+    FN_TOKEN@51..53 "fn"
+    WHITESPACE@53..54 " "
+    IDENT@54..57 "foo"
+    FUNCTION_ARGS@57..74
+      L_PAREN@57..58 "("
+      FUNCTION_ARG@58..73
+        VAR_REF@58..61
+          IDENT@58..61 "bar"
+        COLON@61..62 ":"
+        WHITESPACE@62..63 " "
+        TYPE@63..73
+          TUPLE_TYPE@63..73
+            L_PAREN@63..64 "("
+            TUPLE_TYPE_ELEM@64..68
+              TYPE@64..67
+                GENERIC_TYPE@64..67
+                  IDENT@64..67 "Bar"
+              COMMA@67..68 ","
+            WHITESPACE@68..69 " "
+            TUPLE_TYPE_ELEM@69..72
+              TYPE@69..72
+                GENERIC_TYPE@69..72
+                  IDENT@69..72 "Baz"
+            R_PAREN@72..73 ")"
+      R_PAREN@73..74 ")"
+    WHITESPACE@74..75 " "
+    BLOCK@75..77
+      L_CURLY@75..76 "{"
+      R_CURLY@76..77 "}"
+    WHITESPACE@77..78 "\n"

@@ -12,11 +12,7 @@ impl FunctionDef {
     /// included in the signature's span
     pub fn signature_span(&self, include_keyword: bool) -> TextRange {
         let keyword = self.keyword().map(|function| function.text_range());
-        let name = self
-            .name()
-            .as_ref()
-            .and_then(|name| name.ident())
-            .map(|name| name.text_range());
+        let name = self.name().as_ref().map(|name| name.text_range());
         let generics = self.generics().map(|generics| generics.trimmed_range());
         let args = self.args().map(|args| args.trimmed_range());
         let ret = self.ret().map(|ret| ret.trimmed_range());
@@ -46,7 +42,7 @@ impl Attribute {
     /// Returns `true` if any of the underlying attributes are `deprecated`
     pub fn is_deprecated(&self, interner: &Interner) -> bool {
         for pair in self.attr_pairs() {
-            if let Some(name) = pair.name().and_then(|name| name.ident()) {
+            if let Some(name) = pair.name() {
                 if name.lexical_eq("deprecated", interner) {
                     return true;
                 }

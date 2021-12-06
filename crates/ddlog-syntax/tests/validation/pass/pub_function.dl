@@ -1,2 +1,2 @@
 // kind:item validate:true pass:true ignore:false
-extern function foo() {}
+pub fn foo() {}

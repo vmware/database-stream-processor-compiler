@@ -37,6 +37,11 @@ special_logos! {
         "regex(\"0x[0-9a-fA-F][0-9a-fA-F_]*\")",
     },
 
+    "string_literal" => {
+        // FIXME: Handle string escapes
+        "regex(\"\\\"[^\\\"]*\\\"\")",
+    },
+
     "error" => { "error" },
 }
 
@@ -67,6 +72,13 @@ pub fn generate_syntax_kind(
 
             quote! {
                 #(#[#attrs])*
+                #variant = #discriminant,
+            }
+        } else if kind.is_token {
+            let token = &kind.raw_name;
+
+            quote! {
+                #[token(#token)]
                 #variant = #discriminant,
             }
         } else {

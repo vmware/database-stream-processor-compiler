@@ -119,8 +119,8 @@ impl<'src, 'token> Parser<'src, 'token> {
     }
 
     // test(stmt) variable_declarations
-    // - var foo = bar;
-    // - var baz = 1 + 100 + { 10 };
+    // - let foo = bar;
+    // - let baz = 1 + 100 + { 10 };
     fn let_decl(&mut self) -> Option<CompletedMarker> {
         let decl = self.start();
 

@@ -2,7 +2,7 @@ use crate::{database::DocumentSymbols, providers::utils};
 use ddlog_diagnostics::{FileId, Interner, Rope};
 use ddlog_syntax::{
     ast::{
-        nodes::{FunctionArg, FunctionDef, Pattern, RelCol, RelationDef, Stmt, Type},
+        nodes::{BracketedStructField, FunctionArg, FunctionDef, Pattern, Stmt, StructDef, Type},
         AstNode, AstToken,
     },
     match_ast, visitor, AstVisitor, RuleCtx, SyntaxNode,
@@ -32,9 +32,9 @@ pub(crate) fn document_symbols(
                     tracing::debug!("documenting function");
                     symbols.document_function(file, function.into_owned())
                 },
-                RelationDef(relation) => {
-                    tracing::debug!("documenting relation");
-                    symbols.document_relation(file, relation.into_owned())
+                StructDef(strct) => {
+                    tracing::debug!("documenting struct");
+                    symbols.document_struct(file, strct.into_owned())
                 },
                 // TODO: Type definitions
 
@@ -60,8 +60,8 @@ impl AstVisitor for DeclarationCollector {
                     tracing::trace!("collected function declaration");
                     self.0.push(node.clone());
                 },
-                RelationDef(_relation) => {
-                    tracing::trace!("collected relation declaration");
+                StructDef(_struct) => {
+                    tracing::trace!("collected struct declaration");
                     self.0.push(node.clone());
                 },
                 // TODO: Type definitions
@@ -115,7 +115,6 @@ pub(crate) fn document_function(
     let (name, selection_range) = function
         .name()
         .as_ref()
-        .and_then(|name| name.ident())
         .map(|name| {
             (
                 name.text(interner),
@@ -142,19 +141,20 @@ pub(crate) fn document_function(
         for generic in generics.generics() {
             let selection_range = generic.trimmed_range();
 
-            if let Some(ty) = generic.type_token() {
+            if let Some(ty) = generic.ty() {
+                // TODO: There's other types to handle
                 if let Type::GenericType(generic) = &*ty {
                     if generic
                         .generics()
                         .map(|generics| generics.generics().count() == 0)
                         .unwrap_or(true)
                     {
-                        if let Some(name) = generic.ident() {
+                        if let Some(path) = generic.path() {
                             let selection_range = utils::ide_range(&source, selection_range);
-                            let range = utils::ide_range(&source, name.text_range());
+                            let range = utils::ide_range(&source, path.text_range());
 
                             let type_param = DocumentSymbol {
-                                name: name.text(interner).to_owned(),
+                                name: path.text(interner).to_string(),
                                 detail: None,
                                 kind: SymbolKind::TypeParameter,
                                 tags: None,
@@ -198,8 +198,7 @@ pub(crate) fn document_function(
     // Look for a `#[deprecated]` attribute on the function
     let tags = function
         .attributes()
-        .map(|attrs| attrs.any_are_deprecated(interner))
-        .unwrap_or(false)
+        .any(|attr| attr.is_deprecated(interner))
         .then(|| vec![SymbolTag::Deprecated]);
 
     let children = if children.is_empty() {
@@ -230,10 +229,7 @@ pub(crate) fn document_function_arg(
     let interner = session.interner();
     let source = symbols.file_source(file);
 
-    let is_deprecated = arg
-        .attributes()
-        .map(|attrs| attrs.any_are_deprecated(interner))
-        .unwrap_or(false);
+    let is_deprecated = arg.attributes().any(|attr| attr.is_deprecated(interner));
 
     let mut bindings = Vec::with_capacity(arg.binding().is_some() as usize);
     if let Some(binding) = arg.binding() {
@@ -247,10 +243,10 @@ pub(crate) fn document_function_arg(
     }
 }
 
-pub(crate) fn document_relation(
+pub(crate) fn document_struct(
     symbols: &dyn DocumentSymbols,
     file: FileId,
-    relation: RelationDef,
+    strct: StructDef,
 ) -> DocumentSymbol {
     let session = symbols.session();
     let interner = session.interner();
@@ -258,14 +254,13 @@ pub(crate) fn document_relation(
 
     tracing::debug!(
         file = file.to_str(interner),
-        "collecting symbols for relation declaration",
+        "collecting symbols for struct declaration",
     );
 
-    let range = utils::ide_range(&source, relation.trimmed_range());
-    let (name, selection_range) = relation
+    let range = utils::ide_range(&source, strct.trimmed_range());
+    let (name, selection_range) = strct
         .name()
         .as_ref()
-        .and_then(|name| name.ident())
         .map(|name| {
             (
                 name.text(interner),
@@ -275,23 +270,28 @@ pub(crate) fn document_relation(
         .unwrap_or(("???", range));
     let name = name.to_owned();
 
-    // Look for a `#[deprecated]` attribute on the relation
-    let tags = relation
+    // Look for a `#[deprecated]` attribute on the struct
+    let tags = strct
         .attributes()
-        .map(|attrs| attrs.any_are_deprecated(interner))
-        .unwrap_or(false)
+        .any(|attr| attr.is_deprecated(interner))
         .then(|| vec![SymbolTag::Deprecated]);
 
-    let total_columns = relation
-        .columns()
-        .map(|args| args.columns().count())
+    let total_fields = strct
+        .fields()
+        .and_then(|fields| {
+            fields
+                .as_bracketed_struct_fields()
+                .map(|fields| fields.fields().count())
+        })
         .unwrap_or(0);
-    let mut children = Vec::with_capacity(total_columns);
+    let mut children = Vec::with_capacity(total_fields);
 
-    if let Some(columns) = relation.columns() {
-        for column in columns.columns() {
-            if let Some(column) = symbols.document_relation_column(file, column.into_owned()) {
-                children.extend(column.iter().cloned());
+    if let Some(fields) = strct.fields() {
+        if let Some(fields) = fields.as_bracketed_struct_fields() {
+            for field in fields.fields() {
+                if let Some(field) = symbols.document_struct_field(file, field.into_owned()) {
+                    children.extend(field.iter().cloned());
+                }
             }
         }
     }
@@ -317,23 +317,33 @@ pub(crate) fn document_relation(
     }
 }
 
-pub(crate) fn document_relation_column(
+pub(crate) fn document_struct_field(
     symbols: &dyn DocumentSymbols,
     file: FileId,
-    column: RelCol,
+    field: BracketedStructField,
 ) -> Option<ArcSlice<DocumentSymbol>> {
     let session = symbols.session();
     let interner = session.interner();
     let source = symbols.file_source(file);
 
-    let is_deprecated = column
-        .attributes()
-        .map(|attrs| attrs.any_are_deprecated(interner))
-        .unwrap_or(false);
+    let mut bindings = Vec::with_capacity(field.name().is_some() as usize);
+    if let Some(name) = field.name() {
+        let tags = field
+            .attributes()
+            .any(|attr| attr.is_deprecated(interner))
+            .then(|| vec![SymbolTag::Deprecated]);
+        let range = utils::ide_range(&source, name.text_range());
 
-    let mut bindings = Vec::with_capacity(column.binding().is_some() as usize);
-    if let Some(binding) = column.binding() {
-        process_pattern(&*binding, &mut bindings, &source, interner, is_deprecated);
+        bindings.push(DocumentSymbol {
+            name: name.text(interner).to_owned(),
+            detail: None,
+            kind: SymbolKind::Variable,
+            tags,
+            range,
+            selection_range: range,
+            children: None,
+            ..default_document_symbol()
+        });
     }
 
     if bindings.is_empty() {
@@ -354,6 +364,14 @@ fn process_pattern(
     is_deprecated: bool,
 ) {
     match binding {
+        Pattern::StructPattern(strct) => {
+            for field in strct.fields() {
+                if let Some(pattern) = field.alias() {
+                    process_pattern(&*pattern, bindings, source, interner, is_deprecated);
+                }
+            }
+        }
+
         Pattern::TuplePattern(tuple) => {
             for element in tuple.elements() {
                 if let Some(pattern) = element.pattern() {

@@ -1,4 +1,0 @@
-// kind:item validate:true pass:false ignore:false
-relation foo(foo: Bar,, bar: Baz)
-multiset foo(foo: Bar,, bar: Baz)
-stream foo(foo: Bar,, bar: Baz)

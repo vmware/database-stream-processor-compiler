@@ -1,5 +1,3 @@
 // kind:item validate:true pass:false ignore:false
 #[foo = bar bar = baz]
-function foo() {}
-#[foo = bar bar = baz]
-relation Foo()
+fn foo() {}

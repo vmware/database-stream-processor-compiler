@@ -1,6 +1,6 @@
 #![cfg(test)]
 
-use crate::SyntaxKind::{self, ERROR, IDENT, NUMBER, WHITESPACE};
+use crate::SyntaxKind::{self, ERROR, IDENT, NUMBER_LITERAL, WHITESPACE};
 use logos::Logos;
 
 #[test]
@@ -27,7 +27,7 @@ fn whitespace() {
 
 #[test]
 fn function_keyword() {
-    check("function", T![fn]);
+    check("fn", T![fn]);
 }
 
 #[test]
@@ -47,7 +47,7 @@ fn mixed_case_identifier() {
 
 #[test]
 fn number() {
-    check("123456", NUMBER);
+    check("123456", NUMBER_LITERAL);
 }
 
 #[test]
@@ -95,18 +95,18 @@ fn single_char_identifier() {
 fn prefix_not_part_of_integer() {
     let mut lexer = SyntaxKind::lexer("+1");
     assert_eq!(lexer.next(), Some(T![+]));
-    assert_eq!(lexer.next(), Some(NUMBER));
+    assert_eq!(lexer.next(), Some(NUMBER_LITERAL));
 
     let mut lexer = SyntaxKind::lexer("-1");
     assert_eq!(lexer.next(), Some(T![-]));
-    assert_eq!(lexer.next(), Some(NUMBER));
+    assert_eq!(lexer.next(), Some(NUMBER_LITERAL));
 
     let mut lexer = SyntaxKind::lexer("1+1");
-    assert_eq!(lexer.next(), Some(NUMBER));
+    assert_eq!(lexer.next(), Some(NUMBER_LITERAL));
     assert_eq!(lexer.next(), Some(T![+]));
-    assert_eq!(lexer.next(), Some(NUMBER));
+    assert_eq!(lexer.next(), Some(NUMBER_LITERAL));
 
     let mut lexer = SyntaxKind::lexer("!1");
     assert_eq!(lexer.next(), Some(T![!]));
-    assert_eq!(lexer.next(), Some(NUMBER));
+    assert_eq!(lexer.next(), Some(NUMBER_LITERAL));
 }

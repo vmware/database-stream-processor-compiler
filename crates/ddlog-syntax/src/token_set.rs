@@ -1,53 +1,79 @@
 use crate::SyntaxKind;
-use std::fmt::{self, Debug, Display};
+use std::{
+    fmt::{self, Debug, Display},
+    mem::size_of,
+};
 
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[allow(dead_code)]
+const TOKENS_FIT_IN_SET: () =
+    assert!(size_of::<u128>() * 8 * 2 > SyntaxKind::MAXIMUM_DISCRIMINANT as usize);
+
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
 #[repr(transparent)]
-pub struct TokenSet(u128);
+pub struct TokenSet([u128; 2]);
 
 impl TokenSet {
     /// Create a new token set with the given [tokens][`SyntaxKind`]
     pub const fn new(tokens: &[SyntaxKind]) -> Self {
-        let (mut set, mut idx) = (0, 0);
+        let (mut set, mut idx) = (Self::empty(), 0);
         while idx < tokens.len() {
-            set |= mask(tokens[idx]);
+            set = set.add(tokens[idx]);
             idx += 1;
         }
 
-        Self(set)
+        set
     }
 
     /// Create a new token set with a single [token][`SyntaxKind`]
     pub const fn singleton(kind: SyntaxKind) -> Self {
-        Self(mask(kind))
+        Self::empty().add(kind)
     }
 
     /// Create an empty token set
     pub const fn empty() -> Self {
-        Self(0)
+        Self([0, 0])
     }
 
-    const fn raw(self) -> u128 {
+    const fn raw(self) -> [u128; 2] {
         self.0
     }
 
     pub const fn add(self, kind: SyntaxKind) -> Self {
-        Self(self.raw() | mask(kind))
+        let [mut high, mut low] = self.raw();
+        let mask = mask(kind);
+
+        if kind as u16 >= 128 {
+            low |= mask;
+        } else {
+            high |= mask;
+        }
+
+        Self([high, low])
     }
 
     /// Combine two token sets together
     pub const fn union(self, other: Self) -> Self {
-        Self(self.raw() | other.raw())
+        let [high1, low1] = self.raw();
+        let [high2, low2] = other.raw();
+
+        Self([high1 | high2, low1 | low2])
     }
 
     /// Returns `true` if the current token set contains the given [`SyntaxKind`]
     pub const fn contains(self, kind: SyntaxKind) -> bool {
-        self.raw() & mask(kind) != 0
+        let [high, low] = self.raw();
+        let mask = mask(kind);
+
+        if kind as u16 >= 128 {
+            low & mask != 0
+        } else {
+            high & mask != 0
+        }
     }
 }
 
 const fn mask(kind: SyntaxKind) -> u128 {
-    1u128 << (kind as usize)
+    1u128 << (kind as usize % 128)
 }
 
 impl Debug for TokenSet {

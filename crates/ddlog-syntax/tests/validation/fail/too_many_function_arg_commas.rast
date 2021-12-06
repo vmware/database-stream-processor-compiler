@@ -1,50 +1,32 @@
-ROOT@0..88
+ROOT@0..86
   COMMENT@0..50 "// kind:item validate ..."
   WHITESPACE@50..51 "\n"
-  ITEM@51..88
-    FUNCTION_DEF@51..88
-      ATTRIBUTES@51..51
-      MODIFIERS@51..51
-      FUNCTION@51..59 "function"
-      WHITESPACE@59..60 " "
-      FUNCTION_NAME@60..63
-        IDENT@60..63 "foo"
-      FUNCTION_ARGS@63..84
-        L_PAREN@63..64 "("
-        FUNCTION_ARG@64..74
-          ATTRIBUTES@64..64
-          VAR_REF@64..67
-            IDENT@64..67 "foo"
-          COLON@67..68 ":"
-          WHITESPACE@68..69 " "
-          TYPE@69..72
-            GENERIC_TYPE@69..72
-              IDENT@69..72 "Bar"
-          COMMA@72..73 ","
-          COMMA@73..74 ","
-        WHITESPACE@74..75 " "
-        FUNCTION_ARG@75..83
-          ATTRIBUTES@75..75
-          VAR_REF@75..78
-            IDENT@75..78 "bar"
-          COLON@78..79 ":"
-          WHITESPACE@79..80 " "
-          TYPE@80..83
-            GENERIC_TYPE@80..83
-              IDENT@80..83 "Baz"
-        R_PAREN@83..84 ")"
-      WHITESPACE@84..85 " "
-      BLOCK@85..87
-        L_CURLY@85..86 "{"
-        R_CURLY@86..87 "}"
-      WHITESPACE@87..88 "\n"
+  ERROR@51..86
+    IDENT@51..59 "function"
+    WHITESPACE@59..60 " "
+    IDENT@60..63 "foo"
+    L_PAREN@63..64 "("
+    IDENT@64..67 "foo"
+    COLON@67..68 ":"
+    WHITESPACE@68..69 " "
+    IDENT@69..72 "Bar"
+    COMMA@72..73 ","
+    COMMA@73..74 ","
+    WHITESPACE@74..75 " "
+    IDENT@75..78 "bar"
+    COLON@78..79 ":"
+    WHITESPACE@79..80 " "
+    IDENT@80..83 "Baz"
+    R_PAREN@83..84 ")"
+    WHITESPACE@84..85 " "
+    L_CURLY@85..86 "{"
 --
-Error: too many commas between function arguments
-   ,-[validation/fail/too_many_function_arg_commas.dl:2:23]
+Error: expected a top-level item
+   ,-[validation/fail/too_many_function_arg_commas.dl:2:1]
    |
  2 | function foo(foo: Bar,, bar: Baz) {}
-   :                       |  
-   :                       `-- remove this comma
+   : ^^^^^^^^^^^^^^^^^|^^^^^^^^^^^^^^^^^  
+   :                  `------------------- expected a top-level item
 ---'
 --
 // kind:item validate:true pass:false ignore:false

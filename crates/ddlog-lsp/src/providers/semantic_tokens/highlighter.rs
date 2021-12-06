@@ -4,7 +4,7 @@ use crate::providers::{
 };
 use cstree::TextRange;
 use ddlog_syntax::{
-    ast::AstNode,
+    ast::{AstNode, AstToken},
     match_ast, AstVisitor, RuleCtx,
     SyntaxKind::{COMMENT, IDENT, NUMBER},
     SyntaxNode, SyntaxToken, SyntaxTokenExt, T,
@@ -56,29 +56,47 @@ impl AstVisitor for SemanticHighlighter {
                 UnaryOp(op) => self.operator(op.trimmed_range()),
                 BinOp(op) => self.operator(op.trimmed_range()),
 
-                RelName(name) => {
-                    let mut modifiers = ModifierSet::empty();
-                    modifiers |= SemanticTokenModifier::DECLARATION;
-                    modifiers |= SemanticTokenModifier::DEFINITION;
+                StructDef(strct) => {
+                    if let Some(name) = strct.name() {
+                        let mut modifiers = ModifierSet::empty();
+                        modifiers |= SemanticTokenModifier::DECLARATION;
+                        modifiers |= SemanticTokenModifier::DEFINITION;
 
-                    self.push(
-                        name.trimmed_range(),
-                        // TODO: Make a custom type for relations
-                        SemanticTokenType::FUNCTION,
-                        modifiers,
-                    );
+                        self.push(
+                            name.text_range(),
+                            // TODO: Make a custom type for relations
+                            SemanticTokenType::FUNCTION,
+                            modifiers,
+                        );
+                    }
                 },
 
-                FunctionName(name) => {
-                    let mut modifiers = ModifierSet::empty();
-                    modifiers |= SemanticTokenModifier::DECLARATION;
-                    modifiers |= SemanticTokenModifier::DEFINITION;
+                FunctionDef(func) => {
+                    if let Some(name) = func.name() {
+                        let mut modifiers = ModifierSet::empty();
+                        modifiers |= SemanticTokenModifier::DECLARATION;
+                        modifiers |= SemanticTokenModifier::DEFINITION;
 
-                    self.push(
-                        name.trimmed_range(),
-                        SemanticTokenType::FUNCTION,
-                        modifiers,
-                    );
+                        self.push(
+                            name.text_range(),
+                            SemanticTokenType::FUNCTION,
+                            modifiers,
+                        );
+                    }
+                },
+
+                EnumDef(enum_def) => {
+                    if let Some(name) = enum_def.name() {
+                        let mut modifiers = ModifierSet::empty();
+                        modifiers |= SemanticTokenModifier::DECLARATION;
+                        modifiers |= SemanticTokenModifier::DEFINITION;
+
+                        self.push(
+                            name.text_range(),
+                            SemanticTokenType::ENUM,
+                            modifiers,
+                        );
+                    }
                 },
 
                 GenericArg(generic) => {
@@ -100,19 +118,32 @@ impl AstVisitor for SemanticHighlighter {
         let range = token.text_range();
 
         match token.kind() {
-            T![function]
-            | T![relation]
-            | T![extern]
-            | T![input]
-            | T![output]
+            T![fn]
+            | T![struct]
+            | T![enum]
+            | T![pub]
+            | T![let]
+            | T![impl]
+            | T![type]
+            | T![as]
+            | T![use]
+            | T![const]
+            | T![for]
+            | T![match]
+            | T![break]
+            | T![return]
+            | T![continue]
+            | T![if]
+            | T![else]
+            | T![loop]
+            | T![in]
+            | T![while]
+            | T![and]
+            | T![or]
             | T![true]
-            | T![false]
-            | T![var]
-            | T![multiset]
-            | T![stream]
-            | T![typedef] => {
+            | T![false] => {
                 let mut modifiers = ModifierSet::empty();
-                if matches!(token.kind(), T![extern] | T![input] | T![output]) {
+                if matches!(token.kind(), T![pub]) {
                     modifiers |= SemanticTokenModifier::MODIFICATION;
                 } else if matches!(token.kind(), T![true] | T![false]) {
                     modifiers |= SemanticTokenModifier::DEFAULT_LIBRARY;

@@ -1,3 +1,4 @@
+use crate::codegen::generate_ast::utils::KEYWORDS;
 use anyhow::Result;
 use heck::{CamelCase, ShoutySnakeCase, SnakeCase};
 use proc_macro2::{Ident, TokenStream};
@@ -58,15 +59,6 @@ const NAMED_TOKENS: &[(&str, &str)] = &[
 ];
 
 const FUNKY_CHARS: &[&str] = &["(", ")", "{", "}", "[", "]", "#[", "/*", "*/"];
-
-// Sourced from https://doc.rust-lang.org/reference/keywords.html
-pub(super) const KEYWORDS: &[&str] = &[
-    "Self", "abstract", "as", "async", "await", "become", "box", "break", "const", "continue",
-    "crate", "do", "dyn", "else", "enum", "extern", "false", "final", "fn", "for", "if", "impl",
-    "in", "let", "loop", "macro", "match", "mod", "move", "mut", "override", "priv", "pub", "ref",
-    "return", "self", "static", "struct", "super", "trait", "true", "try", "type", "typeof",
-    "union", "unsafe", "unsized", "use", "virtual", "where", "while", "yield", "and", "or",
-];
 
 type StructuredGrammar = (Vec<Struct>, Vec<Enum>, Vec<SyntaxKindEntry>, u16);
 
@@ -136,36 +128,13 @@ pub fn from_grammar(grammar: &Grammar) -> Result<StructuredGrammar> {
             ) {
                 match rule {
                     Rule::Labeled { label, rule } => {
-                        fn child_type(grammar: &Grammar, rule: &Rule) -> (NodeKind, TokenStream) {
-                            match rule {
-                                &Rule::Node(node)
-                                    if rule_is_syntax_node(&grammar[node].rule, true) =>
-                                {
-                                    let node_type = camel_case_name(&grammar[node].name);
-                                    (NodeKind::Syntax, quote![crate::ast::nodes::#node_type])
-                                }
-                                &Rule::Node(node) => {
-                                    let token_type = camel_case_name(&grammar[node].name);
-                                    (NodeKind::Token, quote![crate::ast::tokens::#token_type])
-                                }
-                                &Rule::Token(token) => {
-                                    let token_type = camel_case_name(&grammar[token].name);
-                                    (NodeKind::Token, quote![crate::ast::tokens::#token_type])
-                                }
-                                Rule::Opt(rule) | Rule::Rep(rule) => child_type(grammar, &**rule),
+                        let mut labeled = Vec::with_capacity(1);
+                        children_inner(grammar, rule, kind, &mut labeled);
+                        assert_eq!(labeled.len(), 1);
 
-                                _ => panic!(),
-                            }
-                        }
-
-                        let (node_kind, child_type) = child_type(grammar, rule);
-                        children.push(StructChild {
-                            snake_case_name: snake_case_name(label),
-                            child_type,
-                            node_kind,
-                            kind,
-                            index: 0,
-                        });
+                        let mut child = labeled.remove(0);
+                        child.snake_case_name = snake_case_name(label);
+                        children.push(child);
                     }
 
                     &Rule::Node(node) => {
@@ -204,7 +173,7 @@ pub fn from_grammar(grammar: &Grammar) -> Result<StructuredGrammar> {
                         children_inner(
                             grammar,
                             rule,
-                            if matches!(kind, ChildKind::Repeated) {
+                            if kind == ChildKind::Repeated {
                                 ChildKind::Repeated
                             } else {
                                 ChildKind::Optional
@@ -217,7 +186,13 @@ pub fn from_grammar(grammar: &Grammar) -> Result<StructuredGrammar> {
                         children_inner(grammar, rule, ChildKind::Repeated, children);
                     }
 
-                    rule @ (Rule::Seq(_) | Rule::Alt(_)) => println!("{:?}", rule),
+                    Rule::Seq(rules) => {
+                        for rule in rules {
+                            children_inner(grammar, rule, kind, children);
+                        }
+                    }
+
+                    Rule::Alt(_) => {}
                 }
             }
 
@@ -312,15 +287,21 @@ pub fn from_grammar(grammar: &Grammar) -> Result<StructuredGrammar> {
 fn collect_syntax_kinds(structs: &[Struct], enums: &[Enum]) -> Result<(Vec<SyntaxKindEntry>, u16)> {
     let mut syntax_kinds: Vec<_> = structs
         .iter()
-        .map(|s| (s.raw_name.clone(), s.screaming_snake_case_name.clone()))
-        .chain(enums.iter().filter_map(|e| {
-            if e.kind == EnumKind::NodeOfTokens {
-                Some((e.raw_name.clone(), e.screaming_snake_case_name.clone()))
-            } else {
-                None
-            }
+        .map(|s| {
+            (
+                s.raw_name.clone(),
+                s.screaming_snake_case_name.clone(),
+                s.kind == NodeKind::Token,
+            )
+        })
+        .chain(enums.iter().map(|e| {
+            (
+                e.raw_name.clone(),
+                e.screaming_snake_case_name.clone(),
+                false,
+            )
         }))
-        .map(|(raw_name, screaming_snake_case)| {
+        .map(|(raw_name, screaming_snake_case, is_token)| {
             let debug_string = screaming_snake_case.to_string();
 
             let display_string = if KEYWORDS.contains(&&*raw_name)
@@ -364,6 +345,7 @@ fn collect_syntax_kinds(structs: &[Struct], enums: &[Enum]) -> Result<(Vec<Synta
                 // We initialize everything with a zero discriminant until we've sorted the variants
                 discriminant: 0,
                 macro_ident,
+                is_token,
             }
         })
         .collect();
@@ -579,6 +561,7 @@ pub struct SyntaxKindEntry {
     /// The variant's discriminant within the enum
     pub discriminant: u16,
     pub macro_ident: Option<TokenStream>,
+    pub is_token: bool,
 }
 
 #[derive(Debug)]
@@ -600,7 +583,7 @@ pub struct StructChild {
     pub index: usize,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ChildKind {
     Normal,
     Repeated,
@@ -633,7 +616,7 @@ pub enum EnumKind {
     NodeOfNodes,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NodeKind {
     Syntax,
     Token,
