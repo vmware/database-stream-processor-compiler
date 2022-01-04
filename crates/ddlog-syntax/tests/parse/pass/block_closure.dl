@@ -1,0 +1,4 @@
+// kind:expr validate:false pass:true ignore:false
+|foo, bar| {
+    return baz(foo + bar);
+}

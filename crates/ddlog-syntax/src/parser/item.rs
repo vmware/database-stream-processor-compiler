@@ -235,7 +235,7 @@ impl Parser<'_, '_> {
     }
 
     // TODO: Extend to full types
-    fn ty(&mut self) -> Option<CompletedMarker> {
+    pub(super) fn ty(&mut self) -> Option<CompletedMarker> {
         let _frame = self.stack_frame();
         let ty = self.start();
 
@@ -300,7 +300,7 @@ impl Parser<'_, '_> {
 
     // test function_types
     // - fn foo(bar: fn(Bar, Baz) -> Bing) {}
-    // - fn Foo(bar: fn(Bar, Baz,) -> Bing,)
+    // - fn Foo(bar: fn(Bar, Baz,) -> Bing,) {}
     // - fn foo(bar: fn(Bar)) {}
     // - fn Foo(bar: fn(Bar,)) -> fn(Bong, Bang) {}
     fn function_type(&mut self) -> Option<CompletedMarker> {

@@ -1,0 +1,11 @@
+ROOT@0..61
+  COMMENT@0..50 "// kind:expr validate ..."
+  WHITESPACE@50..51 "\n"
+  METHOD_CALL@51..60
+    VAR_REF@51..54
+      IDENT@51..54 "foo"
+    DOT@54..55 "."
+    IDENT@55..58 "bar"
+    L_PAREN@58..59 "("
+    R_PAREN@59..60 ")"
+  WHITESPACE@60..61 "\n"

@@ -1,0 +1,13 @@
+ROOT@0..57
+  COMMENT@0..50 "// kind:expr validate ..."
+  WHITESPACE@50..51 "\n"
+  CLOSURE_EXPR@51..57
+    PIPE@51..52 "|"
+    CLOSURE_ARG@52..53
+      VAR_REF@52..53
+        IDENT@52..53 "x"
+    PIPE@53..54 "|"
+    WHITESPACE@54..55 " "
+    VAR_REF@55..56
+      IDENT@55..56 "x"
+    WHITESPACE@56..57 "\n"

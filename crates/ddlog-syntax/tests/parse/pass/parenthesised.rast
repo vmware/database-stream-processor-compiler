@@ -20,7 +20,7 @@ ROOT@0..85
                   PAREN_EXPR@59..76
                     L_PAREN@59..60 "("
                     BIN_EXPR@60..75
-                      NUMBER_LITERAL@60..61
+                      NUMBER@60..61
                         NUMBER_LITERAL@60..61 "2"
                       WHITESPACE@61..62 " "
                       BIN_OP@62..63
@@ -36,7 +36,7 @@ ROOT@0..85
                               L_PAREN@67..68 "("
                               PAREN_EXPR@68..71
                                 L_PAREN@68..69 "("
-                                NUMBER_LITERAL@69..70
+                                NUMBER@69..70
                                   NUMBER_LITERAL@69..70 "5"
                                 R_PAREN@70..71 ")"
                               R_PAREN@71..72 ")"

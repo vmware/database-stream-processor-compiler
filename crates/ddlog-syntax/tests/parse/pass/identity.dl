@@ -1,0 +1,2 @@
+// kind:expr validate:false pass:true ignore:false
+|x| x

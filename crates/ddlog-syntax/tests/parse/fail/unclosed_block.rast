@@ -6,9 +6,10 @@ ROOT@0..60
     BLOCK@53..59
       L_CURLY@53..54 "{"
       WHITESPACE@54..55 " "
-      NUMBER_LITERAL@55..57
-        NUMBER_LITERAL@55..57 "10"
-      WHITESPACE@57..58 " "
+      EXPR_STMT@55..58
+        NUMBER@55..57
+          NUMBER_LITERAL@55..57 "10"
+        WHITESPACE@57..58 " "
       R_CURLY@58..59 "}"
     WHITESPACE@59..60 "\n"
 --

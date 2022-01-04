@@ -99,6 +99,7 @@ Expr =
     | FieldAccess
     | ArrayAccess
     | FunctionCall
+    | MethodCall
     | StructInitExpr
     | TupleInitExpr
     | ArrayInitExpr
@@ -141,11 +142,16 @@ ClosureArg = binding:Pattern (':' ty:Type)? ','*
 FieldAccess = Expr '.' FieldAccessor
 FieldAccessor = FieldAccessorName | Number
 FieldAccessorName = 'ident'
+
 ArrayAccess = Expr '[' index:Expr ']'
 
 FunctionCall = func:Expr '(' args:FunctionCallArg* ')'
 // Future Possibility: Named arguments
 FunctionCallArg = arg:Expr ','*
+
+MethodCall = func:Expr '.' method:'ident' '(' args:MethodCallArg* ')'
+// Future Possibility: Named arguments
+MethodCallArg = arg:Expr ','*
 
 StructInitExpr = ty:Path '{' fields:StructInitField* '}'
 StructInitField = field:'ident' (':' value:Expr)? ','*
@@ -160,10 +166,11 @@ RangeExpr = start:Expr? RangeOp end:Expr?
 RangeOp = '..' | '..='
 
 // TODO: Floats
-Literal = Bool | Number | String
+Literal = Bool | Number | String | Char
 Bool = 'true' | 'false'
 Number = 'number_literal'
 String = 'string_literal'
+Char = 'char_literal'
 
 RetExpr = 'return' expr:Expr
 BreakExpr = 'break' expr:Expr

@@ -637,6 +637,53 @@ impl crate::ast::AstNode for BreakExpr {
     :: core :: hash :: Hash,
 )]
 #[repr(transparent)]
+pub struct Char {
+    syntax: crate::SyntaxNode,
+}
+impl Char {
+    #[inline]
+    pub fn char_literal(
+        &self,
+    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::CharLiteral>> {
+        crate::ast::support::token(&self.syntax)
+    }
+}
+impl crate::ast::AstNode for Char {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`CHAR`]
+    /// [`SyntaxKind`]: crate::SyntaxKind
+    /// [`CHAR`]: crate::SyntaxKind::CHAR
+    #[inline]
+    fn can_cast_from(kind: crate::SyntaxKind) -> bool {
+        kind == crate::SyntaxKind::CHAR
+    }
+    /// Returns [`Some`] if the given [`SyntaxNode`] has the [`CHAR`] [`SyntaxKind`]
+    /// [`Some`]: std::option::Option::Some
+    /// [`SyntaxNode`]: crate::SyntaxNode
+    /// [`CHAR`]: crate::SyntaxKind::CHAR
+    /// [`SyntaxKind`]: crate::SyntaxKind
+    #[inline]
+    fn cast(syntax: &crate::SyntaxNode) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
+        if <Self as crate::ast::AstNode>::can_cast_from(crate::SyntaxNode::kind(syntax)) {
+            let node = unsafe { ::core::mem::transmute::<&crate::SyntaxNode, &Self>(syntax) };
+            ::core::option::Option::Some(::std::borrow::Cow::Borrowed(node))
+        } else {
+            ::core::option::Option::None
+        }
+    }
+    ///Returns a reference to the inner [`SyntaxNode`][crate::SyntaxNode]
+    #[inline]
+    fn syntax(&self) -> &crate::SyntaxNode {
+        &self.syntax
+    }
+}
+#[derive(
+    :: core :: fmt :: Debug,
+    :: core :: clone :: Clone,
+    :: core :: cmp :: PartialEq,
+    :: core :: cmp :: Eq,
+    :: core :: hash :: Hash,
+)]
+#[repr(transparent)]
 pub struct ClosureArg {
     syntax: crate::SyntaxNode,
 }
@@ -2471,6 +2518,126 @@ impl crate::ast::AstNode for MatchExpr {
     /// [`Some`]: std::option::Option::Some
     /// [`SyntaxNode`]: crate::SyntaxNode
     /// [`MATCH_EXPR`]: crate::SyntaxKind::MATCH_EXPR
+    /// [`SyntaxKind`]: crate::SyntaxKind
+    #[inline]
+    fn cast(syntax: &crate::SyntaxNode) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
+        if <Self as crate::ast::AstNode>::can_cast_from(crate::SyntaxNode::kind(syntax)) {
+            let node = unsafe { ::core::mem::transmute::<&crate::SyntaxNode, &Self>(syntax) };
+            ::core::option::Option::Some(::std::borrow::Cow::Borrowed(node))
+        } else {
+            ::core::option::Option::None
+        }
+    }
+    ///Returns a reference to the inner [`SyntaxNode`][crate::SyntaxNode]
+    #[inline]
+    fn syntax(&self) -> &crate::SyntaxNode {
+        &self.syntax
+    }
+}
+#[derive(
+    :: core :: fmt :: Debug,
+    :: core :: clone :: Clone,
+    :: core :: cmp :: PartialEq,
+    :: core :: cmp :: Eq,
+    :: core :: hash :: Hash,
+)]
+#[repr(transparent)]
+pub struct MethodCall {
+    syntax: crate::SyntaxNode,
+}
+impl MethodCall {
+    #[inline]
+    pub fn func(&self) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::Expr>> {
+        crate::ast::support::child(&self.syntax)
+    }
+    #[inline]
+    pub fn dot(&self) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::Dot>> {
+        crate::ast::support::token(&self.syntax)
+    }
+    #[inline]
+    pub fn method(
+        &self,
+    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::Ident>> {
+        crate::ast::support::token(&self.syntax)
+    }
+    #[inline]
+    pub fn l_paren(
+        &self,
+    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::LParen>> {
+        crate::ast::support::token(&self.syntax)
+    }
+    #[inline]
+    pub fn args(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::MethodCallArg> {
+        crate::ast::support::children(&self.syntax)
+    }
+    #[inline]
+    pub fn r_paren(
+        &self,
+    ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::RParen>> {
+        crate::ast::support::token(&self.syntax)
+    }
+}
+impl crate::ast::AstNode for MethodCall {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`METHOD_CALL`]
+    /// [`SyntaxKind`]: crate::SyntaxKind
+    /// [`METHOD_CALL`]: crate::SyntaxKind::METHOD_CALL
+    #[inline]
+    fn can_cast_from(kind: crate::SyntaxKind) -> bool {
+        kind == crate::SyntaxKind::METHOD_CALL
+    }
+    /// Returns [`Some`] if the given [`SyntaxNode`] has the [`METHOD_CALL`] [`SyntaxKind`]
+    /// [`Some`]: std::option::Option::Some
+    /// [`SyntaxNode`]: crate::SyntaxNode
+    /// [`METHOD_CALL`]: crate::SyntaxKind::METHOD_CALL
+    /// [`SyntaxKind`]: crate::SyntaxKind
+    #[inline]
+    fn cast(syntax: &crate::SyntaxNode) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
+        if <Self as crate::ast::AstNode>::can_cast_from(crate::SyntaxNode::kind(syntax)) {
+            let node = unsafe { ::core::mem::transmute::<&crate::SyntaxNode, &Self>(syntax) };
+            ::core::option::Option::Some(::std::borrow::Cow::Borrowed(node))
+        } else {
+            ::core::option::Option::None
+        }
+    }
+    ///Returns a reference to the inner [`SyntaxNode`][crate::SyntaxNode]
+    #[inline]
+    fn syntax(&self) -> &crate::SyntaxNode {
+        &self.syntax
+    }
+}
+#[derive(
+    :: core :: fmt :: Debug,
+    :: core :: clone :: Clone,
+    :: core :: cmp :: PartialEq,
+    :: core :: cmp :: Eq,
+    :: core :: hash :: Hash,
+)]
+#[repr(transparent)]
+pub struct MethodCallArg {
+    syntax: crate::SyntaxNode,
+}
+impl MethodCallArg {
+    #[inline]
+    pub fn arg(&self) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::Expr>> {
+        crate::ast::support::child(&self.syntax)
+    }
+    #[inline]
+    pub fn commas(&self) -> crate::ast::support::TokenChildren<'_, crate::ast::tokens::Comma> {
+        crate::ast::support::token_children(&self.syntax)
+    }
+}
+impl crate::ast::AstNode for MethodCallArg {
+    /// Returns `true` if the given [`SyntaxKind`] is a [`METHOD_CALL_ARG`]
+    /// [`SyntaxKind`]: crate::SyntaxKind
+    /// [`METHOD_CALL_ARG`]: crate::SyntaxKind::METHOD_CALL_ARG
+    #[inline]
+    fn can_cast_from(kind: crate::SyntaxKind) -> bool {
+        kind == crate::SyntaxKind::METHOD_CALL_ARG
+    }
+    /// Returns [`Some`] if the given [`SyntaxNode`] has the [`METHOD_CALL_ARG`] [`SyntaxKind`]
+    /// [`Some`]: std::option::Option::Some
+    /// [`SyntaxNode`]: crate::SyntaxNode
+    /// [`METHOD_CALL_ARG`]: crate::SyntaxKind::METHOD_CALL_ARG
     /// [`SyntaxKind`]: crate::SyntaxKind
     #[inline]
     fn cast(syntax: &crate::SyntaxNode) -> ::core::option::Option<::std::borrow::Cow<'_, Self>> {
@@ -4730,6 +4897,7 @@ pub enum Expr {
     Literal(crate::ast::nodes::Literal),
     LoopExpr(crate::ast::nodes::LoopExpr),
     MatchExpr(crate::ast::nodes::MatchExpr),
+    MethodCall(crate::ast::nodes::MethodCall),
     ParenExpr(crate::ast::nodes::ParenExpr),
     QualifiedRef(crate::ast::nodes::QualifiedRef),
     RangeExpr(crate::ast::nodes::RangeExpr),
@@ -4785,6 +4953,9 @@ impl Expr {
     }
     pub fn is_match_expr(&self) -> bool {
         ::core::matches!(self, Self::MatchExpr(..))
+    }
+    pub fn is_method_call(&self) -> bool {
+        ::core::matches!(self, Self::MethodCall(..))
     }
     pub fn is_paren_expr(&self) -> bool {
         ::core::matches!(self, Self::ParenExpr(..))
@@ -4913,6 +5084,13 @@ impl Expr {
     }
     pub fn as_match_expr(&self) -> ::core::option::Option<&crate::ast::nodes::MatchExpr> {
         if let Self::MatchExpr(syntax) = self {
+            ::core::option::Option::Some(syntax)
+        } else {
+            ::core::option::Option::None
+        }
+    }
+    pub fn as_method_call(&self) -> ::core::option::Option<&crate::ast::nodes::MethodCall> {
+        if let Self::MethodCall(syntax) = self {
             ::core::option::Option::Some(syntax)
         } else {
             ::core::option::Option::None
@@ -5094,6 +5272,13 @@ impl Expr {
             ::core::result::Result::Err(self)
         }
     }
+    pub fn into_method_call(self) -> ::core::result::Result<crate::ast::nodes::MethodCall, Self> {
+        if let Self::MethodCall(syntax) = self {
+            ::core::result::Result::Ok(syntax)
+        } else {
+            ::core::result::Result::Err(self)
+        }
+    }
     pub fn into_paren_expr(self) -> ::core::result::Result<crate::ast::nodes::ParenExpr, Self> {
         if let Self::ParenExpr(syntax) = self {
             ::core::result::Result::Ok(syntax)
@@ -5182,6 +5367,7 @@ impl crate::ast::AstNode for Expr {
             || <crate::ast::nodes::Literal as crate::ast::AstNode>::can_cast_from(kind)
             || <crate::ast::nodes::LoopExpr as crate::ast::AstNode>::can_cast_from(kind)
             || <crate::ast::nodes::MatchExpr as crate::ast::AstNode>::can_cast_from(kind)
+            || <crate::ast::nodes::MethodCall as crate::ast::AstNode>::can_cast_from(kind)
             || <crate::ast::nodes::ParenExpr as crate::ast::AstNode>::can_cast_from(kind)
             || <crate::ast::nodes::QualifiedRef as crate::ast::AstNode>::can_cast_from(kind)
             || <crate::ast::nodes::RangeExpr as crate::ast::AstNode>::can_cast_from(kind)
@@ -5417,6 +5603,20 @@ impl crate::ast::AstNode for Expr {
                 };
                 ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::MatchExpr(node)))
             }
+            kind if <crate::ast::nodes::MethodCall as crate::ast::AstNode>::can_cast_from(kind) => {
+                let node =
+                    match <crate::ast::nodes::MethodCall as crate::ast::AstNode>::cast(syntax) {
+                        ::core::option::Option::Some(node) => ::std::borrow::Cow::into_owned(node),
+                        ::core::option::Option::None => {
+                            if ::core::cfg!(debug_assertions) {
+                                ::core::unreachable!()
+                            } else {
+                                unsafe { ::core::hint::unreachable_unchecked() }
+                            }
+                        }
+                    };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::MethodCall(node)))
+            }
             kind if <crate::ast::nodes::ParenExpr as crate::ast::AstNode>::can_cast_from(kind) => {
                 let node = match <crate::ast::nodes::ParenExpr as crate::ast::AstNode>::cast(syntax)
                 {
@@ -5601,6 +5801,9 @@ impl crate::ast::AstNode for Expr {
             }
             Self::MatchExpr(syntax) => {
                 <crate::ast::nodes::MatchExpr as crate::ast::AstNode>::syntax(syntax)
+            }
+            Self::MethodCall(syntax) => {
+                <crate::ast::nodes::MethodCall as crate::ast::AstNode>::syntax(syntax)
             }
             Self::ParenExpr(syntax) => {
                 <crate::ast::nodes::ParenExpr as crate::ast::AstNode>::syntax(syntax)
@@ -5797,6 +6000,17 @@ impl ::core::convert::TryFrom<Expr> for crate::ast::nodes::MatchExpr {
         }
     }
 }
+impl ::core::convert::TryFrom<Expr> for crate::ast::nodes::MethodCall {
+    type Error = Expr;
+    #[inline]
+    fn try_from(value: Expr) -> ::core::result::Result<Self, Self::Error> {
+        if let Expr::MethodCall(this) = value {
+            ::core::result::Result::Ok(this)
+        } else {
+            ::core::result::Result::Err(value)
+        }
+    }
+}
 impl ::core::convert::TryFrom<Expr> for crate::ast::nodes::ParenExpr {
     type Error = Expr;
     #[inline]
@@ -5984,6 +6198,12 @@ impl ::core::convert::From<crate::ast::nodes::MatchExpr> for Expr {
     #[inline]
     fn from(value: crate::ast::nodes::MatchExpr) -> Self {
         Self::MatchExpr(value)
+    }
+}
+impl ::core::convert::From<crate::ast::nodes::MethodCall> for Expr {
+    #[inline]
+    fn from(value: crate::ast::nodes::MethodCall) -> Self {
+        Self::MethodCall(value)
     }
 }
 impl ::core::convert::From<crate::ast::nodes::ParenExpr> for Expr {
@@ -6591,12 +6811,16 @@ impl ::core::convert::From<crate::ast::nodes::UseDef> for Item {
 )]
 pub enum Literal {
     Bool(crate::ast::nodes::Bool),
+    Char(crate::ast::nodes::Char),
     Number(crate::ast::nodes::Number),
     String(crate::ast::nodes::String),
 }
 impl Literal {
     pub fn is_bool(&self) -> bool {
         ::core::matches!(self, Self::Bool(..))
+    }
+    pub fn is_char(&self) -> bool {
+        ::core::matches!(self, Self::Char(..))
     }
     pub fn is_number(&self) -> bool {
         ::core::matches!(self, Self::Number(..))
@@ -6606,6 +6830,13 @@ impl Literal {
     }
     pub fn as_bool(&self) -> ::core::option::Option<&crate::ast::nodes::Bool> {
         if let Self::Bool(syntax) = self {
+            ::core::option::Option::Some(syntax)
+        } else {
+            ::core::option::Option::None
+        }
+    }
+    pub fn as_char(&self) -> ::core::option::Option<&crate::ast::nodes::Char> {
+        if let Self::Char(syntax) = self {
             ::core::option::Option::Some(syntax)
         } else {
             ::core::option::Option::None
@@ -6632,6 +6863,13 @@ impl Literal {
             ::core::result::Result::Err(self)
         }
     }
+    pub fn into_char(self) -> ::core::result::Result<crate::ast::nodes::Char, Self> {
+        if let Self::Char(syntax) = self {
+            ::core::result::Result::Ok(syntax)
+        } else {
+            ::core::result::Result::Err(self)
+        }
+    }
     pub fn into_number(self) -> ::core::result::Result<crate::ast::nodes::Number, Self> {
         if let Self::Number(syntax) = self {
             ::core::result::Result::Ok(syntax)
@@ -6651,6 +6889,7 @@ impl crate::ast::AstNode for Literal {
     #[inline]
     fn can_cast_from(kind: crate::SyntaxKind) -> bool {
         <crate::ast::nodes::Bool as crate::ast::AstNode>::can_cast_from(kind)
+            || <crate::ast::nodes::Char as crate::ast::AstNode>::can_cast_from(kind)
             || <crate::ast::nodes::Number as crate::ast::AstNode>::can_cast_from(kind)
             || <crate::ast::nodes::String as crate::ast::AstNode>::can_cast_from(kind)
     }
@@ -6669,6 +6908,19 @@ impl crate::ast::AstNode for Literal {
                     }
                 };
                 ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Bool(node)))
+            }
+            kind if <crate::ast::nodes::Char as crate::ast::AstNode>::can_cast_from(kind) => {
+                let node = match <crate::ast::nodes::Char as crate::ast::AstNode>::cast(syntax) {
+                    ::core::option::Option::Some(node) => ::std::borrow::Cow::into_owned(node),
+                    ::core::option::Option::None => {
+                        if ::core::cfg!(debug_assertions) {
+                            ::core::unreachable!()
+                        } else {
+                            unsafe { ::core::hint::unreachable_unchecked() }
+                        }
+                    }
+                };
+                ::core::option::Option::Some(::std::borrow::Cow::Owned(Self::Char(node)))
             }
             kind if <crate::ast::nodes::Number as crate::ast::AstNode>::can_cast_from(kind) => {
                 let node = match <crate::ast::nodes::Number as crate::ast::AstNode>::cast(syntax) {
@@ -6703,6 +6955,7 @@ impl crate::ast::AstNode for Literal {
     fn syntax(&self) -> &crate::SyntaxNode {
         match self {
             Self::Bool(syntax) => <crate::ast::nodes::Bool as crate::ast::AstNode>::syntax(syntax),
+            Self::Char(syntax) => <crate::ast::nodes::Char as crate::ast::AstNode>::syntax(syntax),
             Self::Number(syntax) => {
                 <crate::ast::nodes::Number as crate::ast::AstNode>::syntax(syntax)
             }
@@ -6717,6 +6970,17 @@ impl ::core::convert::TryFrom<Literal> for crate::ast::nodes::Bool {
     #[inline]
     fn try_from(value: Literal) -> ::core::result::Result<Self, Self::Error> {
         if let Literal::Bool(this) = value {
+            ::core::result::Result::Ok(this)
+        } else {
+            ::core::result::Result::Err(value)
+        }
+    }
+}
+impl ::core::convert::TryFrom<Literal> for crate::ast::nodes::Char {
+    type Error = Literal;
+    #[inline]
+    fn try_from(value: Literal) -> ::core::result::Result<Self, Self::Error> {
+        if let Literal::Char(this) = value {
             ::core::result::Result::Ok(this)
         } else {
             ::core::result::Result::Err(value)
@@ -6749,6 +7013,12 @@ impl ::core::convert::From<crate::ast::nodes::Bool> for Literal {
     #[inline]
     fn from(value: crate::ast::nodes::Bool) -> Self {
         Self::Bool(value)
+    }
+}
+impl ::core::convert::From<crate::ast::nodes::Char> for Literal {
+    #[inline]
+    fn from(value: crate::ast::nodes::Char) -> Self {
+        Self::Char(value)
     }
 }
 impl ::core::convert::From<crate::ast::nodes::Number> for Literal {

@@ -1,6 +1,6 @@
 use crate::{
     parser::{CompletedMarker, Marker, Parser},
-    SyntaxKind::{BLOCK, ELSE_BLOCK, IF_BLOCK, IF_EXPR, RET_EXPR, VAR_DECL},
+    SyntaxKind::{BLOCK, ELSE_BLOCK, EXPR_STMT, IF_BLOCK, IF_EXPR, RET_EXPR, VAR_DECL},
     TokenSet,
 };
 use ddlog_diagnostics::{Diagnostic, Label};
@@ -29,8 +29,8 @@ impl<'src, 'token> Parser<'src, 'token> {
             T![return] => self.ret(true),
 
             _ => {
-                let expr = self.expr();
-                if expr.is_none() {
+                let expr_stmt = self.start();
+                if self.expr().is_none() {
                     // TODO: Get full span text
                     let source = self.current_text();
                     let span = self.error_eat_until(STATEMENT_RECOVERY);
@@ -43,13 +43,14 @@ impl<'src, 'token> Parser<'src, 'token> {
                         );
 
                     self.push_error(error);
+                    expr_stmt.abandon(self);
+                    None
 
                 // Otherwise, eat trailing semicolons
                 } else {
                     self.eat_semicolons();
+                    Some(expr_stmt.complete(self, EXPR_STMT))
                 }
-
-                expr
             }
         }
     }

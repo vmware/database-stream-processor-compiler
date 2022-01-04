@@ -1,7 +1,6 @@
 ROOT@0..56
   COMMENT@0..50 "// kind:expr validate ..."
   WHITESPACE@50..51 "\n"
-  BOOL@51..56
-    TRUE_TOKEN@51..55
-      TRUE_TOKEN@51..55 "true"
-    WHITESPACE@55..56 "\n"
+  BOOL@51..55
+    TRUE_TOKEN@51..55 "true"
+  WHITESPACE@55..56 "\n"

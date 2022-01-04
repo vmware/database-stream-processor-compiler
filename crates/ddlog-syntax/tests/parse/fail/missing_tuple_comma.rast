@@ -1,0 +1,35 @@
+ROOT@0..59
+  COMMENT@0..51 "// kind:expr validate ..."
+  WHITESPACE@51..52 "\n"
+  PAREN_EXPR@52..56
+    L_PAREN@52..53 "("
+    NUMBER_LITERAL@53..54
+      NUMBER_LITERAL@53..54 "1"
+    ERROR@54..55
+      COMMA@54..55 ","
+    WHITESPACE@55..56 " "
+  NUMBER_LITERAL@56..57
+    NUMBER_LITERAL@56..57 "2"
+  WHITESPACE@57..58 " "
+  NUMBER_LITERAL@58..59
+    NUMBER_LITERAL@58..59 "3"
+  ERROR@59..59
+--
+Error: expected ')' but instead found '","'
+   ,-[parse/fail/missing_tuple_comma.dl:2:3]
+   |
+ 2 | (1, 2 3)
+   :   |  
+   :   `-- unexpected token
+---'
+--
+Error: expected an expression
+   ,-[parse/fail/missing_tuple_comma.dl:2:8]
+   |
+ 2 | (1, 2 3)
+   :        |  
+   :        `-- expected an ident, literal, '-', '!', '(' or '{', got ')'
+---'
+--
+// kind:expr validate:false pass:false ignore:false
+(1, 2 3)

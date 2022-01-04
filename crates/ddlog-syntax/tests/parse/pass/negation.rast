@@ -12,7 +12,7 @@ ROOT@0..60
         UNARY_EXPR@54..58
           UNARY_OP@54..55
             MINUS@54..55 "-"
-          NUMBER_LITERAL@55..58
+          NUMBER@55..58
             NUMBER_LITERAL@55..58 "100"
         R_PAREN@58..59 ")"
       WHITESPACE@59..60 "\n"

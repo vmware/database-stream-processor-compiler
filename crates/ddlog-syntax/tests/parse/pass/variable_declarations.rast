@@ -22,14 +22,14 @@ ROOT@0..94
     EQ@74..75 "="
     WHITESPACE@75..76 " "
     BIN_EXPR@76..92
-      NUMBER_LITERAL@76..77
+      NUMBER@76..77
         NUMBER_LITERAL@76..77 "1"
       WHITESPACE@77..78 " "
       BIN_OP@78..79
         PLUS@78..79 "+"
       WHITESPACE@79..80 " "
       BIN_EXPR@80..92
-        NUMBER_LITERAL@80..83
+        NUMBER@80..83
           NUMBER_LITERAL@80..83 "100"
         WHITESPACE@83..84 " "
         BIN_OP@84..85
@@ -38,9 +38,10 @@ ROOT@0..94
         BLOCK@86..92
           L_CURLY@86..87 "{"
           WHITESPACE@87..88 " "
-          NUMBER_LITERAL@88..90
-            NUMBER_LITERAL@88..90 "10"
-          WHITESPACE@90..91 " "
+          EXPR_STMT@88..91
+            NUMBER@88..90
+              NUMBER_LITERAL@88..90 "10"
+            WHITESPACE@90..91 " "
           R_CURLY@91..92 "}"
     SEMICOLON@92..93 ";"
   WHITESPACE@93..94 "\n"

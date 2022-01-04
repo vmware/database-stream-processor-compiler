@@ -1,0 +1,11 @@
+ROOT@0..57
+  COMMENT@0..50 "// kind:expr validate ..."
+  WHITESPACE@50..51 "\n"
+  CLOSURE_EXPR@51..57
+    PIPE@51..52 "|"
+    PIPE@52..53 "|"
+    WHITESPACE@53..54 " "
+    BLOCK@54..56
+      L_CURLY@54..55 "{"
+      R_CURLY@55..56 "}"
+    WHITESPACE@56..57 "\n"

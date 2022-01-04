@@ -1,0 +1,6 @@
+// kind:expr validate:false pass:true ignore:false
+(1,)
+(1, 2)
+(1, 2,)
+(1, 2, 3)
+(1, 2, 3,)

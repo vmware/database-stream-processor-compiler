@@ -32,7 +32,7 @@ ROOT@0..189
         WHITESPACE@104..105 " "
         EQ@105..106 "="
         WHITESPACE@106..107 " "
-        NUMBER_LITERAL@107..109
+        NUMBER@107..109
           NUMBER_LITERAL@107..109 "10"
         COMMA@109..110 ","
         COMMA@110..111 ","

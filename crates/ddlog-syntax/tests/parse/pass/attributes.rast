@@ -9,7 +9,7 @@ ROOT@0..143
         WHITESPACE@62..63 " "
         EQ@63..64 "="
         WHITESPACE@64..65 " "
-        NUMBER_LITERAL@65..67
+        NUMBER@65..67
           NUMBER_LITERAL@65..67 "10"
         COMMA@67..68 ","
         COMMA@68..69 ","
@@ -23,7 +23,7 @@ ROOT@0..143
         WHITESPACE@88..89 " "
         EQ@89..90 "="
         WHITESPACE@90..91 " "
-        NUMBER_LITERAL@91..93
+        NUMBER@91..93
           NUMBER_LITERAL@91..93 "10"
         COMMA@93..94 ","
         COMMA@94..95 ","

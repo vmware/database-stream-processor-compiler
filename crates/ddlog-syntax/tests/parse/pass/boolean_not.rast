@@ -13,7 +13,6 @@ ROOT@0..61
           UNARY_OP@54..55
             BANG@54..55 "!"
           BOOL@55..59
-            TRUE_TOKEN@55..59
-              TRUE_TOKEN@55..59 "true"
+            TRUE_TOKEN@55..59 "true"
         R_PAREN@59..60 ")"
       WHITESPACE@60..61 "\n"

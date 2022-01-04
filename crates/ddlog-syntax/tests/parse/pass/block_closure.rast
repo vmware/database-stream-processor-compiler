@@ -1,0 +1,40 @@
+ROOT@0..93
+  COMMENT@0..50 "// kind:expr validate ..."
+  WHITESPACE@50..51 "\n"
+  CLOSURE_EXPR@51..93
+    PIPE@51..52 "|"
+    CLOSURE_ARG@52..56
+      VAR_REF@52..55
+        IDENT@52..55 "foo"
+      COMMA@55..56 ","
+    WHITESPACE@56..57 " "
+    CLOSURE_ARG@57..60
+      VAR_REF@57..60
+        IDENT@57..60 "bar"
+    PIPE@60..61 "|"
+    WHITESPACE@61..62 " "
+    BLOCK@62..92
+      L_CURLY@62..63 "{"
+      WHITESPACE@63..68 "\n    "
+      RET_EXPR@68..78
+        RETURN_TOKEN@68..74 "return"
+        WHITESPACE@74..75 " "
+        VAR_REF@75..78
+          IDENT@75..78 "baz"
+      EXPR_STMT@78..90
+        PAREN_EXPR@78..89
+          L_PAREN@78..79 "("
+          BIN_EXPR@79..88
+            VAR_REF@79..82
+              IDENT@79..82 "foo"
+            WHITESPACE@82..83 " "
+            BIN_OP@83..84
+              PLUS@83..84 "+"
+            WHITESPACE@84..85 " "
+            VAR_REF@85..88
+              IDENT@85..88 "bar"
+          R_PAREN@88..89 ")"
+        SEMICOLON@89..90 ";"
+      WHITESPACE@90..91 "\n"
+      R_CURLY@91..92 "}"
+    WHITESPACE@92..93 "\n"

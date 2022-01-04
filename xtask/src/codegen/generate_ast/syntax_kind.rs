@@ -39,7 +39,14 @@ special_logos! {
 
     "string_literal" => {
         // FIXME: Handle string escapes
-        "regex(\"\\\"[^\\\"]*\\\"\")",
+        // FIXME: Raw strings
+        // FIXME: Inline expressions
+        // FIXME: Interned strings
+        "regex(\"b?\\\"[^\\\"]*\\\"\")",
+    },
+
+    "char_literal" => {
+        "regex(\"b?'[^']*'\")",
     },
 
     "error" => { "error" },

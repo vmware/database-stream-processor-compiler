@@ -47,6 +47,17 @@ impl<'src, 'token> Parser<'src, 'token> {
     // -         fibonacci
     // -     }
     // - }
+    //
+    // test paths
+    // - fn main() {
+    // -     let edges = input("edges");
+    // -     let paths = edges.iterative(|edges| {
+    // -         edges
+    // -             .join(edges.reverse())
+    // -             .distinct()
+    // -     });
+    // -     output(paths, "paths");
+    // - }
     pub(crate) fn parse(mut self) -> (Vec<Event>, Vec<Diagnostic>) {
         self.root();
 
@@ -373,7 +384,7 @@ impl Marker {
 
         CompletedMarker {
             position: self.position,
-            kind,
+            _kind: kind,
         }
     }
 
@@ -429,7 +440,7 @@ impl Drop for Marker {
 #[derive(Debug)]
 struct CompletedMarker {
     position: usize,
-    kind: SyntaxKind,
+    _kind: SyntaxKind,
 }
 
 impl CompletedMarker {

@@ -1,0 +1,71 @@
+ROOT@0..92
+  COMMENT@0..50 "// kind:expr validate ..."
+  WHITESPACE@50..51 "\n"
+  TUPLE_INIT_EXPR@51..55
+    L_PAREN@51..52 "("
+    TUPLE_EXPR_ELEM@52..54
+      NUMBER@52..53
+        NUMBER_LITERAL@52..53 "1"
+      COMMA@53..54 ","
+    R_PAREN@54..55 ")"
+  WHITESPACE@55..56 "\n"
+  TUPLE_INIT_EXPR@56..62
+    L_PAREN@56..57 "("
+    TUPLE_EXPR_ELEM@57..59
+      NUMBER@57..58
+        NUMBER_LITERAL@57..58 "1"
+      COMMA@58..59 ","
+    WHITESPACE@59..60 " "
+    TUPLE_EXPR_ELEM@60..61
+      NUMBER@60..61
+        NUMBER_LITERAL@60..61 "2"
+    R_PAREN@61..62 ")"
+  WHITESPACE@62..63 "\n"
+  TUPLE_INIT_EXPR@63..70
+    L_PAREN@63..64 "("
+    TUPLE_EXPR_ELEM@64..66
+      NUMBER@64..65
+        NUMBER_LITERAL@64..65 "1"
+      COMMA@65..66 ","
+    WHITESPACE@66..67 " "
+    TUPLE_EXPR_ELEM@67..69
+      NUMBER@67..68
+        NUMBER_LITERAL@67..68 "2"
+      COMMA@68..69 ","
+    R_PAREN@69..70 ")"
+  WHITESPACE@70..71 "\n"
+  TUPLE_INIT_EXPR@71..80
+    L_PAREN@71..72 "("
+    TUPLE_EXPR_ELEM@72..74
+      NUMBER@72..73
+        NUMBER_LITERAL@72..73 "1"
+      COMMA@73..74 ","
+    WHITESPACE@74..75 " "
+    TUPLE_EXPR_ELEM@75..77
+      NUMBER@75..76
+        NUMBER_LITERAL@75..76 "2"
+      COMMA@76..77 ","
+    WHITESPACE@77..78 " "
+    TUPLE_EXPR_ELEM@78..79
+      NUMBER@78..79
+        NUMBER_LITERAL@78..79 "3"
+    R_PAREN@79..80 ")"
+  WHITESPACE@80..81 "\n"
+  TUPLE_INIT_EXPR@81..91
+    L_PAREN@81..82 "("
+    TUPLE_EXPR_ELEM@82..84
+      NUMBER@82..83
+        NUMBER_LITERAL@82..83 "1"
+      COMMA@83..84 ","
+    WHITESPACE@84..85 " "
+    TUPLE_EXPR_ELEM@85..87
+      NUMBER@85..86
+        NUMBER_LITERAL@85..86 "2"
+      COMMA@86..87 ","
+    WHITESPACE@87..88 " "
+    TUPLE_EXPR_ELEM@88..90
+      NUMBER@88..89
+        NUMBER_LITERAL@88..89 "3"
+      COMMA@89..90 ","
+    R_PAREN@90..91 ")"
+  WHITESPACE@91..92 "\n"

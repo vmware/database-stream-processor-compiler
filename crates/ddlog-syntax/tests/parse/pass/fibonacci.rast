@@ -39,7 +39,7 @@ ROOT@0..200
               EQEQ@94..96 "=="
             WHITESPACE@96..97 " "
             BIN_EXPR@97..109
-              NUMBER_LITERAL@97..98
+              NUMBER@97..98
                 NUMBER_LITERAL@97..98 "0"
               WHITESPACE@98..99 " "
               BIN_OP@99..101
@@ -52,7 +52,7 @@ ROOT@0..200
                 BIN_OP@104..106
                   EQEQ@104..106 "=="
                 WHITESPACE@106..107 " "
-                NUMBER_LITERAL@107..108
+                NUMBER@107..108
                   NUMBER_LITERAL@107..108 "1"
                 WHITESPACE@108..109 " "
           BLOCK@109..134
@@ -75,9 +75,10 @@ ROOT@0..200
             WHITESPACE@141..150 "\n        "
             COMMENT@150..173 "// TODO: Function calls"
             WHITESPACE@173..182 "\n        "
-            VAR_REF@182..191
-              IDENT@182..191 "fibonacci"
-            WHITESPACE@191..196 "\n    "
+            EXPR_STMT@182..196
+              VAR_REF@182..191
+                IDENT@182..191 "fibonacci"
+              WHITESPACE@191..196 "\n    "
             R_CURLY@196..197 "}"
           WHITESPACE@197..198 "\n"
       R_CURLY@198..199 "}"
