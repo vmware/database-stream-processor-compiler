@@ -1,14 +1,23 @@
 use crate::{
-    parser::{CompletedMarker, Parser},
+    parser::{precedence::ExprPrecedence, CompletedMarker, Parser},
     SyntaxKind::{
-        self, BIN_EXPR, BIN_OP, BOOL, CHAR, CHAR_LITERAL, CLOSURE_ARG, CLOSURE_EXPR, FIELD_ACCESS,
-        FIELD_ACCESSOR, FIELD_ACCESSOR_NAME, IDENT, METHOD_CALL, METHOD_CALL_ARG, NUMBER,
-        NUMBER_LITERAL, PAREN_EXPR, STRING, STRING_LITERAL, TUPLE_EXPR_ELEM, TUPLE_INIT_EXPR,
-        UNARY_EXPR, UNARY_OP, VAR_REF,
+        self, ASSIGN, ASSIGN_OP, BIN_EXPR, BIN_OP, BOOL, BREAK_EXPR, CHAR, CHAR_LITERAL,
+        CLOSURE_ARG, CLOSURE_EXPR, CONTINUE_EXPR, FIELD_ACCESS, FIELD_ACCESSOR,
+        FIELD_ACCESSOR_NAME, FUNCTION_CALL, FUNCTION_CALL_ARG, IDENT, METHOD_CALL, METHOD_CALL_ARG,
+        NUMBER, NUMBER_LITERAL, PAREN_EXPR, RET_EXPR, STRING, STRING_LITERAL, TUPLE_EXPR_ELEM,
+        TUPLE_INIT_EXPR, UNARY_EXPR, UNARY_OP, VAR_REF,
     },
     TokenSet,
 };
 use ddlog_diagnostics::{Diagnostic, Label};
+use std::convert::TryFrom;
+
+type PrefixParselet<'src, 'token> =
+    fn(&mut Parser<'src, 'token>, SyntaxKind) -> Option<CompletedMarker>;
+type PostfixParselet<'src, 'token> =
+    fn(&mut Parser<'src, 'token>, SyntaxKind, CompletedMarker) -> Option<CompletedMarker>;
+type InfixParselet<'src, 'token> =
+    fn(&mut Parser<'src, 'token>, SyntaxKind, CompletedMarker) -> Option<CompletedMarker>;
 
 pub(super) const EXPR_RECOVERY_SET: TokenSet = token_set! {
     T![')'],
@@ -16,7 +25,7 @@ pub(super) const EXPR_RECOVERY_SET: TokenSet = token_set! {
     T![;],
 };
 
-impl Parser<'_, '_> {
+impl<'src, 'token> Parser<'src, 'token> {
     // test(stmt) binary_ops
     // - {
     // -     1 == 2;
@@ -54,137 +63,153 @@ impl Parser<'_, '_> {
     /// The innards of [`Parser::expr()`], does all of the actual work
     ///
     /// Utilizes [pratt parsing](https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html)
-    /// to parse operator precedence
-    // FIXME: Make this iterative instead of recursive
-    // FIXME: This needs to be totally restructured, this fundamentally
-    //        hinders using pratt parsing
-    // FIXME: Function calls
-    fn expr_inner(&mut self, mut current_precedence: u8) -> Option<CompletedMarker> {
-        let _frame = self.stack_frame();
-        let mut lhs = match self.peek() {
-            IDENT => self.var_ref()?,
-            NUMBER_LITERAL | STRING_LITERAL | CHAR_LITERAL | T![true] | T![false] => {
-                self.literal()?
+    pub(super) fn expr_inner(&mut self, precedence: u8) -> Option<CompletedMarker> {
+        let mut token = self.peek();
+
+        let prefix = Self::expr_prefix(token);
+        if let Some(prefix) = prefix {
+            let mut left = prefix(self, token)?;
+
+            if let Some(peek) = self.try_peek() {
+                let postfix = Self::expr_postfix(peek);
+
+                if let Some(postfix) = postfix {
+                    token = self.peek();
+                    left = postfix(self, token, left)?;
+                }
             }
-            operator @ (T![-] | T![!]) => self.unary_expr(operator)?,
-            T!['('] => self.parens_or_tuple()?,
-            T!['{'] => self.block(false)?,
-            T![return] => self.ret(false)?,
-            T![|] => self.closure()?,
+
+            while precedence < self.expr_precedence() {
+                token = self.peek();
+
+                let infix = Self::expr_infix(token);
+                if let Some(infix) = infix {
+                    left = infix(self, token, left)?;
+                } else {
+                    break;
+                }
+            }
+
+            Some(left)
+        } else {
+            // TODO: Emit an error
+            // Err(Locatable::new(
+            //     Error::Syntax(SyntaxError::Generic(format!(
+            //         "Could not parse `{}`",
+            //         token.ty()
+            //     ))),
+            //     Location::new(&token, self.current_file),
+            // ))
+            None
+        }
+    }
+
+    fn expr_prefix(kind: SyntaxKind) -> Option<PrefixParselet<'src, 'token>> {
+        let prefix: PrefixParselet<'src, 'token> = match kind {
+            IDENT => Self::var_ref,
+            T![if] => Self::if_expr,
+            // T![match] => Self::match_expr,
+            // T![while] => Self::while_expr,
+            // T![loop] => Self::loop_expr,
+            // T![for] => Self::for_expr,
+            T![return] => Self::return_expr,
+            T![break] => Self::break_expr,
+            T![continue] => Self::continue_expr,
+            T!['('] => Self::parens_or_tuple,
+            T!['{'] => Self::block_expr,
+            T![-] | T![!] => Self::unary_expr,
+            T![|] => Self::closure,
+
+            // TODO: Floats
+            NUMBER_LITERAL | STRING_LITERAL | CHAR_LITERAL | T![true] | T![false] => {
+                Self::literal_expr
+            }
 
             _ => return None,
         };
 
-        // Infix operators
-        while !self.at_end() {
-            let precedence = match infix_precedence(self.peek()) {
-                Some(operand) => operand,
-                // TODO: Error handling
-                None => break,
-            };
-
-            // Eat the operator’s token.
-            let inner = self.start();
-            match self.peek() {
-                // Binary operation
-                T![or]
-                | T![and]
-                | T![==]
-                | T![!=]
-                | T![<]
-                | T![<=]
-                | T![>]
-                | T![>=]
-                | T![|]
-                | T![^]
-                | T![&]
-                | T![<<]
-                | T![>>]
-                | T![+]
-                | T![-]
-                | T![*]
-                | T![/]
-                | T![%] => {
-                    self.bump();
-                    inner.complete(self, BIN_OP);
-
-                    let marker = lhs.precede(self);
-                    let rhs_invalid = self.expr_inner(precedence).is_none();
-                    lhs = marker.complete(self, BIN_EXPR);
-
-                    if precedence < current_precedence {
-                        break;
-                    }
-                    current_precedence = precedence;
-
-                    if rhs_invalid {
-                        break;
-                    }
-                }
-
-                // Method call
-                T![.] => {
-                    self.bump();
-                    inner.abandon(self);
-
-                    let marker = lhs.precede(self);
-
-                    // Tuple access
-                    lhs = if self.at(NUMBER_LITERAL) {
-                        let accessor = self.start();
-                        self.bump();
-                        accessor.complete(self, NUMBER);
-
-                        marker.complete(self, FIELD_ACCESSOR)
-
-                    // Field access or method calls
-                    } else {
-                        let accessor = self.start();
-                        let accessor_inner = self.start();
-                        self.ident();
-
-                        // Method call
-                        if self.try_expect(T!['(']) {
-                            accessor.abandon(self);
-                            accessor_inner.abandon(self);
-
-                            while !self.at(T![')']) {
-                                let arg = self.start();
-
-                                // TODO: Error handling
-                                self.expr().unwrap();
-                                self.eat_commas();
-
-                                arg.complete(self, METHOD_CALL_ARG);
-                            }
-
-                            // TODO: Method args
-                            self.expect(T![')']);
-                            marker.complete(self, METHOD_CALL)
-
-                        // Field access
-                        } else {
-                            accessor_inner.complete(self, FIELD_ACCESSOR_NAME);
-                            accessor.complete(self, FIELD_ACCESSOR);
-                            marker.complete(self, FIELD_ACCESS)
-                        }
-                    };
-
-                    if precedence < current_precedence {
-                        break;
-                    }
-                    current_precedence = precedence;
-                }
-
-                token => unimplemented!("unknown infix expression: {}", token),
-            }
-        }
-
-        // TODO: Postfix expressions, e.g. `array[x]`
-
-        Some(lhs)
+        Some(prefix)
     }
 
+    fn expr_infix(kind: SyntaxKind) -> Option<InfixParselet<'src, 'token>> {
+        let infix: InfixParselet<'src, 'token> = match kind {
+            // T!['['] => Self::index_array,
+            // T![as] => Self::as_cast,
+            T![.] => Self::method_or_access,
+
+            // TODO: Powers?
+            T![+]
+            | T![-]
+            | T![*]
+            | T![/]
+            | T![%]
+            | T![&]
+            | T![|]
+            | T![<<]
+            | T![>>]
+            | T![and]
+            | T![or]
+            | T![<]
+            | T![>]
+            | T![<=]
+            | T![>=]
+            | T![==]
+            | T![!=] => Self::binop,
+
+            // TODO: Powers?
+            T![=]
+            | T![+=]
+            | T![-=]
+            | T![*=]
+            | T![/=]
+            | T![%=]
+            | T![<<=]
+            | T![>>=]
+            | T![|=]
+            | T![&=]
+            | T![^=] => Self::assign,
+
+            _ => return None,
+        };
+
+        Some(infix)
+    }
+
+    fn expr_postfix(kind: SyntaxKind) -> Option<PostfixParselet<'src, 'token>> {
+        let postfix: PostfixParselet<'src, 'token> = match kind {
+            T!['('] => Self::function,
+            // T![..] => Self::ranges,
+            // T!['['] => Self::index_array,
+            // T![as] => Self::as_cast,
+            T![.] => Self::method_or_access,
+
+            // TODO: Powers?
+            T![=]
+            | T![+=]
+            | T![-=]
+            | T![*=]
+            | T![/=]
+            | T![%=]
+            | T![<<=]
+            | T![>>=]
+            | T![|=]
+            | T![&=]
+            | T![^=] => Self::assign,
+
+            _ => return None,
+        };
+
+        Some(postfix)
+    }
+
+    fn expr_precedence(&mut self) -> u8 {
+        ExprPrecedence::try_from(self.current())
+            .map(ExprPrecedence::precedence)
+            .unwrap_or(0)
+    }
+}
+
+impl Parser<'_, '_> {
     // test(expr) parenthesised
     // - (((((((((2 + (((((5))))))))))))))
     // test_err(expr) unclosed_paren
@@ -201,7 +226,7 @@ impl Parser<'_, '_> {
     // - (1, 2, 3,)
     // test_err(expr) missing_tuple_comma
     // - (1, 2 3)
-    fn parens_or_tuple(&mut self) -> Option<CompletedMarker> {
+    pub(super) fn parens_or_tuple(&mut self, _paren: SyntaxKind) -> Option<CompletedMarker> {
         let marker = self.start();
 
         if !self.expect(T!['(']) {
@@ -210,6 +235,7 @@ impl Parser<'_, '_> {
         }
 
         let first_expr = self.start();
+        // TODO: Error handling
         self.expr();
 
         let kind = if self.try_expect(T![,]) {
@@ -218,8 +244,17 @@ impl Parser<'_, '_> {
             while !self.at(T![')']) {
                 let tuple_elem = self.start();
 
+                // TODO: Error handling
                 self.expr();
-                self.try_expect(T![,]);
+
+                if !self.try_expect(T![,]) {
+                    let span = self.current_span();
+                    let error = Diagnostic::error()
+                        .with_message("missing comma between tuple elements")
+                        .with_label(Label::primary(span).with_message("expected a comma"));
+
+                    self.error(error);
+                }
 
                 tuple_elem.complete(self, TUPLE_EXPR_ELEM);
             }
@@ -235,78 +270,6 @@ impl Parser<'_, '_> {
         Some(marker.complete(self, kind))
     }
 
-    // test(expr) negation
-    // - --(-100)
-    // test(expr) boolean_not
-    // - !!(!true)
-    fn unary_expr(&mut self, operator: SyntaxKind) -> Option<CompletedMarker> {
-        let precedence = match unary_precedence(operator) {
-            Some(operand) => operand,
-            None => unreachable!(),
-        };
-
-        let marker = self.start();
-
-        // Eat the operator’s token.
-        let operand = self.start();
-        self.expect(operator);
-        operand.complete(self, UNARY_OP);
-
-        let expr_invalid = self.expr_inner(precedence).is_none();
-
-        let complete = marker.complete(self, UNARY_EXPR);
-        if expr_invalid {
-            return None;
-        }
-
-        Some(complete)
-    }
-
-    // test(expr) decimal_number
-    // - 123
-    // test(expr) hex_number
-    // - 0xFFFF
-    // test(expr) binary_number
-    // - 0b010101
-    // test(expr) bool_true
-    // - true
-    // test(expr) bool_false
-    // - false
-    // test(expr) strings
-    // - "foo"
-    // - "bar\"\n"
-    // test(expr) chars
-    // - 'c'
-    pub(super) fn literal(&mut self) -> Option<CompletedMarker> {
-        let literal = self.start();
-
-        // Numbers
-        if self.at(NUMBER_LITERAL) {
-            self.bump();
-            Some(literal.complete(self, NUMBER))
-
-        // Strings
-        } else if self.at(STRING_LITERAL) {
-            self.bump();
-            Some(literal.complete(self, STRING))
-
-        // Booleans
-        } else if self.at(T![true]) || self.at(T![false]) {
-            self.bump();
-            Some(literal.complete(self, BOOL))
-
-        // Chars
-        } else if self.at(CHAR_LITERAL) {
-            self.bump();
-            Some(literal.complete(self, CHAR))
-
-        // Non-literals
-        } else {
-            literal.abandon(self);
-            None
-        }
-    }
-
     // test(expr) var_ref
     // - a
     // - abcd
@@ -314,7 +277,7 @@ impl Parser<'_, '_> {
     // - _
     // - _135
     // - _dsg434
-    fn var_ref(&mut self) -> Option<CompletedMarker> {
+    pub(super) fn var_ref(&mut self, _ident: SyntaxKind) -> Option<CompletedMarker> {
         let var = self.start();
         self.ident();
         Some(var.complete(self, VAR_REF))
@@ -348,7 +311,7 @@ impl Parser<'_, '_> {
     // - |foo, bar| {
     // -     return baz(foo + bar);
     // - }
-    fn closure(&mut self) -> Option<CompletedMarker> {
+    pub(super) fn closure(&mut self, _pipe: SyntaxKind) -> Option<CompletedMarker> {
         let closure = self.start();
 
         self.expect(T![|]);
@@ -373,32 +336,193 @@ impl Parser<'_, '_> {
 
         Some(closure.complete(self, CLOSURE_EXPR))
     }
-}
 
-fn unary_precedence(operand: SyntaxKind) -> Option<u8> {
-    let precedence = match operand {
-        T![-] | T![!] => 1,
-        _ => return None,
-    };
+    // TODO: Floats
+    // test(expr) decimal_number
+    // - 123
+    // test(expr) hex_number
+    // - 0xFFFF
+    // test(expr) binary_number
+    // - 0b010101
+    // test(expr) bool_true
+    // - true
+    // test(expr) bool_false
+    // - false
+    // test(expr) strings
+    // - "foo"
+    // - "bar\"\n"
+    // test(expr) chars
+    // - 'c'
+    fn literal_expr(&mut self, kind: SyntaxKind) -> Option<CompletedMarker> {
+        let literal = self.start();
 
-    Some(precedence)
-}
+        match kind {
+            NUMBER_LITERAL => {
+                self.bump();
+                Some(literal.complete(self, NUMBER))
+            }
 
-fn infix_precedence(operand: SyntaxKind) -> Option<u8> {
-    let precedence = match operand {
-        T![or] => 1,
-        T![and] => 2,
-        T![==] | T![!=] | T![<] | T![<=] | T![>] | T![>=] => 3,
-        T![|] => 4,
-        T![^] => 5,
-        T![&] => 6,
-        T![<<] | T![>>] => 7,
-        T![+] | T![-] => 8,
-        T![*] | T![/] | T![%] => 9,
-        T![.] => 10,
+            STRING_LITERAL => {
+                self.bump();
+                Some(literal.complete(self, STRING))
+            }
 
-        _ => return None,
-    };
+            CHAR_LITERAL => {
+                self.bump();
+                Some(literal.complete(self, CHAR))
+            }
 
-    Some(precedence)
+            T![true] | T![false] => {
+                self.bump();
+                Some(literal.complete(self, BOOL))
+            }
+
+            kind => unreachable!("invalid literal kind {:?}", kind),
+        }
+    }
+
+    // test(expr) negation
+    // - --(-100)
+    // test(expr) boolean_not
+    // - !!(!true)
+    fn unary_expr(&mut self, operator: SyntaxKind) -> Option<CompletedMarker> {
+        let marker = self.start();
+
+        // Eat the operator’s token.
+        let operand = self.start();
+        self.expect(operator);
+        operand.complete(self, UNARY_OP);
+
+        // TODO: Improve error handling
+        let expr_invalid = self.expr().is_none();
+
+        let complete = marker.complete(self, UNARY_EXPR);
+        if expr_invalid {
+            return None;
+        }
+
+        Some(complete)
+    }
+
+    fn block_expr(&mut self, _bracket: SyntaxKind) -> Option<CompletedMarker> {
+        self.block(false)
+    }
+
+    fn return_expr(&mut self, _return: SyntaxKind) -> Option<CompletedMarker> {
+        let ret = self.start();
+
+        self.expect(T![return]);
+        self.expr();
+
+        Some(ret.complete(self, RET_EXPR))
+    }
+
+    fn continue_expr(&mut self, _continue: SyntaxKind) -> Option<CompletedMarker> {
+        let cont = self.start();
+
+        self.expect(T![continue]);
+        self.expr();
+
+        Some(cont.complete(self, CONTINUE_EXPR))
+    }
+
+    fn break_expr(&mut self, _break: SyntaxKind) -> Option<CompletedMarker> {
+        let brk = self.start();
+
+        self.expect(T![break]);
+        self.expr();
+
+        Some(brk.complete(self, BREAK_EXPR))
+    }
+
+    fn if_expr(&mut self, _if: SyntaxKind) -> Option<CompletedMarker> {
+        self.parse_if()
+    }
+
+    fn binop(&mut self, _op: SyntaxKind, lhs: CompletedMarker) -> Option<CompletedMarker> {
+        let op = self.start();
+        self.bump();
+        op.complete(self, BIN_OP);
+
+        // TODO: Error handling for the right hand side
+        let rhs = lhs.precede(self);
+        self.expr();
+        Some(rhs.complete(self, BIN_EXPR))
+    }
+
+    fn assign(&mut self, _assign: SyntaxKind, rvalue: CompletedMarker) -> Option<CompletedMarker> {
+        let assign = self.start();
+        self.bump();
+        assign.complete(self, ASSIGN_OP);
+
+        let lvalue = rvalue.precede(self);
+        self.expr();
+        Some(lvalue.complete(self, ASSIGN))
+    }
+
+    fn method_or_access(
+        &mut self,
+        _dot: SyntaxKind,
+        callee: CompletedMarker,
+    ) -> Option<CompletedMarker> {
+        let marker = callee.precede(self);
+        self.expect(T![.]);
+
+        // Tuple access
+        Some(if self.at(NUMBER_LITERAL) {
+            let accessor = self.start();
+            accessor.complete(self, NUMBER);
+
+            marker.complete(self, FIELD_ACCESSOR)
+
+        // Field access or method calls
+        } else {
+            let accessor = self.start();
+            let accessor_inner = self.start();
+            self.ident();
+
+            // Method call
+            if self.try_expect(T!['(']) {
+                accessor.abandon(self);
+                accessor_inner.abandon(self);
+
+                while !self.at(T![')']) {
+                    let arg = self.start();
+
+                    // TODO: Error handling
+                    self.expr().unwrap();
+                    self.eat_commas();
+
+                    arg.complete(self, METHOD_CALL_ARG);
+                }
+
+                // TODO: Method args
+                self.expect(T![')']);
+                marker.complete(self, METHOD_CALL)
+
+            // Field access
+            } else {
+                accessor_inner.complete(self, FIELD_ACCESSOR_NAME);
+                accessor.complete(self, FIELD_ACCESSOR);
+                marker.complete(self, FIELD_ACCESS)
+            }
+        })
+    }
+
+    fn function(&mut self, _paren: SyntaxKind, callee: CompletedMarker) -> Option<CompletedMarker> {
+        let call = callee.precede(self);
+        self.expect(T!['(']);
+
+        while !self.at(T![')']) {
+            let arg = self.start();
+            self.expr();
+
+            self.try_expect(T![,]);
+
+            arg.complete(self, FUNCTION_CALL_ARG);
+        }
+        self.expect(T![')']);
+
+        Some(call.complete(self, FUNCTION_CALL))
+    }
 }

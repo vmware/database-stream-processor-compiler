@@ -54,6 +54,7 @@ impl Parser<'_, '_> {
     // TODO: Abandon attributes & modifiers if an error occurs in parsing the item
     fn item(&mut self) -> Option<CompletedMarker> {
         tracing::trace!(current = %self.current(), peek = %self.peek(), "parsing item");
+        let _frame = self.stack_frame();
 
         let item = self.start();
 
@@ -99,6 +100,7 @@ impl Parser<'_, '_> {
     // - fn foo1(bar: Baz) {}
     // - fn foo2(bar: Baz, bing: Bang) {}
     fn function_def(&mut self, function: Marker) -> Option<CompletedMarker> {
+        let _frame = self.stack_frame();
         self.expect(T![fn]);
 
         let current_set = self.recovery_set;
@@ -168,6 +170,8 @@ impl Parser<'_, '_> {
     // - struct TupleStruct();
     // - struct TupleStruct(u8, u8, u8);
     fn struct_def(&mut self, struct_def: Marker) -> Option<CompletedMarker> {
+        let _frame = self.stack_frame();
+
         self.expect(T![struct]);
         self.ident();
 

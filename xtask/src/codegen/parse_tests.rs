@@ -11,6 +11,7 @@ use crate::{
 };
 use std::{
     collections::{HashMap, HashSet},
+    fmt::Write,
     fs, iter, mem,
     path::{Path, PathBuf},
 };
@@ -294,15 +295,39 @@ fn tests_from_dir(dir: &Path, all_validate: bool) -> Result<Tests> {
 
 fn process_file(res: &mut Tests, path: &Path, all_validate: bool) -> Result<()> {
     let text = fs::read_to_string(path)?;
+    let mut duplicate_tests = Vec::new();
 
     for test in collect_tests(&text, all_validate) {
         if test.pass {
             if let Some(old_test) = res.pass.insert(test.name.clone(), test) {
-                anyhow::bail!("duplicate test: {}", old_test.name);
+                duplicate_tests.push(old_test.name);
             }
         } else if let Some(old_test) = res.fail.insert(test.name.clone(), test) {
-            anyhow::bail!("duplicate test: {}", old_test.name);
+            duplicate_tests.push(old_test.name);
         }
+    }
+
+    if !duplicate_tests.is_empty() {
+        let total_duplicates = duplicate_tests.len();
+        let duplicates = if total_duplicates == 1 {
+            duplicate_tests.into_iter().next().unwrap()
+        } else {
+            duplicate_tests.sort_unstable();
+
+            let mut duplicates = String::new();
+            for test in duplicate_tests {
+                write!(&mut duplicates, "- {}", test).unwrap();
+            }
+
+            duplicates
+        };
+
+        anyhow::bail!(
+            "{} duplicate test{}: {}",
+            total_duplicates,
+            if total_duplicates == 1 { "" } else { "s" },
+            duplicates,
+        );
     }
 
     Ok(())

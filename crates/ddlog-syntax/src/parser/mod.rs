@@ -1,6 +1,7 @@
 mod event;
 mod expr;
 mod item;
+mod precedence;
 pub(crate) mod sink;
 pub(crate) mod source;
 mod stmt;
@@ -163,6 +164,10 @@ impl<'src, 'token> Parser<'src, 'token> {
     #[track_caller]
     fn bump(&mut self) {
         self.bump_span();
+    }
+
+    fn try_peek(&mut self) -> Option<SyntaxKind> {
+        self.source.try_peek_kind()
     }
 
     fn peek(&mut self) -> SyntaxKind {
@@ -335,6 +340,7 @@ impl<'src, 'token> Parser<'src, 'token> {
         }
     }
 
+    /// Returns `true` if the current token is the same as `kind`
     fn try_expect(&mut self, kind: SyntaxKind) -> bool {
         self.try_expect_span(kind).is_some()
     }
@@ -471,6 +477,7 @@ impl StackFrame {
 }
 
 impl Drop for StackFrame {
+    #[track_caller]
     fn drop(&mut self) {
         #[cold]
         #[track_caller]

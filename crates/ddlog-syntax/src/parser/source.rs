@@ -32,9 +32,13 @@ impl<'src, 'token> Source<'src, 'token> {
         self.end_of_file
     }
 
-    pub(super) fn peek_kind(&mut self) -> SyntaxKind {
+    pub(super) fn try_peek_kind(&mut self) -> Option<SyntaxKind> {
         self.eat_trivia();
-        self.peek_kind_raw().unwrap_or(EOF)
+        self.peek_kind_raw()
+    }
+
+    pub(super) fn peek_kind(&mut self) -> SyntaxKind {
+        self.try_peek_kind().unwrap_or(EOF)
     }
 
     pub(super) fn peek_nth(&mut self, n: usize) -> Token<'src> {

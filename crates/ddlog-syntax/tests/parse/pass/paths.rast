@@ -12,7 +12,7 @@ ROOT@0..248
     BLOCK@61..247
       L_CURLY@61..62 "{"
       WHITESPACE@62..67 "\n    "
-      VAR_DECL@67..84
+      VAR_DECL@67..94
         LET_TOKEN@67..70 "let"
         WHITESPACE@70..71 " "
         VAR_REF@71..76
@@ -20,13 +20,13 @@ ROOT@0..248
         WHITESPACE@76..77 " "
         EQ@77..78 "="
         WHITESPACE@78..79 " "
-        VAR_REF@79..84
-          IDENT@79..84 "input"
-      EXPR_STMT@84..94
-        PAREN_EXPR@84..93
+        FUNCTION_CALL@79..93
+          VAR_REF@79..84
+            IDENT@79..84 "input"
           L_PAREN@84..85 "("
-          STRING@85..92
-            STRING_LITERAL@85..92 "\"edges\""
+          FUNCTION_CALL_ARG@85..92
+            STRING@85..92
+              STRING_LITERAL@85..92 "\"edges\""
           R_PAREN@92..93 ")"
         SEMICOLON@93..94 ";"
       WHITESPACE@94..99 "\n    "
@@ -83,18 +83,17 @@ ROOT@0..248
           R_PAREN@215..216 ")"
         SEMICOLON@216..217 ";"
       WHITESPACE@217..222 "\n    "
-      EXPR_STMT@222..228
-        VAR_REF@222..228
-          IDENT@222..228 "output"
-      EXPR_STMT@228..245
-        TUPLE_INIT_EXPR@228..244
+      EXPR_STMT@222..245
+        FUNCTION_CALL@222..244
+          VAR_REF@222..228
+            IDENT@222..228 "output"
           L_PAREN@228..229 "("
-          TUPLE_EXPR_ELEM@229..235
+          FUNCTION_CALL_ARG@229..235
             VAR_REF@229..234
               IDENT@229..234 "paths"
             COMMA@234..235 ","
           WHITESPACE@235..236 " "
-          TUPLE_EXPR_ELEM@236..243
+          FUNCTION_CALL_ARG@236..243
             STRING@236..243
               STRING_LITERAL@236..243 "\"paths\""
           R_PAREN@243..244 ")"
