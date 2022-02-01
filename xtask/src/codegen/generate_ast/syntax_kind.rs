@@ -42,7 +42,7 @@ special_logos! {
         // FIXME: Raw strings
         // FIXME: Inline expressions
         // FIXME: Interned strings
-        "regex(\"b?\\\"[^\\\"]*\\\"\")",
+        r##"regex(r#"b?"(\\.|[^\\"])*""#)"##,
     },
 
     "char_literal" => {

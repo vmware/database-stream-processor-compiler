@@ -211,7 +211,7 @@ pub enum SyntaxKind {
     STAR_EQ = 133u16,
     STMT = 134u16,
     STRING = 135u16,
-    #[regex("b?\"[^\"]*\"")]
+    #[regex(r#"b?"(\\.|[^\\"])*""#)]
     STRING_LITERAL = 136u16,
     STRUCT_DEF = 137u16,
     STRUCT_FIELDS = 138u16,
