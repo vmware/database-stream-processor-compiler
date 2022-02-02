@@ -219,11 +219,13 @@ impl Parser<'_, '_> {
     // test(expr) single_element_tuple
     // - (1,)
     // test(expr) tuple_literals
-    // - (1,)
-    // - (1, 2)
-    // - (1, 2,)
-    // - (1, 2, 3)
-    // - (1, 2, 3,)
+    // - {
+    // -    (1,);
+    // -    (1, 2);
+    // -    (1, 2,);
+    // -    (1, 2, 3);
+    // -    (1, 2, 3,);
+    // - }
     // test_err(expr) missing_tuple_comma
     // - (1, 2 3)
     pub(super) fn parens_or_tuple(&mut self, _paren: SyntaxKind) -> Option<CompletedMarker> {

@@ -8,10 +8,14 @@ use std::{
     panic::{self, AssertUnwindSafe},
     path::{Path, PathBuf},
     str::FromStr,
+    sync::mpsc,
+    thread,
+    time::Duration,
 };
 use tracing::subscriber;
 use tracing_subscriber::EnvFilter;
 
+const TEST_WARNING_TIME: Duration = Duration::from_secs(5);
 const TEST_DIRS: &[&str] = &[
     "parse/pass",
     "parse/fail",
@@ -48,12 +52,28 @@ fn main() {
             return Outcome::Ignored;
         }
 
+        let name = interner.get_or_intern(&test.name);
+
         let cache = NodeCache::from_interner(interner.clone());
         let mut file_cache = FileCache::new(interner.clone());
 
         // Add the file to the file cache
-        let file = FileId::new(interner.get_or_intern(&test.name));
+        let file = FileId::new(name);
         file_cache.add_str(file, contents);
+
+        // Print a warning if the test runs for more than `TEST_WARNING_TIME`
+        let (send, recv) = mpsc::sync_channel(1);
+        let thread_intern = interner.clone();
+        thread::spawn(move || {
+            if recv.recv_timeout(TEST_WARNING_TIME).is_err() {
+                let name = thread_intern.resolve(name);
+
+                eprintln!(
+                    "{} has been running for more than {:#?}",
+                    name, TEST_WARNING_TIME,
+                );
+            }
+        });
 
         // Attempt to parse the file
         let (parsed, _cache) = match try_parse(file, contents, kind, cache) {
@@ -69,6 +89,8 @@ fn main() {
             validation::run_validators(&root, &mut ctx);
             errors.extend(ctx.diagnostics);
         }
+
+        send.send(()).unwrap();
 
         if should_pass && !errors.is_empty() {
             let mut printed_errors = Vec::new();
@@ -165,9 +187,7 @@ fn try_parse(
 }
 
 fn project_root() -> &'static Path {
-    const MANIFEST: &str = env!("CARGO_MANIFEST_DIR");
-
-    Path::new(MANIFEST)
+    Path::new(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .expect("CARGO_MANIFEST_DIR has no parent??")
 }
