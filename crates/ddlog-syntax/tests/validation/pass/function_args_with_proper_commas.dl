@@ -1,4 +1,4 @@
-// kind:item validate:true pass:true ignore:false
+// kind:item validate:true pass:true ignore:false file:'ddlog-syntax/src/validation/extra_commas.rs' line:72 column:3
 fn foo(bar: Baz) {}
 fn foo(bar: Baz,) {}
 fn foo(bar: Baz, foo: Bar, bing: Bop) {}

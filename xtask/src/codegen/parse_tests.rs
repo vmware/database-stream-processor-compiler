@@ -159,12 +159,12 @@ fn install_tests(tests: &HashMap<String, Test>, test_dir: &str, mode: CodegenMod
 fn extract_comment_blocks(
     text: &str,
     allow_blocks_with_empty_lines: bool,
-) -> Vec<(usize, Vec<&str>)> {
+) -> Vec<(Location, Vec<&str>)> {
     let mut res = Vec::new();
 
     let prefix = "// - ";
 
-    let mut block = (0, vec![]);
+    let mut block = (Location::default(), vec![]);
     for (line_num, line) in text.lines().map(str::trim_start).enumerate() {
         if line == "//" && allow_blocks_with_empty_lines {
             block.1.push("");
@@ -178,14 +178,14 @@ fn extract_comment_blocks(
             }
 
             block.1.push(&line["// ".len()..]);
+            block.0 = Location::new(
+                line_num as u32,
+                (line.len() - line["// ".len()..].len()) as u32,
+            );
         } else if is_comment {
             block.1.push(&line[prefix.len()..]);
-        } else {
-            if !block.1.is_empty() {
-                res.push(mem::take(&mut block));
-            }
-
-            block.0 = line_num + 2;
+        } else if !block.1.is_empty() {
+            res.push(mem::take(&mut block));
         }
     }
 
@@ -217,12 +217,9 @@ struct Tests {
 }
 
 // TODO: Allow for giving `:expr`/`:stmt`/`:item` specifiers in tests
-fn collect_tests(source: &str, all_validate: bool) -> Vec<Test> {
+fn collect_tests(source: &str, all_validate: bool, src_file: &Path) -> Vec<Test> {
     let mut tests = Vec::new();
-    for comment_block in extract_comment_blocks(source, false)
-        .into_iter()
-        .map(|(_, x)| x)
-    {
+    for (location, comment_block) in extract_comment_blocks(source, false) {
         let first_line = &comment_block[0];
         let (line, pass) = if let Some(line) = first_line.strip_prefix("test_err") {
             (line.trim(), false)
@@ -243,8 +240,11 @@ fn collect_tests(source: &str, all_validate: bool) -> Vec<Test> {
             (line, TestKind::Item)
         };
 
+        let pretty_file = src_file
+            .strip_prefix(&project_root().join("crates"))
+            .unwrap_or(src_file);
         let header = format!(
-            "// kind:{} validate:{} pass:{} ignore:{}",
+            "// kind:{} validate:{} pass:{} ignore:{} file:'{}' line:{} column:{}",
             match kind {
                 TestKind::Item => "item",
                 TestKind::Stmt => "stmt",
@@ -253,6 +253,9 @@ fn collect_tests(source: &str, all_validate: bool) -> Vec<Test> {
             all_validate,
             pass,
             ignore,
+            display_path(pretty_file),
+            location.line,
+            location.column,
         );
         let code = iter::once(&*header)
             .chain(comment_block[1..].iter().map(|line| &**line))
@@ -297,7 +300,7 @@ fn process_file(res: &mut Tests, path: &Path, all_validate: bool) -> Result<()> 
     let text = fs::read_to_string(path)?;
     let mut duplicate_tests = Vec::new();
 
-    for test in collect_tests(&text, all_validate) {
+    for test in collect_tests(&text, all_validate, path) {
         if test.pass {
             if let Some(old_test) = res.pass.insert(test.name.clone(), test) {
                 duplicate_tests.push(old_test.name);
@@ -361,4 +364,16 @@ fn existing_tests(dir: &Path, ok: bool) -> Result<HashMap<String, (PathBuf, Test
     }
 
     Ok(res)
+}
+
+#[derive(Debug, Default)]
+struct Location {
+    line: u32,
+    column: u32,
+}
+
+impl Location {
+    fn new(line: u32, column: u32) -> Self {
+        Self { line, column }
+    }
 }

@@ -1,4 +1,4 @@
-// kind:item validate:true pass:true ignore:false
+// kind:item validate:true pass:true ignore:false file:'ddlog-syntax/src/validation/extra_commas.rs' line:17 column:3
 #[foo = bar]
 #[foo = bar,]
 #[foo = bar, bar = baz, bing = bop,]

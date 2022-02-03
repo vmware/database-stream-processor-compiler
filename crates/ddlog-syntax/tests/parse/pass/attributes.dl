@@ -1,4 +1,4 @@
-// kind:item validate:false pass:true ignore:false
+// kind:item validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/item.rs' line:389 column:3
 #[something = 10,,,]
 #[something_else = 10,,,]
 #[something_again = wheee,,,]

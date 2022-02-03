@@ -1,2 +1,2 @@
-// kind:expr validate:false pass:true ignore:false
+// kind:expr validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/stmt.rs' line:136 column:3
 { 10 } - {{ 5 + ({ 99 }) }}

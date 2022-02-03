@@ -1,2 +1,2 @@
-// kind:item validate:true pass:true ignore:false
+// kind:item validate:true pass:true ignore:false file:'ddlog-syntax/src/validation/modifiers.rs' line:23 column:3
 pub fn foo() {}

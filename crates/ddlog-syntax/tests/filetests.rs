@@ -46,6 +46,9 @@ fn main() {
             ignored,
             ref contents,
             ref expected_path,
+            ref src_file,
+            src_line,
+            src_column,
         } = test.data;
 
         if ignored {
@@ -63,14 +66,14 @@ fn main() {
 
         // Print a warning if the test runs for more than `TEST_WARNING_TIME`
         let (send, recv) = mpsc::sync_channel(1);
-        let thread_intern = interner.clone();
+        let (thread_file, thread_intern) = (src_file.clone(), interner.clone());
         thread::spawn(move || {
             if recv.recv_timeout(TEST_WARNING_TIME).is_err() {
                 let name = thread_intern.resolve(name);
 
                 eprintln!(
-                    "{} has been running for more than {:#?}",
-                    name, TEST_WARNING_TIME,
+                    "{} @ {}:{}:{} has been running for more than {:#?}",
+                    name, thread_file, src_line, src_column, TEST_WARNING_TIME,
                 );
             }
         });
@@ -92,6 +95,7 @@ fn main() {
 
         send.send(()).unwrap();
 
+        // Expected no errors, but some were emitted
         if should_pass && !errors.is_empty() {
             let mut printed_errors = Vec::new();
             let num_errors = errors.len();
@@ -103,16 +107,25 @@ fn main() {
             }
 
             let message = format!(
-                "there should be no errors in '{}', but {} were found\n--\n{}\n--\n{}",
+                "there should be no errors in '{}' @ {}:{}:{}, but {} were found\n--\n{}\n--\n{}",
                 test.name,
+                src_file,
+                src_line,
+                src_column,
                 num_errors,
                 root.debug(&interner, true),
                 String::from_utf8(printed_errors).expect("invalid utf8 in errors"),
             );
 
             return Outcome::Failed { msg: Some(message) };
+
+        // Expected errors, but none were emitted
         } else if !should_pass && errors.is_empty() {
-            let message = format!("there should be errors in '{}'", test.name);
+            let message = format!(
+                "there should be errors in '{}' @ {}:{}:{}",
+                test.name, src_file, src_line, src_column,
+            );
+
             return Outcome::Failed { msg: Some(message) };
         }
 
@@ -127,7 +140,7 @@ fn main() {
 
                 actual_output.push_str(&format!(
                     "--\n{}",
-                    std::str::from_utf8(buffer.as_slice()).expect("non utf8 in error buffer")
+                    std::str::from_utf8(buffer.as_slice()).expect("non utf8 in error buffer"),
                 ));
 
                 buffer.clear();
@@ -143,8 +156,8 @@ fn main() {
         if expected.is_err() {
             Outcome::Failed {
                 msg: Some(format!(
-                    "{}'s output didn't match its expected output",
-                    test.name,
+                    "{}'s output didn't match its expected output ({}:{}:{})",
+                    test.name, src_file, src_line, src_column
                 )),
             }
         } else {
@@ -181,7 +194,7 @@ fn try_parse(
         msg: Some(format!(
             "panicked while trying to parse '{}': {:?}",
             file.to_str(&interner),
-            error
+            error,
         )),
     })
 }
@@ -203,32 +216,219 @@ fn collect_ddlog_files(root_dir: &Path, paths: &[&str]) -> Vec<Test<TestData>> {
             let text = fs::read_to_string(&path)
                 .unwrap_or_else(|_| panic!("could not read ddlog file '{}'", path.display()));
 
-            let header = text.lines().next().expect("expected a test header");
-            assert!(header.starts_with("//"), "header must start with `//`");
+            let header = text
+                .lines()
+                .next()
+                .expect("expected a test header")
+                .trim()
+                .strip_prefix("//")
+                .expect("header must start with `//`")
+                .trim();
 
-            let (mut kind, mut validate, mut pass, mut ignored) =
-                (TestKind::Item, false, true, false);
-            for attr in header.split(' ') {
-                if let Some(k) = attr.strip_prefix("kind:") {
-                    kind = k.parse().expect("invalid test kind");
-                } else if let Some(v) = attr.strip_prefix("validate:") {
-                    match v {
-                        "true" => validate = true,
-                        "false" => validate = false,
-                        _ => panic!("invalid `validate` setting: {:?}", v),
+            let (
+                mut kind,
+                mut validate,
+                mut pass,
+                mut ignored,
+                mut src_file,
+                mut src_line,
+                mut src_column,
+            ) = (TestKind::Item, false, true, false, String::new(), 0, 0);
+
+            // Really sketchy bootleg header parser, the only reason this is complex is because file paths
+            // can have spaces in them, without that it could just be splitting on spaces
+            let mut chars = header.char_indices();
+            while let Some((_, char)) = chars.next() {
+                if char == ' ' {
+                    continue;
+                }
+
+                match char {
+                    ' ' => {}
+
+                    'k' => {
+                        assert!(matches!(chars.next(), Some((_, 'i'))));
+                        assert!(matches!(chars.next(), Some((_, 'n'))));
+                        assert!(matches!(chars.next(), Some((_, 'd'))));
+
+                        let (idx, char) = chars.next().unwrap();
+                        assert_eq!(char, ':');
+
+                        let start_idx = idx + 1;
+                        let mut end_idx = start_idx;
+                        for (idx, char) in chars.by_ref() {
+                            if char != ' ' {
+                                end_idx = idx + char.len_utf8();
+                            } else {
+                                break;
+                            }
+                        }
+
+                        let raw = &header[start_idx..end_idx];
+                        dbg!(raw);
+                        kind = raw
+                            .parse()
+                            .unwrap_or_else(|_| panic!("invalid `kind` setting: {:?}", raw));
                     }
-                } else if let Some(p) = attr.strip_prefix("pass:") {
-                    match p {
-                        "true" => pass = true,
-                        "false" => pass = false,
-                        _ => panic!("invalid `pass` setting: {:?}", p),
+
+                    'v' => {
+                        assert!(matches!(chars.next(), Some((_, 'a'))));
+                        assert!(matches!(chars.next(), Some((_, 'l'))));
+                        assert!(matches!(chars.next(), Some((_, 'i'))));
+                        assert!(matches!(chars.next(), Some((_, 'd'))));
+                        assert!(matches!(chars.next(), Some((_, 'a'))));
+                        assert!(matches!(chars.next(), Some((_, 't'))));
+                        assert!(matches!(chars.next(), Some((_, 'e'))));
+
+                        let (idx, char) = chars.next().unwrap();
+                        assert_eq!(char, ':');
+
+                        let start_idx = idx + 1;
+                        let mut end_idx = start_idx;
+                        for (idx, char) in chars.by_ref() {
+                            if char != ' ' {
+                                end_idx = idx + char.len_utf8();
+                            } else {
+                                break;
+                            }
+                        }
+
+                        let raw = &header[start_idx..end_idx];
+                        dbg!(raw);
+                        validate = raw
+                            .parse()
+                            .unwrap_or_else(|_| panic!("invalid `validate` setting: {:?}", raw));
                     }
-                } else if let Some(i) = attr.strip_prefix("ignore:") {
-                    match i {
-                        "true" => ignored = true,
-                        "false" => ignored = false,
-                        _ => panic!("invalid `ignore` setting: {:?}", i),
+
+                    'p' => {
+                        assert!(matches!(chars.next(), Some((_, 'a'))));
+                        assert!(matches!(chars.next(), Some((_, 's'))));
+                        assert!(matches!(chars.next(), Some((_, 's'))));
+
+                        let (idx, char) = chars.next().unwrap();
+                        assert_eq!(char, ':');
+
+                        let start_idx = idx + 1;
+                        let mut end_idx = start_idx;
+                        for (idx, char) in chars.by_ref() {
+                            if char != ' ' {
+                                end_idx = idx + char.len_utf8();
+                            } else {
+                                break;
+                            }
+                        }
+
+                        let raw = &header[start_idx..end_idx];
+                        dbg!(raw);
+                        pass = raw
+                            .parse()
+                            .unwrap_or_else(|_| panic!("invalid `pass` setting: {:?}", raw));
                     }
+
+                    'i' => {
+                        assert!(matches!(chars.next(), Some((_, 'g'))));
+                        assert!(matches!(chars.next(), Some((_, 'n'))));
+                        assert!(matches!(chars.next(), Some((_, 'o'))));
+                        assert!(matches!(chars.next(), Some((_, 'r'))));
+                        assert!(matches!(chars.next(), Some((_, 'e'))));
+
+                        let (idx, char) = chars.next().unwrap();
+                        assert_eq!(char, ':');
+
+                        let start_idx = idx + 1;
+                        let mut end_idx = start_idx;
+                        for (idx, char) in chars.by_ref() {
+                            if char != ' ' {
+                                end_idx = idx + char.len_utf8();
+                            } else {
+                                break;
+                            }
+                        }
+
+                        let raw = &header[start_idx..end_idx];
+                        dbg!(raw);
+                        ignored = raw
+                            .parse()
+                            .unwrap_or_else(|_| panic!("invalid `ignore` setting: {:?}", raw));
+                    }
+
+                    'f' => {
+                        assert!(matches!(chars.next(), Some((_, 'i'))));
+                        assert!(matches!(chars.next(), Some((_, 'l'))));
+                        assert!(matches!(chars.next(), Some((_, 'e'))));
+                        assert!(matches!(chars.next(), Some((_, ':'))));
+
+                        let (idx, char) = chars.next().unwrap();
+                        assert_eq!(char, '\'');
+
+                        let start_idx = idx + 1;
+                        let mut end_idx = start_idx;
+                        for (idx, char) in chars.by_ref() {
+                            if char != '\'' {
+                                end_idx = idx + char.len_utf8();
+                            } else {
+                                break;
+                            }
+                        }
+
+                        let raw = &header[start_idx..end_idx];
+                        dbg!(raw);
+                        src_file = raw.to_owned();
+                    }
+
+                    'l' => {
+                        assert!(matches!(chars.next(), Some((_, 'i'))));
+                        assert!(matches!(chars.next(), Some((_, 'n'))));
+                        assert!(matches!(chars.next(), Some((_, 'e'))));
+
+                        let (idx, char) = chars.next().unwrap();
+                        assert_eq!(char, ':');
+
+                        let start_idx = idx + 1;
+                        let mut end_idx = start_idx;
+                        for (idx, char) in chars.by_ref() {
+                            if char != ' ' {
+                                end_idx = idx + char.len_utf8();
+                            } else {
+                                break;
+                            }
+                        }
+
+                        let raw = &header[start_idx..end_idx];
+                        dbg!(raw);
+                        src_line = raw
+                            .parse()
+                            .unwrap_or_else(|_| panic!("invalid `line` setting: {:?}", raw));
+                    }
+
+                    'c' => {
+                        assert!(matches!(chars.next(), Some((_, 'o'))));
+                        assert!(matches!(chars.next(), Some((_, 'l'))));
+                        assert!(matches!(chars.next(), Some((_, 'u'))));
+                        assert!(matches!(chars.next(), Some((_, 'm'))));
+                        assert!(matches!(chars.next(), Some((_, 'n'))));
+
+                        let (idx, char) = chars.next().unwrap();
+                        assert_eq!(char, ':');
+
+                        let start_idx = idx + 1;
+                        let mut end_idx = start_idx;
+                        for (idx, char) in chars.by_ref() {
+                            if char != ' ' {
+                                end_idx = idx + char.len_utf8();
+                            } else {
+                                break;
+                            }
+                        }
+
+                        let raw = &header[start_idx..end_idx];
+                        dbg!(raw);
+                        src_column = raw
+                            .parse()
+                            .unwrap_or_else(|_| panic!("invalid `column` setting: {:?}", raw));
+                    }
+
+                    _ => {}
                 }
             }
 
@@ -258,6 +458,9 @@ fn collect_ddlog_files(root_dir: &Path, paths: &[&str]) -> Vec<Test<TestData>> {
                     ignored,
                     contents,
                     expected_path,
+                    src_file,
+                    src_line,
+                    src_column,
                 },
             }
         })
@@ -272,6 +475,9 @@ struct TestData {
     ignored: bool,
     contents: String,
     expected_path: PathBuf,
+    src_file: String,
+    src_line: u32,
+    src_column: u32,
 }
 
 fn ddlog_files_in_dir(dir: &Path) -> Vec<PathBuf> {

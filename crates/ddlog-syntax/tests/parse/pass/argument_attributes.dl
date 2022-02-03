@@ -1,4 +1,4 @@
-// kind:item validate:false pass:true ignore:false
+// kind:item validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/item.rs' line:144 column:3
 fn foo(
     #[by_val]
     bar: Baz,

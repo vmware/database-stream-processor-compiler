@@ -1,4 +1,4 @@
-// kind:item validate:false pass:true ignore:false
+// kind:item validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/mod.rs' line:51 column:3
 fn main() {
     let edges = input("edges");
     let paths = edges.iterative(|edges| {

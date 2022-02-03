@@ -1,4 +1,4 @@
-// kind:item validate:false pass:true ignore:false
+// kind:item validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/item.rs' line:161 column:3
 struct Foo {}
 struct Foo1 {
     bar: usize,
