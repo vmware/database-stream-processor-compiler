@@ -218,14 +218,16 @@ impl Parser<'_, '_> {
     // - (1)
     // test(expr) single_element_tuple
     // - (1,)
-    // test(expr) tuple_literals
-    // - {
-    // -    (1,);
-    // -    (1, 2);
-    // -    (1, 2,);
-    // -    (1, 2, 3);
-    // -    (1, 2, 3,);
-    // - }
+    // test(expr) tuple_literal_1
+    // - (1,)
+    // test(expr) tuple_literal_2
+    // - (1, 2)
+    // test(expr) tuple_literal_2_trailing
+    // - (1, 2,)
+    // test(expr) tuple_literal_3
+    // - (1, 2, 3)
+    // test(expr) tuple_literal_3_trailing
+    // - (1, 2, 3,)
     // test_err(expr) missing_tuple_comma
     // - (1, 2 3)
     pub(super) fn parens_or_tuple(&mut self, _paren: SyntaxKind) -> Option<CompletedMarker> {
@@ -249,7 +251,7 @@ impl Parser<'_, '_> {
                 // TODO: Error handling
                 self.expr();
 
-                if !self.try_expect(T![,]) {
+                if !self.try_expect(T![,]) && !self.at(T![')']) {
                     let span = self.current_span();
                     let error = Diagnostic::error()
                         .with_message("missing comma between tuple elements")

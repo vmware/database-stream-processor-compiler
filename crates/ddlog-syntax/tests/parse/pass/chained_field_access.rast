@@ -1,21 +1,21 @@
-ROOT@0..68
-  COMMENT@0..50 "// kind:expr validate ..."
-  WHITESPACE@50..51 "\n"
-  FIELD_ACCESS@51..68
-    FIELD_ACCESS@51..62
-      FIELD_ACCESS@51..58
-        VAR_REF@51..54
-          IDENT@51..54 "foo"
-        DOT@54..55 "."
-        FIELD_ACCESSOR@55..58
-          FIELD_ACCESSOR_NAME@55..58
-            IDENT@55..58 "bar"
-      DOT@58..59 "."
-      FIELD_ACCESSOR@59..62
-        FIELD_ACCESSOR_NAME@59..62
-          IDENT@59..62 "baz"
-    DOT@62..63 "."
-    FIELD_ACCESSOR@63..68
-      FIELD_ACCESSOR_NAME@63..67
-        IDENT@63..67 "bing"
-      WHITESPACE@67..68 "\n"
+ROOT@0..124
+  COMMENT@0..106 "// kind:expr validate ..."
+  WHITESPACE@106..107 "\n"
+  FIELD_ACCESS@107..124
+    FIELD_ACCESS@107..118
+      FIELD_ACCESS@107..114
+        VAR_REF@107..110
+          IDENT@107..110 "foo"
+        DOT@110..111 "."
+        FIELD_ACCESSOR@111..114
+          FIELD_ACCESSOR_NAME@111..114
+            IDENT@111..114 "bar"
+      DOT@114..115 "."
+      FIELD_ACCESSOR@115..118
+        FIELD_ACCESSOR_NAME@115..118
+          IDENT@115..118 "baz"
+    DOT@118..119 "."
+    FIELD_ACCESSOR@119..124
+      FIELD_ACCESSOR_NAME@119..123
+        IDENT@119..123 "bing"
+      WHITESPACE@123..124 "\n"

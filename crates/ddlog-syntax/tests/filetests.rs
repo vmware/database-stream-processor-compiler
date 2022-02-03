@@ -265,7 +265,6 @@ fn collect_ddlog_files(root_dir: &Path, paths: &[&str]) -> Vec<Test<TestData>> {
                         }
 
                         let raw = &header[start_idx..end_idx];
-                        dbg!(raw);
                         kind = raw
                             .parse()
                             .unwrap_or_else(|_| panic!("invalid `kind` setting: {:?}", raw));
@@ -294,7 +293,6 @@ fn collect_ddlog_files(root_dir: &Path, paths: &[&str]) -> Vec<Test<TestData>> {
                         }
 
                         let raw = &header[start_idx..end_idx];
-                        dbg!(raw);
                         validate = raw
                             .parse()
                             .unwrap_or_else(|_| panic!("invalid `validate` setting: {:?}", raw));
@@ -319,7 +317,6 @@ fn collect_ddlog_files(root_dir: &Path, paths: &[&str]) -> Vec<Test<TestData>> {
                         }
 
                         let raw = &header[start_idx..end_idx];
-                        dbg!(raw);
                         pass = raw
                             .parse()
                             .unwrap_or_else(|_| panic!("invalid `pass` setting: {:?}", raw));
@@ -346,7 +343,6 @@ fn collect_ddlog_files(root_dir: &Path, paths: &[&str]) -> Vec<Test<TestData>> {
                         }
 
                         let raw = &header[start_idx..end_idx];
-                        dbg!(raw);
                         ignored = raw
                             .parse()
                             .unwrap_or_else(|_| panic!("invalid `ignore` setting: {:?}", raw));
@@ -371,9 +367,7 @@ fn collect_ddlog_files(root_dir: &Path, paths: &[&str]) -> Vec<Test<TestData>> {
                             }
                         }
 
-                        let raw = &header[start_idx..end_idx];
-                        dbg!(raw);
-                        src_file = raw.to_owned();
+                        src_file = header[start_idx..end_idx].to_owned();
                     }
 
                     'l' => {
@@ -395,7 +389,6 @@ fn collect_ddlog_files(root_dir: &Path, paths: &[&str]) -> Vec<Test<TestData>> {
                         }
 
                         let raw = &header[start_idx..end_idx];
-                        dbg!(raw);
                         src_line = raw
                             .parse()
                             .unwrap_or_else(|_| panic!("invalid `line` setting: {:?}", raw));
@@ -422,7 +415,6 @@ fn collect_ddlog_files(root_dir: &Path, paths: &[&str]) -> Vec<Test<TestData>> {
                         }
 
                         let raw = &header[start_idx..end_idx];
-                        dbg!(raw);
                         src_column = raw
                             .parse()
                             .unwrap_or_else(|_| panic!("invalid `column` setting: {:?}", raw));

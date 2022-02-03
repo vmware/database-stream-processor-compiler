@@ -1,9 +1,9 @@
-ROOT@0..55
-  COMMENT@0..50 "// kind:expr validate ..."
-  WHITESPACE@50..51 "\n"
-  PAREN_EXPR@51..54
-    L_PAREN@51..52 "("
-    NUMBER@52..53
-      NUMBER_LITERAL@52..53 "1"
-    R_PAREN@53..54 ")"
-  WHITESPACE@54..55 "\n"
+ROOT@0..112
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  PAREN_EXPR@108..111
+    L_PAREN@108..109 "("
+    NUMBER@109..110
+      NUMBER_LITERAL@109..110 "1"
+    R_PAREN@110..111 ")"
+  WHITESPACE@111..112 "\n"

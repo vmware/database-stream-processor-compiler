@@ -7,7 +7,7 @@ use std::convert::TryFrom;
 pub enum ExprPrecedence {
     As,
     Dot,
-    Mul, Div, Mod, Pow,
+    Mul, Div, Mod, // Pow,
     Add, Sub,
     Shl, Shr,
     Less, Greater, LessEq, GreaterEq,
@@ -22,29 +22,22 @@ pub enum ExprPrecedence {
 }
 
 impl ExprPrecedence {
-    #[rustfmt::skip]
     pub fn precedence(self) -> u8 {
         match self {
-            Self::As              => 14,
-            Self::Dot             => 13,
-            Self::Mul
-            | Self::Div
-            | Self::Mod
-            | Self::Pow           => 12,
+            Self::As => 14,
+            Self::Dot => 13,
+            Self::Mul | Self::Div | Self::Mod => 12, // Self::Pow
             Self::Add | Self::Sub => 11,
             Self::Shl | Self::Shr => 10,
-            Self::Less
-            | Self::Greater
-            | Self::LessEq
-            | Self::GreaterEq     => 9,
-            Self::Eq | Self::Ne   => 8,
-            Self::BitAnd          => 7,
-            Self::BitXor          => 6,
-            Self::BitOr           => 5,
-            Self::LogAnd          => 4,
-            Self::LogOr           => 3,
-            Self::Ternary         => 2,
-            Self::Assignment      => 1,
+            Self::Less | Self::Greater | Self::LessEq | Self::GreaterEq => 9,
+            Self::Eq | Self::Ne => 8,
+            Self::BitAnd => 7,
+            Self::BitXor => 6,
+            Self::BitOr => 5,
+            Self::LogAnd => 4,
+            Self::LogOr => 3,
+            Self::Ternary => 2,
+            Self::Assignment => 1,
         }
     }
 }

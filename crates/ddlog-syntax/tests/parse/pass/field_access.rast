@@ -1,11 +1,11 @@
-ROOT@0..59
-  COMMENT@0..50 "// kind:expr validate ..."
-  WHITESPACE@50..51 "\n"
-  FIELD_ACCESS@51..59
-    VAR_REF@51..54
-      IDENT@51..54 "foo"
-    DOT@54..55 "."
-    FIELD_ACCESSOR@55..59
-      FIELD_ACCESSOR_NAME@55..58
-        IDENT@55..58 "bar"
-      WHITESPACE@58..59 "\n"
+ROOT@0..115
+  COMMENT@0..106 "// kind:expr validate ..."
+  WHITESPACE@106..107 "\n"
+  FIELD_ACCESS@107..115
+    VAR_REF@107..110
+      IDENT@107..110 "foo"
+    DOT@110..111 "."
+    FIELD_ACCESSOR@111..115
+      FIELD_ACCESSOR_NAME@111..114
+        IDENT@111..114 "bar"
+      WHITESPACE@114..115 "\n"

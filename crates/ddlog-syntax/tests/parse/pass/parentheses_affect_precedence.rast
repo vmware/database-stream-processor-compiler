@@ -1,23 +1,23 @@
-ROOT@0..63
-  COMMENT@0..50 "// kind:expr validate ..."
-  WHITESPACE@50..51 "\n"
-  BIN_EXPR@51..63
-    NUMBER@51..52
-      NUMBER_LITERAL@51..52 "5"
-    WHITESPACE@52..53 " "
-    BIN_OP@53..54
-      STAR@53..54 "*"
-    WHITESPACE@54..55 " "
-    PAREN_EXPR@55..62
-      L_PAREN@55..56 "("
-      BIN_EXPR@56..61
-        NUMBER@56..57
-          NUMBER_LITERAL@56..57 "2"
-        WHITESPACE@57..58 " "
-        BIN_OP@58..59
-          PLUS@58..59 "+"
-        WHITESPACE@59..60 " "
-        NUMBER@60..61
-          NUMBER_LITERAL@60..61 "1"
-      R_PAREN@61..62 ")"
-    WHITESPACE@62..63 "\n"
+ROOT@0..119
+  COMMENT@0..106 "// kind:expr validate ..."
+  WHITESPACE@106..107 "\n"
+  BIN_EXPR@107..119
+    NUMBER@107..108
+      NUMBER_LITERAL@107..108 "5"
+    WHITESPACE@108..109 " "
+    BIN_OP@109..110
+      STAR@109..110 "*"
+    WHITESPACE@110..111 " "
+    PAREN_EXPR@111..118
+      L_PAREN@111..112 "("
+      BIN_EXPR@112..117
+        NUMBER@112..113
+          NUMBER_LITERAL@112..113 "2"
+        WHITESPACE@113..114 " "
+        BIN_OP@114..115
+          PLUS@114..115 "+"
+        WHITESPACE@115..116 " "
+        NUMBER@116..117
+          NUMBER_LITERAL@116..117 "1"
+      R_PAREN@117..118 ")"
+    WHITESPACE@118..119 "\n"

@@ -1,6 +1,6 @@
-ROOT@0..58
-  COMMENT@0..50 "// kind:expr validate ..."
-  WHITESPACE@50..51 "\n"
-  NUMBER@51..57
-    NUMBER_LITERAL@51..57 "0xFFFF"
-  WHITESPACE@57..58 "\n"
+ROOT@0..115
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  NUMBER@108..114
+    NUMBER_LITERAL@108..114 "0xFFFF"
+  WHITESPACE@114..115 "\n"

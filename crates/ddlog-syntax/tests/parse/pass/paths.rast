@@ -1,103 +1,103 @@
-ROOT@0..248
-  COMMENT@0..50 "// kind:item validate ..."
-  WHITESPACE@50..51 "\n"
-  FUNCTION_DEF@51..248
-    FN_TOKEN@51..53 "fn"
-    WHITESPACE@53..54 " "
-    IDENT@54..58 "main"
-    FUNCTION_ARGS@58..60
-      L_PAREN@58..59 "("
-      R_PAREN@59..60 ")"
-    WHITESPACE@60..61 " "
-    BLOCK@61..247
-      L_CURLY@61..62 "{"
-      WHITESPACE@62..67 "\n    "
-      VAR_DECL@67..94
-        LET_TOKEN@67..70 "let"
-        WHITESPACE@70..71 " "
-        VAR_REF@71..76
-          IDENT@71..76 "edges"
-        WHITESPACE@76..77 " "
-        EQ@77..78 "="
-        WHITESPACE@78..79 " "
-        FUNCTION_CALL@79..93
-          VAR_REF@79..84
-            IDENT@79..84 "input"
-          L_PAREN@84..85 "("
-          FUNCTION_CALL_ARG@85..92
-            STRING@85..92
-              STRING_LITERAL@85..92 "\"edges\""
-          R_PAREN@92..93 ")"
-        SEMICOLON@93..94 ";"
-      WHITESPACE@94..99 "\n    "
-      VAR_DECL@99..217
-        LET_TOKEN@99..102 "let"
-        WHITESPACE@102..103 " "
-        VAR_REF@103..108
-          IDENT@103..108 "paths"
-        WHITESPACE@108..109 " "
-        EQ@109..110 "="
-        WHITESPACE@110..111 " "
-        METHOD_CALL@111..216
-          VAR_REF@111..116
-            IDENT@111..116 "edges"
-          DOT@116..117 "."
-          IDENT@117..126 "iterative"
-          L_PAREN@126..127 "("
-          METHOD_CALL_ARG@127..215
-            CLOSURE_EXPR@127..215
-              PIPE@127..128 "|"
-              CLOSURE_ARG@128..133
-                VAR_REF@128..133
-                  IDENT@128..133 "edges"
-              PIPE@133..134 "|"
-              WHITESPACE@134..135 " "
-              BLOCK@135..215
-                L_CURLY@135..136 "{"
-                WHITESPACE@136..145 "\n        "
-                EXPR_STMT@145..214
-                  METHOD_CALL@145..209
-                    METHOD_CALL@145..185
-                      VAR_REF@145..150
-                        IDENT@145..150 "edges"
-                      WHITESPACE@150..163 "\n            "
-                      DOT@163..164 "."
-                      IDENT@164..168 "join"
-                      L_PAREN@168..169 "("
-                      METHOD_CALL_ARG@169..184
-                        METHOD_CALL@169..184
-                          VAR_REF@169..174
-                            IDENT@169..174 "edges"
-                          DOT@174..175 "."
-                          IDENT@175..182 "reverse"
-                          L_PAREN@182..183 "("
-                          R_PAREN@183..184 ")"
-                      R_PAREN@184..185 ")"
-                    WHITESPACE@185..198 "\n            "
-                    DOT@198..199 "."
-                    IDENT@199..207 "distinct"
-                    L_PAREN@207..208 "("
-                    R_PAREN@208..209 ")"
-                  WHITESPACE@209..214 "\n    "
-                R_CURLY@214..215 "}"
-          R_PAREN@215..216 ")"
-        SEMICOLON@216..217 ";"
-      WHITESPACE@217..222 "\n    "
-      EXPR_STMT@222..245
-        FUNCTION_CALL@222..244
-          VAR_REF@222..228
-            IDENT@222..228 "output"
-          L_PAREN@228..229 "("
-          FUNCTION_CALL_ARG@229..235
-            VAR_REF@229..234
-              IDENT@229..234 "paths"
-            COMMA@234..235 ","
-          WHITESPACE@235..236 " "
-          FUNCTION_CALL_ARG@236..243
-            STRING@236..243
-              STRING_LITERAL@236..243 "\"paths\""
-          R_PAREN@243..244 ")"
-        SEMICOLON@244..245 ";"
-      WHITESPACE@245..246 "\n"
-      R_CURLY@246..247 "}"
-    WHITESPACE@247..248 "\n"
+ROOT@0..303
+  COMMENT@0..105 "// kind:item validate ..."
+  WHITESPACE@105..106 "\n"
+  FUNCTION_DEF@106..303
+    FN_TOKEN@106..108 "fn"
+    WHITESPACE@108..109 " "
+    IDENT@109..113 "main"
+    FUNCTION_ARGS@113..115
+      L_PAREN@113..114 "("
+      R_PAREN@114..115 ")"
+    WHITESPACE@115..116 " "
+    BLOCK@116..302
+      L_CURLY@116..117 "{"
+      WHITESPACE@117..122 "\n    "
+      VAR_DECL@122..149
+        LET_TOKEN@122..125 "let"
+        WHITESPACE@125..126 " "
+        VAR_REF@126..131
+          IDENT@126..131 "edges"
+        WHITESPACE@131..132 " "
+        EQ@132..133 "="
+        WHITESPACE@133..134 " "
+        FUNCTION_CALL@134..148
+          VAR_REF@134..139
+            IDENT@134..139 "input"
+          L_PAREN@139..140 "("
+          FUNCTION_CALL_ARG@140..147
+            STRING@140..147
+              STRING_LITERAL@140..147 "\"edges\""
+          R_PAREN@147..148 ")"
+        SEMICOLON@148..149 ";"
+      WHITESPACE@149..154 "\n    "
+      VAR_DECL@154..272
+        LET_TOKEN@154..157 "let"
+        WHITESPACE@157..158 " "
+        VAR_REF@158..163
+          IDENT@158..163 "paths"
+        WHITESPACE@163..164 " "
+        EQ@164..165 "="
+        WHITESPACE@165..166 " "
+        METHOD_CALL@166..271
+          VAR_REF@166..171
+            IDENT@166..171 "edges"
+          DOT@171..172 "."
+          IDENT@172..181 "iterative"
+          L_PAREN@181..182 "("
+          METHOD_CALL_ARG@182..270
+            CLOSURE_EXPR@182..270
+              PIPE@182..183 "|"
+              CLOSURE_ARG@183..188
+                VAR_REF@183..188
+                  IDENT@183..188 "edges"
+              PIPE@188..189 "|"
+              WHITESPACE@189..190 " "
+              BLOCK@190..270
+                L_CURLY@190..191 "{"
+                WHITESPACE@191..200 "\n        "
+                EXPR_STMT@200..269
+                  METHOD_CALL@200..264
+                    METHOD_CALL@200..240
+                      VAR_REF@200..205
+                        IDENT@200..205 "edges"
+                      WHITESPACE@205..218 "\n            "
+                      DOT@218..219 "."
+                      IDENT@219..223 "join"
+                      L_PAREN@223..224 "("
+                      METHOD_CALL_ARG@224..239
+                        METHOD_CALL@224..239
+                          VAR_REF@224..229
+                            IDENT@224..229 "edges"
+                          DOT@229..230 "."
+                          IDENT@230..237 "reverse"
+                          L_PAREN@237..238 "("
+                          R_PAREN@238..239 ")"
+                      R_PAREN@239..240 ")"
+                    WHITESPACE@240..253 "\n            "
+                    DOT@253..254 "."
+                    IDENT@254..262 "distinct"
+                    L_PAREN@262..263 "("
+                    R_PAREN@263..264 ")"
+                  WHITESPACE@264..269 "\n    "
+                R_CURLY@269..270 "}"
+          R_PAREN@270..271 ")"
+        SEMICOLON@271..272 ";"
+      WHITESPACE@272..277 "\n    "
+      EXPR_STMT@277..300
+        FUNCTION_CALL@277..299
+          VAR_REF@277..283
+            IDENT@277..283 "output"
+          L_PAREN@283..284 "("
+          FUNCTION_CALL_ARG@284..290
+            VAR_REF@284..289
+              IDENT@284..289 "paths"
+            COMMA@289..290 ","
+          WHITESPACE@290..291 " "
+          FUNCTION_CALL_ARG@291..298
+            STRING@291..298
+              STRING_LITERAL@291..298 "\"paths\""
+          R_PAREN@298..299 ")"
+        SEMICOLON@299..300 ";"
+      WHITESPACE@300..301 "\n"
+      R_CURLY@301..302 "}"
+    WHITESPACE@302..303 "\n"

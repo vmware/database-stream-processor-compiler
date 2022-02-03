@@ -1,6 +1,6 @@
-ROOT@0..61
-  COMMENT@0..50 "// kind:expr validate ..."
-  WHITESPACE@50..51 "\n"
-  VAR_REF@51..60
-    IDENT@51..60 "foo1245__"
-  WHITESPACE@60..61 "\n"
+ROOT@0..118
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  VAR_REF@108..117
+    IDENT@108..117 "foo1245__"
+  WHITESPACE@117..118 "\n"

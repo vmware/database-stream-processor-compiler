@@ -1,16 +1,16 @@
-ROOT@0..60
-  COMMENT@0..50 "// kind:expr validate ..."
-  WHITESPACE@50..51 "\n"
-  UNARY_EXPR@51..60
-    UNARY_OP@51..52
-      MINUS@51..52 "-"
-    BIN_EXPR@52..60
-      NUMBER@52..54
-        NUMBER_LITERAL@52..54 "20"
-      WHITESPACE@54..55 " "
-      BIN_OP@55..56
-        PLUS@55..56 "+"
-      WHITESPACE@56..57 " "
-      NUMBER@57..59
-        NUMBER_LITERAL@57..59 "20"
-      WHITESPACE@59..60 "\n"
+ROOT@0..116
+  COMMENT@0..106 "// kind:expr validate ..."
+  WHITESPACE@106..107 "\n"
+  UNARY_EXPR@107..116
+    UNARY_OP@107..108
+      MINUS@107..108 "-"
+    BIN_EXPR@108..116
+      NUMBER@108..110
+        NUMBER_LITERAL@108..110 "20"
+      WHITESPACE@110..111 " "
+      BIN_OP@111..112
+        PLUS@111..112 "+"
+      WHITESPACE@112..113 " "
+      NUMBER@113..115
+        NUMBER_LITERAL@113..115 "20"
+      WHITESPACE@115..116 "\n"

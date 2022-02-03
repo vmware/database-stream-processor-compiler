@@ -1,4 +1,4 @@
-// kind:expr validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:311 column:3
+// kind:expr validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:313 column:3
 |foo, bar| {
     return baz(foo + bar);
 }

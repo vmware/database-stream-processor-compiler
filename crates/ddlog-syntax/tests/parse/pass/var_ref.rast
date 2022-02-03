@@ -1,21 +1,21 @@
-ROOT@0..82
-  COMMENT@0..50 "// kind:expr validate ..."
-  WHITESPACE@50..51 "\n"
-  VAR_REF@51..52
-    IDENT@51..52 "a"
-  WHITESPACE@52..53 "\n"
-  VAR_REF@53..57
-    IDENT@53..57 "abcd"
-  WHITESPACE@57..58 "\n"
-  VAR_REF@58..66
-    IDENT@58..66 "abcd1245"
-  WHITESPACE@66..67 "\n"
-  VAR_REF@67..68
-    IDENT@67..68 "_"
-  WHITESPACE@68..69 "\n"
-  VAR_REF@69..73
-    IDENT@69..73 "_135"
-  WHITESPACE@73..74 "\n"
-  VAR_REF@74..81
-    IDENT@74..81 "_dsg434"
-  WHITESPACE@81..82 "\n"
+ROOT@0..139
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  VAR_REF@108..109
+    IDENT@108..109 "a"
+  WHITESPACE@109..110 "\n"
+  VAR_REF@110..114
+    IDENT@110..114 "abcd"
+  WHITESPACE@114..115 "\n"
+  VAR_REF@115..123
+    IDENT@115..123 "abcd1245"
+  WHITESPACE@123..124 "\n"
+  VAR_REF@124..125
+    IDENT@124..125 "_"
+  WHITESPACE@125..126 "\n"
+  VAR_REF@126..130
+    IDENT@126..130 "_135"
+  WHITESPACE@130..131 "\n"
+  VAR_REF@131..138
+    IDENT@131..138 "_dsg434"
+  WHITESPACE@138..139 "\n"

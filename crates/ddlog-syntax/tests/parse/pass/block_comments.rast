@@ -1,17 +1,17 @@
-ROOT@0..97
-  COMMENT@0..50 "// kind:item validate ..."
-  WHITESPACE@50..51 "\n"
-  COMMENT@51..84 "/*\n    /*\n        Hel ..."
-  WHITESPACE@84..85 "\n"
-  FUNCTION_DEF@85..97
-    FN_TOKEN@85..87 "fn"
-    WHITESPACE@87..88 " "
-    IDENT@88..91 "bar"
-    FUNCTION_ARGS@91..93
-      L_PAREN@91..92 "("
-      R_PAREN@92..93 ")"
-    WHITESPACE@93..94 " "
-    BLOCK@94..96
-      L_CURLY@94..95 "{"
-      R_CURLY@95..96 "}"
-    WHITESPACE@96..97 "\n"
+ROOT@0..153
+  COMMENT@0..106 "// kind:item validate ..."
+  WHITESPACE@106..107 "\n"
+  COMMENT@107..140 "/*\n    /*\n        Hel ..."
+  WHITESPACE@140..141 "\n"
+  FUNCTION_DEF@141..153
+    FN_TOKEN@141..143 "fn"
+    WHITESPACE@143..144 " "
+    IDENT@144..147 "bar"
+    FUNCTION_ARGS@147..149
+      L_PAREN@147..148 "("
+      R_PAREN@148..149 ")"
+    WHITESPACE@149..150 " "
+    BLOCK@150..152
+      L_CURLY@150..151 "{"
+      R_CURLY@151..152 "}"
+    WHITESPACE@152..153 "\n"
