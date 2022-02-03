@@ -6,7 +6,7 @@ use cstree::TextRange;
 use ddlog_syntax::{
     ast::{AstNode, AstToken},
     match_ast, AstVisitor, RuleCtx,
-    SyntaxKind::{COMMENT, IDENT, NUMBER},
+    SyntaxKind::COMMENT,
     SyntaxNode, SyntaxToken, SyntaxTokenExt, T,
 };
 use lspower::lsp::{SemanticTokenModifier, SemanticTokenType, SemanticTokens};
@@ -53,24 +53,6 @@ impl AstVisitor for SemanticHighlighter {
     fn check_node(&mut self, node: &SyntaxNode, _ctx: &mut RuleCtx) -> Option<()> {
         match_ast! {
             match node {
-                UnaryOp(op) => self.operator(op.trimmed_range()),
-                BinOp(op) => self.operator(op.trimmed_range()),
-
-                StructDef(strct) => {
-                    if let Some(name) = strct.name() {
-                        let mut modifiers = ModifierSet::empty();
-                        modifiers |= SemanticTokenModifier::DECLARATION;
-                        modifiers |= SemanticTokenModifier::DEFINITION;
-
-                        self.push(
-                            name.text_range(),
-                            // TODO: Make a custom type for relations
-                            SemanticTokenType::FUNCTION,
-                            modifiers,
-                        );
-                    }
-                },
-
                 FunctionDef(func) => {
                     if let Some(name) = func.name() {
                         let mut modifiers = ModifierSet::empty();
@@ -83,6 +65,34 @@ impl AstVisitor for SemanticHighlighter {
                             modifiers,
                         );
                     }
+
+                    if let Some(ret) = func.ret() {
+                        if let Some(arrow) = ret.right_arrow() {
+                            self.push(
+                                arrow.text_range(),
+                                SemanticTokenType::OPERATOR,
+                                ModifierSet::empty(),
+                            );
+                        }
+                    }
+
+                    None
+                },
+
+                StructDef(strct) => {
+                    if let Some(name) = strct.name() {
+                        let mut modifiers = ModifierSet::empty();
+                        modifiers |= SemanticTokenModifier::DECLARATION;
+                        modifiers |= SemanticTokenModifier::DEFINITION;
+
+                        self.push(
+                            name.text_range(),
+                            SemanticTokenType::FUNCTION,
+                            modifiers,
+                        );
+                    }
+
+                    None
                 },
 
                 EnumDef(enum_def) => {
@@ -97,6 +107,8 @@ impl AstVisitor for SemanticHighlighter {
                             modifiers,
                         );
                     }
+
+                    None
                 },
 
                 GenericArg(generic) => {
@@ -105,13 +117,63 @@ impl AstVisitor for SemanticHighlighter {
                         SemanticTokenType::TYPE_PARAMETER,
                         ModifierSet::empty(),
                     );
+
+                    Some(())
                 },
 
-                _ => return None,
+                VarRef(var) => {
+                    self.push(
+                        var.trimmed_range(),
+                        SemanticTokenType::VARIABLE,
+                        ModifierSet::empty(),
+                    );
+
+                    Some(())
+                },
+
+                Number(number) => {
+                    self.push(
+                        number.trimmed_range(),
+                        SemanticTokenType::NUMBER,
+                        ModifierSet::empty(),
+                    );
+
+                    Some(())
+                },
+
+                String(string) => {
+                    self.push(
+                        string.trimmed_range(),
+                        SemanticTokenType::STRING,
+                        ModifierSet::empty(),
+                    );
+
+                    Some(())
+                },
+
+                Char(char) => {
+                    self.push(
+                        char.trimmed_range(),
+                        SemanticTokenType::STRING,
+                        ModifierSet::empty(),
+                    );
+
+                    Some(())
+                },
+
+                UnaryOp(op) => {
+                    self.operator(op.trimmed_range());
+                    None
+                },
+
+                BinOp(op) => {
+                    self.operator(op.trimmed_range());
+                    None
+                },
+
+                _ => None,
             }
         }
-
-        Some(())
     }
 
     fn check_token(&mut self, token: &SyntaxToken, ctx: &mut RuleCtx) -> Option<()> {
@@ -152,12 +214,6 @@ impl AstVisitor for SemanticHighlighter {
                 self.push(range, SemanticTokenType::KEYWORD, modifiers);
             }
 
-            IDENT => self.push(
-                token.text_range(),
-                SemanticTokenType::VARIABLE,
-                ModifierSet::empty(),
-            ),
-
             COMMENT => {
                 let mut modifiers = ModifierSet::empty();
                 // Doc comments get the documentation modifier
@@ -168,13 +224,6 @@ impl AstVisitor for SemanticHighlighter {
 
                 self.push(token.text_range(), SemanticTokenType::COMMENT, modifiers);
             }
-
-            // TODO: Floats
-            NUMBER => self.push(
-                token.text_range(),
-                SemanticTokenType::NUMBER,
-                ModifierSet::empty(),
-            ),
 
             _ => {}
         }

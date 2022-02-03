@@ -476,7 +476,7 @@ impl Parser<'_, '_> {
         } else {
             let accessor = self.start();
             let accessor_inner = self.start();
-            self.ident();
+            self.var_ref();
 
             // Method call
             if self.try_expect(T!['(']) {
