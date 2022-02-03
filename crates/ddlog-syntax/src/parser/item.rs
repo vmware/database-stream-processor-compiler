@@ -120,9 +120,10 @@ impl Parser<'_, '_> {
 
             ret.complete(self, FUNCTION_RETURN);
         }
-        // TODO: Detect unicode arrows like →
 
-        self.block(false);
+        // TODO: Detect unicode arrows like → and offer correction
+
+        self.block();
 
         Some(function.complete(self, FUNCTION_DEF))
     }

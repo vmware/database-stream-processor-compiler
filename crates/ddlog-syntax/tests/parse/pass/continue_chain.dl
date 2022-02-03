@@ -1,0 +1,2 @@
+// kind:expr validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:575 column:3
+continue continue continue continue

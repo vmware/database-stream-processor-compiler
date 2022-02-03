@@ -1,7 +1,9 @@
-// kind:expr validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:276 column:3
-a
-abcd
-abcd1245
-_
-_135
-_dsg434
+// kind:expr validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:641 column:3
+{
+    a;
+    abcd;
+    abcd1245;
+    _;
+    _135;
+    _dsg434;
+}

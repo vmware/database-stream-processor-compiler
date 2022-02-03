@@ -1,2 +1,2 @@
-// kind:expr validate:false pass:false ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:230 column:3
+// kind:expr validate:false pass:false ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:525 column:3
 (1, 2 3)

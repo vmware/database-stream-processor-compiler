@@ -1,11 +1,11 @@
-ROOT@0..117
-  COMMENT@0..106 "// kind:expr validate ..."
-  WHITESPACE@106..107 "\n"
-  METHOD_CALL@107..116
-    VAR_REF@107..110
-      IDENT@107..110 "foo"
-    DOT@110..111 "."
-    IDENT@111..114 "bar"
-    L_PAREN@114..115 "("
-    R_PAREN@115..116 ")"
-  WHITESPACE@116..117 "\n"
+ROOT@0..118
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  METHOD_CALL@108..117
+    VAR_REF@108..111
+      IDENT@108..111 "foo"
+    DOT@111..112 "."
+    IDENT@112..115 "bar"
+    L_PAREN@115..116 "("
+    R_PAREN@116..117 ")"
+  WHITESPACE@117..118 "\n"

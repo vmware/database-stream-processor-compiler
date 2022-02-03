@@ -1,97 +1,98 @@
 ROOT@0..197
   COMMENT@0..106 "// kind:stmt validate ..."
   WHITESPACE@106..107 "\n"
-  IF_EXPR@107..197
-    IF_BLOCK@107..127
-      IF_TOKEN@107..109 "if"
-      WHITESPACE@109..110 " "
-      VAR_REF@110..111
-        IDENT@110..111 "x"
-      WHITESPACE@111..112 " "
-      BLOCK@112..126
-        L_CURLY@112..113 "{"
-        WHITESPACE@113..118 "\n    "
-        EXPR_STMT@118..124
-          BIN_EXPR@118..123
-            VAR_REF@118..119
-              IDENT@118..119 "x"
-            WHITESPACE@119..120 " "
-            BIN_OP@120..121
-              PLUS@120..121 "+"
-            WHITESPACE@121..122 " "
-            VAR_REF@122..123
-              IDENT@122..123 "y"
-          SEMICOLON@123..124 ";"
-        WHITESPACE@124..125 "\n"
-        R_CURLY@125..126 "}"
-      WHITESPACE@126..127 " "
-    IF_BLOCK@127..152
-      ELSE_TOKEN@127..131 "else"
-      WHITESPACE@131..132 " "
-      IF_TOKEN@132..134 "if"
-      WHITESPACE@134..135 " "
-      VAR_REF@135..136
-        IDENT@135..136 "y"
-      WHITESPACE@136..137 " "
-      BLOCK@137..151
-        L_CURLY@137..138 "{"
-        WHITESPACE@138..143 "\n    "
-        EXPR_STMT@143..149
-          BIN_EXPR@143..148
-            VAR_REF@143..144
-              IDENT@143..144 "x"
-            WHITESPACE@144..145 " "
-            BIN_OP@145..146
-              PLUS@145..146 "+"
-            WHITESPACE@146..147 " "
-            VAR_REF@147..148
-              IDENT@147..148 "y"
-          SEMICOLON@148..149 ";"
-        WHITESPACE@149..150 "\n"
-        R_CURLY@150..151 "}"
-      WHITESPACE@151..152 " "
-    IF_BLOCK@152..177
-      ELSE_TOKEN@152..156 "else"
-      WHITESPACE@156..157 " "
-      IF_TOKEN@157..159 "if"
-      WHITESPACE@159..160 " "
-      VAR_REF@160..161
-        IDENT@160..161 "z"
-      WHITESPACE@161..162 " "
-      BLOCK@162..176
-        L_CURLY@162..163 "{"
-        WHITESPACE@163..168 "\n    "
-        EXPR_STMT@168..174
-          BIN_EXPR@168..173
-            VAR_REF@168..169
-              IDENT@168..169 "x"
-            WHITESPACE@169..170 " "
-            BIN_OP@170..171
-              PLUS@170..171 "+"
-            WHITESPACE@171..172 " "
-            VAR_REF@172..173
-              IDENT@172..173 "y"
-          SEMICOLON@173..174 ";"
-        WHITESPACE@174..175 "\n"
-        R_CURLY@175..176 "}"
-      WHITESPACE@176..177 " "
-    ELSE_BLOCK@177..197
-      ELSE_TOKEN@177..181 "else"
-      WHITESPACE@181..182 " "
-      BLOCK@182..196
-        L_CURLY@182..183 "{"
-        WHITESPACE@183..188 "\n    "
-        EXPR_STMT@188..194
-          BIN_EXPR@188..193
-            VAR_REF@188..189
-              IDENT@188..189 "x"
-            WHITESPACE@189..190 " "
-            BIN_OP@190..191
-              PLUS@190..191 "+"
-            WHITESPACE@191..192 " "
-            VAR_REF@192..193
-              IDENT@192..193 "y"
-          SEMICOLON@193..194 ";"
-        WHITESPACE@194..195 "\n"
-        R_CURLY@195..196 "}"
-      WHITESPACE@196..197 "\n"
+  EXPR_STMT@107..197
+    IF_EXPR@107..197
+      IF_BLOCK@107..127
+        IF_TOKEN@107..109 "if"
+        WHITESPACE@109..110 " "
+        VAR_REF@110..111
+          IDENT@110..111 "x"
+        WHITESPACE@111..112 " "
+        BLOCK@112..126
+          L_CURLY@112..113 "{"
+          WHITESPACE@113..118 "\n    "
+          EXPR_STMT@118..124
+            BIN_EXPR@118..123
+              VAR_REF@118..119
+                IDENT@118..119 "x"
+              WHITESPACE@119..120 " "
+              BIN_OP@120..121
+                PLUS@120..121 "+"
+              WHITESPACE@121..122 " "
+              VAR_REF@122..123
+                IDENT@122..123 "y"
+            SEMICOLON@123..124 ";"
+          WHITESPACE@124..125 "\n"
+          R_CURLY@125..126 "}"
+        WHITESPACE@126..127 " "
+      IF_BLOCK@127..152
+        ELSE_TOKEN@127..131 "else"
+        WHITESPACE@131..132 " "
+        IF_TOKEN@132..134 "if"
+        WHITESPACE@134..135 " "
+        VAR_REF@135..136
+          IDENT@135..136 "y"
+        WHITESPACE@136..137 " "
+        BLOCK@137..151
+          L_CURLY@137..138 "{"
+          WHITESPACE@138..143 "\n    "
+          EXPR_STMT@143..149
+            BIN_EXPR@143..148
+              VAR_REF@143..144
+                IDENT@143..144 "x"
+              WHITESPACE@144..145 " "
+              BIN_OP@145..146
+                PLUS@145..146 "+"
+              WHITESPACE@146..147 " "
+              VAR_REF@147..148
+                IDENT@147..148 "y"
+            SEMICOLON@148..149 ";"
+          WHITESPACE@149..150 "\n"
+          R_CURLY@150..151 "}"
+        WHITESPACE@151..152 " "
+      IF_BLOCK@152..177
+        ELSE_TOKEN@152..156 "else"
+        WHITESPACE@156..157 " "
+        IF_TOKEN@157..159 "if"
+        WHITESPACE@159..160 " "
+        VAR_REF@160..161
+          IDENT@160..161 "z"
+        WHITESPACE@161..162 " "
+        BLOCK@162..176
+          L_CURLY@162..163 "{"
+          WHITESPACE@163..168 "\n    "
+          EXPR_STMT@168..174
+            BIN_EXPR@168..173
+              VAR_REF@168..169
+                IDENT@168..169 "x"
+              WHITESPACE@169..170 " "
+              BIN_OP@170..171
+                PLUS@170..171 "+"
+              WHITESPACE@171..172 " "
+              VAR_REF@172..173
+                IDENT@172..173 "y"
+            SEMICOLON@173..174 ";"
+          WHITESPACE@174..175 "\n"
+          R_CURLY@175..176 "}"
+        WHITESPACE@176..177 " "
+      ELSE_BLOCK@177..197
+        ELSE_TOKEN@177..181 "else"
+        WHITESPACE@181..182 " "
+        BLOCK@182..196
+          L_CURLY@182..183 "{"
+          WHITESPACE@183..188 "\n    "
+          EXPR_STMT@188..194
+            BIN_EXPR@188..193
+              VAR_REF@188..189
+                IDENT@188..189 "x"
+              WHITESPACE@189..190 " "
+              BIN_OP@190..191
+                PLUS@190..191 "+"
+              WHITESPACE@191..192 " "
+              VAR_REF@192..193
+                IDENT@192..193 "y"
+            SEMICOLON@193..194 ";"
+          WHITESPACE@194..195 "\n"
+          R_CURLY@195..196 "}"
+        WHITESPACE@196..197 "\n"

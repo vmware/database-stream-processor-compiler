@@ -1,9 +1,8 @@
 // kind:item validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/mod.rs' line:41 column:3
 fn fibonacci(n: usize) -> usize {
     if n == 0 or n == 1 {
-        return n;
+        n
     } else {
-        // TODO: Function calls
-        fibonacci
+        fibonacci(n - 1) + fibonacci(n - 2)
     }
 }

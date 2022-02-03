@@ -42,10 +42,9 @@ impl<'src, 'token> Parser<'src, 'token> {
     // test fibonacci
     // - fn fibonacci(n: usize) -> usize {
     // -     if n == 0 or n == 1 {
-    // -         return n;
+    // -         n
     // -     } else {
-    // -         // TODO: Function calls
-    // -         fibonacci
+    // -         fibonacci(n - 1) + fibonacci(n - 2)
     // -     }
     // - }
     //

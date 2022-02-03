@@ -1,4 +1,4 @@
-// kind:stmt validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:28 column:3
+// kind:expr validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:211 column:3
 {
     1 == 2;
     foo != bar;
@@ -9,4 +9,8 @@
     (1 == 2 or 5 == 10) and (1 == 2 and 5 == 10);
     1 + 2 + 3 + 4;
     1 + 2 * 3 - 4;
+    foo + bar;
+    foo and bar;
+    foo & bar;
+    foo % bar;
 }

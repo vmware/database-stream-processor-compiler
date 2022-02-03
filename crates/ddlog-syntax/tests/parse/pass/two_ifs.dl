@@ -1,4 +1,4 @@
-// kind:stmt validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/stmt.rs' line:67 column:3
+// kind:expr validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:318 column:3
 if x {
     x + y;
 }

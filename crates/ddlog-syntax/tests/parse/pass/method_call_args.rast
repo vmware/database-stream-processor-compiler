@@ -1,0 +1,24 @@
+ROOT@0..133
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  METHOD_CALL@108..132
+    VAR_REF@108..111
+      IDENT@108..111 "foo"
+    DOT@111..112 "."
+    IDENT@112..115 "bar"
+    L_PAREN@115..116 "("
+    METHOD_CALL_ARG@116..120
+      VAR_REF@116..119
+        IDENT@116..119 "baz"
+      COMMA@119..120 ","
+    WHITESPACE@120..121 " "
+    METHOD_CALL_ARG@121..126
+      VAR_REF@121..125
+        IDENT@121..125 "bing"
+      COMMA@125..126 ","
+    WHITESPACE@126..127 " "
+    METHOD_CALL_ARG@127..131
+      VAR_REF@127..131
+        IDENT@127..131 "bong"
+    R_PAREN@131..132 ")"
+  WHITESPACE@132..133 "\n"

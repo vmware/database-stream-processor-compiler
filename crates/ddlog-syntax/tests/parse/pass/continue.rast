@@ -1,0 +1,6 @@
+ROOT@0..117
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  CONTINUE_EXPR@108..116
+    CONTINUE_TOKEN@108..116 "continue"
+  WHITESPACE@116..117 "\n"

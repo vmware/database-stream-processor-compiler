@@ -11,6 +11,7 @@ use crate::{
 };
 use std::{
     collections::{HashMap, HashSet},
+    env,
     fmt::Write,
     fs, iter, mem,
     path::{Path, PathBuf},
@@ -61,24 +62,29 @@ pub fn parse_tests(mode: CodegenMode) -> Result<()> {
         missing_dumps = true;
     }
 
-    if missing_dumps {
+    if missing_dumps && matches!(env::var("UPDATE_EXPECT"), Ok(value) if value != "1") {
         println!(
             "{}warning{}: missing dump files, run `cargo test` with `UPDATE_EXPECT` set to 1",
             YELLOW, RESET,
         );
         println!(
-            "{}warning{}:     shell: `UPDATE_EXPECT=1 cargo test`",
+            "{}warning{}:   shell: `UPDATE_EXPECT=1 cargo test`",
             YELLOW, RESET,
         );
         println!(
-            "{}warning{}:     cmd: `set UPDATE_EXPECT=1 && cargo test && set UPDATE_EXPECT=`",
+            "{}warning{}:   cmd: `set UPDATE_EXPECT=1 && cargo test && set UPDATE_EXPECT=`",
             YELLOW, RESET,
         );
         println!(
-            "{}warning{}:     powershell: `$env:UPDATE_EXPECT=1; cargo test; Remove-Item Env:\\UPDATE_EXPECT`",
+            "{}warning{}:   powershell (<7): `$env:UPDATE_EXPECT=1; cargo test; Remove-Item Env:\\UPDATE_EXPECT`",
+            YELLOW, RESET,
+        );
+        println!(
+            "{}warning{}:   powershell (>7): `$env:UPDATE_EXPECT=1 && cargo test && Remove-Item Env:\\UPDATE_EXPECT`",
             YELLOW, RESET,
         );
     }
+
     if missing_dumps && mode.is_check() {
         anyhow::bail!("missing dump files");
     }
@@ -156,10 +162,11 @@ fn install_tests(tests: &HashMap<String, Test>, test_dir: &str, mode: CodegenMod
     Ok(missing_dumps)
 }
 
-fn extract_comment_blocks(
-    text: &str,
+fn extract_comment_blocks<'a>(
+    file: &Path,
+    text: &'a str,
     allow_blocks_with_empty_lines: bool,
-) -> Vec<(Location, Vec<&str>)> {
+) -> Vec<(Location, Vec<&'a str>)> {
     let mut res = Vec::new();
 
     let prefix = "// - ";
@@ -179,6 +186,7 @@ fn extract_comment_blocks(
 
             block.1.push(&line["// ".len()..]);
             block.0 = Location::new(
+                file.to_owned(),
                 line_num as u32,
                 (line.len() - line["// ".len()..].len()) as u32,
             );
@@ -201,6 +209,7 @@ struct Test {
     pub name: String,
     pub code: String,
     pub pass: bool,
+    location: Location,
 }
 
 #[derive(Debug)]
@@ -219,7 +228,7 @@ struct Tests {
 // TODO: Allow for giving `:expr`/`:stmt`/`:item` specifiers in tests
 fn collect_tests(source: &str, all_validate: bool, src_file: &Path) -> Vec<Test> {
     let mut tests = Vec::new();
-    for (location, comment_block) in extract_comment_blocks(source, false) {
+    for (location, comment_block) in extract_comment_blocks(src_file, source, false) {
         let first_line = &comment_block[0];
         let (line, pass) = if let Some(line) = first_line.strip_prefix("test_err") {
             (line.trim(), false)
@@ -257,6 +266,7 @@ fn collect_tests(source: &str, all_validate: bool, src_file: &Path) -> Vec<Test>
             location.line,
             location.column,
         );
+
         let code = iter::once(&*header)
             .chain(comment_block[1..].iter().map(|line| &**line))
             .chain(iter::once(""))
@@ -265,11 +275,13 @@ fn collect_tests(source: &str, all_validate: bool, src_file: &Path) -> Vec<Test>
 
         assert!(!name.trim().is_empty());
         assert!(!code.trim().is_empty() && code.ends_with('\n'));
+
         tests.push(Test {
             name: name.trim().to_owned(),
             code,
             pass,
-        })
+            location,
+        });
     }
 
     tests
@@ -301,32 +313,60 @@ fn process_file(res: &mut Tests, path: &Path, all_validate: bool) -> Result<()> 
     let mut duplicate_tests = Vec::new();
 
     for test in collect_tests(&text, all_validate, path) {
-        if test.pass {
-            if let Some(old_test) = res.pass.insert(test.name.clone(), test) {
-                duplicate_tests.push(old_test.name);
-            }
-        } else if let Some(old_test) = res.fail.insert(test.name.clone(), test) {
-            duplicate_tests.push(old_test.name);
-        }
-    }
-
-    if !duplicate_tests.is_empty() {
-        let total_duplicates = duplicate_tests.len();
-        let duplicates = if total_duplicates == 1 {
-            duplicate_tests.into_iter().next().unwrap()
+        let tests = if test.pass {
+            &mut res.pass
         } else {
-            duplicate_tests.sort_unstable();
-
-            let mut duplicates = String::new();
-            for test in duplicate_tests {
-                write!(&mut duplicates, "- {}", test).unwrap();
-            }
-
-            duplicates
+            &mut res.fail
         };
 
+        tests
+            .entry(test.name.clone())
+            .and_modify(|original| {
+                // If the test already exists, push the duplicate to the list of duplicates
+                duplicate_tests.push((
+                    test.name.clone(),
+                    test.location.clone(),
+                    original.location.clone(),
+                ));
+            })
+            // Otherwise insert the test
+            .or_insert(test);
+    }
+
+    // If there's any duplicate tests, emit an error
+    if !duplicate_tests.is_empty() {
+        let total_duplicates = duplicate_tests.len();
+        duplicate_tests.sort_unstable_by(|(a, _, _), (b, _, _)| a.cmp(b));
+
+        let mut duplicates = String::new();
+        let crate_root = project_root().join("crates");
+
+        for (test, location, original) in duplicate_tests {
+            let file_path = location
+                .file
+                .strip_prefix(&crate_root)
+                .unwrap_or(&location.file);
+            let original_path = original
+                .file
+                .strip_prefix(&crate_root)
+                .unwrap_or(&original.file);
+
+            writeln!(
+                &mut duplicates,
+                "  - {} @ {}:{}:{} (originally declared in {}:{}:{})",
+                test,
+                display_path(file_path),
+                location.line,
+                location.column,
+                display_path(original_path),
+                original.line,
+                original.column,
+            )
+            .unwrap();
+        }
+
         anyhow::bail!(
-            "{} duplicate test{}: {}",
+            "{} duplicate test{}:\n{}",
             total_duplicates,
             if total_duplicates == 1 { "" } else { "s" },
             duplicates,
@@ -336,6 +376,7 @@ fn process_file(res: &mut Tests, path: &Path, all_validate: bool) -> Result<()> 
     Ok(())
 }
 
+// Find all existing tests already in files
 fn existing_tests(dir: &Path, ok: bool) -> Result<HashMap<String, (PathBuf, Test)>> {
     let mut res = HashMap::new();
     for file in fs::read_dir(dir)? {
@@ -356,6 +397,7 @@ fn existing_tests(dir: &Path, ok: bool) -> Result<HashMap<String, (PathBuf, Test
             name: name.clone(),
             code: text,
             pass: ok,
+            location: Location::default(),
         };
 
         if let Some(old) = res.insert(name, (path, test)) {
@@ -366,14 +408,15 @@ fn existing_tests(dir: &Path, ok: bool) -> Result<HashMap<String, (PathBuf, Test
     Ok(res)
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, Default)]
 struct Location {
+    file: PathBuf,
     line: u32,
     column: u32,
 }
 
 impl Location {
-    fn new(line: u32, column: u32) -> Self {
-        Self { line, column }
+    fn new(file: PathBuf, line: u32, column: u32) -> Self {
+        Self { file, line, column }
     }
 }

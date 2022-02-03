@@ -1,21 +1,38 @@
-ROOT@0..139
+ROOT@0..173
   COMMENT@0..107 "// kind:expr validate ..."
   WHITESPACE@107..108 "\n"
-  VAR_REF@108..109
-    IDENT@108..109 "a"
-  WHITESPACE@109..110 "\n"
-  VAR_REF@110..114
-    IDENT@110..114 "abcd"
-  WHITESPACE@114..115 "\n"
-  VAR_REF@115..123
-    IDENT@115..123 "abcd1245"
-  WHITESPACE@123..124 "\n"
-  VAR_REF@124..125
-    IDENT@124..125 "_"
-  WHITESPACE@125..126 "\n"
-  VAR_REF@126..130
-    IDENT@126..130 "_135"
-  WHITESPACE@130..131 "\n"
-  VAR_REF@131..138
-    IDENT@131..138 "_dsg434"
-  WHITESPACE@138..139 "\n"
+  BLOCK@108..172
+    L_CURLY@108..109 "{"
+    WHITESPACE@109..114 "\n    "
+    EXPR_STMT@114..116
+      VAR_REF@114..115
+        IDENT@114..115 "a"
+      SEMICOLON@115..116 ";"
+    WHITESPACE@116..121 "\n    "
+    EXPR_STMT@121..126
+      VAR_REF@121..125
+        IDENT@121..125 "abcd"
+      SEMICOLON@125..126 ";"
+    WHITESPACE@126..131 "\n    "
+    EXPR_STMT@131..140
+      VAR_REF@131..139
+        IDENT@131..139 "abcd1245"
+      SEMICOLON@139..140 ";"
+    WHITESPACE@140..145 "\n    "
+    EXPR_STMT@145..147
+      VAR_REF@145..146
+        IDENT@145..146 "_"
+      SEMICOLON@146..147 ";"
+    WHITESPACE@147..152 "\n    "
+    EXPR_STMT@152..157
+      VAR_REF@152..156
+        IDENT@152..156 "_135"
+      SEMICOLON@156..157 ";"
+    WHITESPACE@157..162 "\n    "
+    EXPR_STMT@162..170
+      VAR_REF@162..169
+        IDENT@162..169 "_dsg434"
+      SEMICOLON@169..170 ";"
+    WHITESPACE@170..171 "\n"
+    R_CURLY@171..172 "}"
+  WHITESPACE@172..173 "\n"
