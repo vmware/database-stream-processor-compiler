@@ -1,6 +1,6 @@
 /// Matches a [`SyntaxNode`][`crate::SyntaxNode`] against an [`ast`][`crate::ast::nodes`] type.
 ///
-/// # Example:
+/// # Examples
 ///
 /// ```ignore
 /// match_ast! {
@@ -11,6 +11,17 @@
 ///     }
 /// }
 /// ```
+///
+/// ```ignore
+/// match_ast! {
+///     match node {
+///         Root(_) => { ... }
+///         BinExpr(bin) => { ... }
+///         something_else => { ... }
+///     }
+/// }
+/// ```
+///
 // TODO: This would be more useful if it handled or patterns and stuff
 #[macro_export]
 macro_rules! match_ast {
@@ -21,15 +32,85 @@ macro_rules! match_ast {
     }};
 
     (match ($node:expr) {
-        $( $ast:ident($it:ident) => $res:expr, )*
-        _ => $catch_all:expr $(,)?
+        $($arms:tt)*
     }) => {{
-        $(
-            if let Some($it) = <$crate::ast::nodes::$ast as $crate::ast::AstNode>::cast(&$node) {
-                $res
-            } else
-        )*
-
-        { $catch_all }
+        match $node {
+            node => {
+                $crate::match_ast_binding!(
+                    node
+                    []
+                    $($arms)*
+                )
+            }
+        }
     }};
+}
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! match_ast_binding {
+    ($node:ident [$($acc:tt)*] $ast:ident(_) => $res:expr, $($rest:tt)*) => {
+        $crate::match_ast_binding!(
+            $node
+            [
+                $($acc)*
+                if <$crate::SyntaxNode as $crate::SyntaxNodeExt>::is::<$ast>(&$node) {
+                    $res
+                } else
+            ]
+            $($rest)*
+        )
+    };
+    ($node:ident [$($acc:tt)*] $ast:ident(_) => $res:block $($rest:tt)*) => {
+        $crate::match_ast_binding!(
+            $node
+            [
+                $($acc)*
+                if <$crate::SyntaxNode as $crate::SyntaxNodeExt>::is::<$ast>(&$node) {
+                    $res
+                } else
+            ]
+            $($rest)*
+        )
+    };
+
+    ($node:ident [$($acc:tt)*] $ast:ident($it:tt) => $res:expr, $($rest:tt)*) => {
+        $crate::match_ast_binding!(
+            $node
+            [
+                $($acc)*
+                if let ::core::option::Option::Some($it) =
+                    <$crate::ast::nodes::$ast as $crate::ast::AstNode>::cast(&$node)
+                {
+                    $res
+                } else
+            ]
+            $($rest)*
+        )
+    };
+    ($node:ident [$($acc:tt)*] $ast:ident($it:tt) => $res:block $($rest:tt)*) => {
+        $crate::match_ast_binding!(
+            $node
+            [
+                $($acc)*
+                if let ::core::option::Option::Some($it) =
+                    <$crate::ast::nodes::$ast as $crate::ast::AstNode>::cast(&$node)
+                {
+                    $res
+                } else
+            ]
+            $($rest)*
+        )
+    };
+
+    ($node:ident [$($acc:tt)*] $binding:ident => $catch_all:expr $(,)?) => {
+        $($acc)* {
+            match $node {
+                binding => { $catch_all }
+            }
+        }
+    };
+    ($node:ident [$($acc:tt)*] _ => $catch_all:expr $(,)?) => {
+        $($acc)* { $catch_all }
+    };
 }

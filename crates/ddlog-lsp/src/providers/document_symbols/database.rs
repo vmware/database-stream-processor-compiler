@@ -2,10 +2,13 @@ use crate::{database::DocumentSymbols, providers::utils};
 use ddlog_diagnostics::{FileId, Interner, Rope};
 use ddlog_syntax::{
     ast::{
-        nodes::{BracketedStructField, FunctionArg, FunctionDef, Pattern, Stmt, StructDef, Type},
+        nodes::{
+            BracketedStructField, EnumDef, EnumVariant, FunctionArg, FunctionDef, Pattern, Stmt,
+            StructDef, Type, VariantStructField,
+        },
         AstNode, AstToken,
     },
-    match_ast, visitor, AstVisitor, RuleCtx, SyntaxNode,
+    match_ast, visitor, AstVisitor, RuleCtx, SyntaxNode, SyntaxNodeExt,
 };
 use ddlog_utils::ArcSlice;
 use lspower::lsp::{DocumentSymbol, Position, Range, SymbolKind, SymbolTag};
@@ -29,13 +32,17 @@ pub(crate) fn document_symbols(
         match_ast! {
             match node {
                 FunctionDef(function) => {
-                    tracing::debug!("documenting function");
+                    tracing::debug!("collecting symbols for function");
                     symbols.document_function(file, function.into_owned())
-                },
-                StructDef(strct) => {
-                    tracing::debug!("documenting struct");
-                    symbols.document_struct(file, strct.into_owned())
-                },
+                }
+                StructDef(def) => {
+                    tracing::debug!("collecting symbols for struct");
+                    symbols.document_struct(file, def.into_owned())
+                }
+                EnumDef(def) => {
+                    tracing::debug!("collecting symbols for enum");
+                    symbols.document_enum(file, def.into_owned())
+                }
                 // TODO: Type definitions
 
                 _ => unreachable!(),
@@ -52,17 +59,31 @@ pub(crate) fn document_symbols(
 #[derive(Debug, Default)]
 struct DeclarationCollector(Vec<SyntaxNode>);
 
+impl DeclarationCollector {
+    pub const fn new() -> Self {
+        Self(Vec::new())
+    }
+
+    pub fn push(&mut self, value: SyntaxNode) {
+        self.0.push(value);
+    }
+}
+
 impl AstVisitor for DeclarationCollector {
     fn check_node(&mut self, node: &SyntaxNode, _ctx: &mut RuleCtx) -> Option<()> {
         match_ast! {
             match node {
-                FunctionDef(_function) => {
+                FunctionDef(_) => {
                     tracing::trace!("collected function declaration");
-                    self.0.push(node.clone());
+                    self.push(node.clone());
                 },
-                StructDef(_struct) => {
+                StructDef(_) => {
                     tracing::trace!("collected struct declaration");
-                    self.0.push(node.clone());
+                    self.push(node.clone());
+                },
+                EnumDef(_) => {
+                    tracing::trace!("collected enum declaration");
+                    self.push(node.clone());
                 },
                 // TODO: Type definitions
 
@@ -84,7 +105,7 @@ pub(crate) fn declarations(symbols: &dyn DocumentSymbols, file: FileId) -> ArcSl
     let root = symbols.syntax(file);
     let mut ctx = RuleCtx::new(file, symbols.file_source(file), interner.clone());
 
-    let mut collector = DeclarationCollector::default();
+    let mut collector = DeclarationCollector::new();
     visitor::apply_visitor(&root, &mut collector, &mut ctx);
 
     let declarations = collector.0;
@@ -207,10 +228,24 @@ pub(crate) fn document_function(
         Some(children)
     };
 
+    let mut detail = String::from("fn ");
+    if let Some(name) = function.name() {
+        detail.push_str(name.syntax().resolve_text(interner));
+    }
+    if let Some(generics) = function.generics() {
+        stripped_node_text(generics.syntax(), interner, &mut detail);
+    }
+    if let Some(args) = function.args() {
+        stripped_node_text(args.syntax(), interner, &mut detail);
+    }
+    if let Some(ret) = function.ret() {
+        detail.push(' ');
+        stripped_node_text(ret.syntax(), interner, &mut detail);
+    }
+
     DocumentSymbol {
         name,
-        // TODO: Get the function's documentation if there's any
-        detail: None,
+        detail: Some(detail),
         kind: SymbolKind::Function,
         tags,
         range,
@@ -218,6 +253,29 @@ pub(crate) fn document_function(
         children,
         ..default_document_symbol()
     }
+}
+
+// FIXME: This is dirty, we really want to use an actual formatter since this produces
+//        varying outputs based off of the physical input's syntax
+fn stripped_node_text(node: &SyntaxNode, interner: &Interner, output: &mut String) {
+    let (mut can_insert_whitespace, mut last_was_whitespace) = (false, false);
+    node.trimmed_text(interner).for_each_chunk(|chunk| {
+        for line in chunk.lines() {
+            let line = line.trim();
+            if line.is_empty() {
+                if can_insert_whitespace && !last_was_whitespace {
+                    output.push(' ');
+                    can_insert_whitespace = false;
+                }
+
+                last_was_whitespace = true;
+            } else {
+                output.push_str(line);
+                can_insert_whitespace = true;
+                last_was_whitespace = false;
+            }
+        }
+    });
 }
 
 pub(crate) fn document_function_arg(
@@ -290,7 +348,7 @@ pub(crate) fn document_struct(
         if let Some(fields) = fields.as_bracketed_struct_fields() {
             for field in fields.fields() {
                 if let Some(field) = symbols.document_struct_field(file, field.into_owned()) {
-                    children.extend(field.iter().cloned());
+                    children.push(field);
                 }
             }
         }
@@ -299,16 +357,15 @@ pub(crate) fn document_struct(
     let children = if children.is_empty() {
         None
     } else {
+        children.shrink_to_fit();
         Some(children)
     };
 
     DocumentSymbol {
         name,
-        // TODO: Get the relation's documentation if there's any
+        // TODO: Get the struct's documentation if there's any
         detail: None,
-        // I can't figure out if there's custom symbol kinds, so
-        // saying that relations are classes is my best guess for now
-        kind: SymbolKind::Class,
+        kind: SymbolKind::Struct,
         tags,
         range,
         selection_range,
@@ -321,20 +378,19 @@ pub(crate) fn document_struct_field(
     symbols: &dyn DocumentSymbols,
     file: FileId,
     field: BracketedStructField,
-) -> Option<ArcSlice<DocumentSymbol>> {
+) -> Option<DocumentSymbol> {
     let session = symbols.session();
     let interner = session.interner();
     let source = symbols.file_source(file);
 
-    let mut bindings = Vec::with_capacity(field.name().is_some() as usize);
-    if let Some(name) = field.name() {
+    field.name().map(|name| {
         let tags = field
             .attributes()
             .any(|attr| attr.is_deprecated(interner))
             .then(|| vec![SymbolTag::Deprecated]);
         let range = utils::ide_range(&source, name.text_range());
 
-        bindings.push(DocumentSymbol {
+        DocumentSymbol {
             name: name.text(interner).to_owned(),
             detail: None,
             kind: SymbolKind::Variable,
@@ -343,14 +399,158 @@ pub(crate) fn document_struct_field(
             selection_range: range,
             children: None,
             ..default_document_symbol()
-        });
+        }
+    })
+}
+
+pub(crate) fn document_enum(
+    symbols: &dyn DocumentSymbols,
+    file: FileId,
+    enumeration: EnumDef,
+) -> DocumentSymbol {
+    let session = symbols.session();
+    let interner = session.interner();
+    let source = symbols.file_source(file);
+
+    tracing::debug!(
+        file = file.to_str(interner),
+        "collecting symbols for enum declaration",
+    );
+
+    let range = utils::ide_range(&source, enumeration.trimmed_range());
+    let (name, selection_range) = enumeration
+        .name()
+        .as_ref()
+        .map(|name| {
+            (
+                name.text(interner),
+                utils::ide_range(&source, name.text_range()),
+            )
+        })
+        .unwrap_or(("???", range));
+    let name = name.to_owned();
+
+    // Look for a `#[deprecated]` attribute on the enum
+    let tags = enumeration
+        .is_deprecated(interner)
+        .then(|| vec![SymbolTag::Deprecated]);
+
+    let total_variants = enumeration
+        .variants()
+        .map(|variants| variants.variants().count())
+        .unwrap_or(0);
+    let mut children = Vec::with_capacity(total_variants);
+
+    if let Some(variants) = enumeration.variants() {
+        for variant in variants.variants() {
+            if let Some(field) = symbols.document_enum_variant(file, variant.into_owned()) {
+                children.push(field);
+            }
+        }
     }
 
-    if bindings.is_empty() {
+    let children = if children.is_empty() {
         None
     } else {
-        Some(ArcSlice::new(bindings))
+        children.shrink_to_fit();
+        Some(children)
+    };
+
+    DocumentSymbol {
+        name,
+        // TODO: Get the enum's documentation if there's any
+        detail: None,
+        kind: SymbolKind::Enum,
+        tags,
+        range,
+        selection_range,
+        children,
+        ..default_document_symbol()
     }
+}
+
+pub(crate) fn document_enum_variant(
+    symbols: &dyn DocumentSymbols,
+    file: FileId,
+    variant: EnumVariant,
+) -> Option<DocumentSymbol> {
+    let session = symbols.session();
+    let interner = session.interner();
+    let source = symbols.file_source(file);
+
+    variant.variant().map(|name| {
+        let tags = variant
+            .is_deprecated(interner)
+            .then(|| vec![SymbolTag::Deprecated]);
+        let range = utils::ide_range(&source, name.text_range());
+
+        // The number of fields that the variant has, if any
+        let variant_fields = variant
+            .enum_variant_body()
+            .and_then(|body| body.as_variant_struct().map(|strct| strct.fields().count()))
+            .unwrap_or(0);
+
+        let mut children = Vec::with_capacity(variant_fields);
+        if let Some(symbols) = variant
+            .enum_variant_body()
+            .as_ref()
+            .and_then(|body| body.as_variant_struct())
+            .map(|variant| {
+                variant
+                    .fields()
+                    .filter_map(|field| symbols.document_variant_field(file, field.into_owned()))
+            })
+        {
+            children.extend(symbols);
+        }
+
+        let children = if children.is_empty() {
+            None
+        } else {
+            children.shrink_to_fit();
+            Some(children)
+        };
+
+        DocumentSymbol {
+            name: name.text(interner).to_owned(),
+            detail: None,
+            kind: SymbolKind::Variable,
+            tags,
+            range,
+            selection_range: range,
+            children,
+            ..default_document_symbol()
+        }
+    })
+}
+
+pub(crate) fn document_variant_field(
+    symbols: &dyn DocumentSymbols,
+    file: FileId,
+    field: VariantStructField,
+) -> Option<DocumentSymbol> {
+    let session = symbols.session();
+    let interner = session.interner();
+    let source = symbols.file_source(file);
+
+    field.name().map(|name| {
+        let tags = field
+            .attributes()
+            .any(|attr| attr.is_deprecated(interner))
+            .then(|| vec![SymbolTag::Deprecated]);
+        let range = utils::ide_range(&source, name.text_range());
+
+        DocumentSymbol {
+            name: name.text(interner).to_owned(),
+            detail: None,
+            kind: SymbolKind::Variable,
+            tags,
+            range,
+            selection_range: range,
+            children: None,
+            ..default_document_symbol()
+        }
+    })
 }
 
 // Each function argument is a pattern, which means that it can bind multiple variables.

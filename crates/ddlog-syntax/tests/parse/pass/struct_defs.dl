@@ -7,4 +7,4 @@ struct Foo2 {
     bar: usize
 }
 struct TupleStruct();
-struct TupleStruct(u8, u8, u8);
+struct TupleStruct2(u8, u8, u8);

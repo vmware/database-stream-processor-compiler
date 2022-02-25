@@ -1,5 +1,5 @@
 use crate::ast::{
-    nodes::{Attribute, FunctionDef},
+    nodes::{Attribute, EnumDef, EnumVariant, FunctionDef},
     AstNode, AstToken,
 };
 use cstree::TextRange;
@@ -35,6 +35,25 @@ impl FunctionDef {
             .unwrap_or_else(|| self.trimmed_range());
 
         start.intersect(end).unwrap_or_else(|| self.trimmed_range())
+    }
+
+    /// Returns `true` if the enum has a `#[deprecated]` attribute
+    pub fn is_deprecated(&self, interner: &Interner) -> bool {
+        self.attributes().any(|attr| attr.is_deprecated(interner))
+    }
+}
+
+impl EnumDef {
+    /// Returns `true` if the enum has a `#[deprecated]` attribute
+    pub fn is_deprecated(&self, interner: &Interner) -> bool {
+        self.attributes().any(|attr| attr.is_deprecated(interner))
+    }
+}
+
+impl EnumVariant {
+    /// Returns `true` if the variant has a `#[deprecated]` attribute
+    pub fn is_deprecated(&self, interner: &Interner) -> bool {
+        self.attributes().any(|attr| attr.is_deprecated(interner))
     }
 }
 

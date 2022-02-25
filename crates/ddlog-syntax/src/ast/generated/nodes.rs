@@ -1053,6 +1053,10 @@ pub struct EnumVariant {
 }
 impl EnumVariant {
     #[inline]
+    pub fn attributes(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::Attribute> {
+        crate::ast::support::children(&self.syntax)
+    }
+    #[inline]
     pub fn variant(
         &self,
     ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::Ident>> {
@@ -4428,6 +4432,10 @@ pub struct VariantStructField {
 }
 impl VariantStructField {
     #[inline]
+    pub fn attributes(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::Attribute> {
+        crate::ast::support::children(&self.syntax)
+    }
+    #[inline]
     pub fn name(
         &self,
     ) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::tokens::Ident>> {
@@ -4547,6 +4555,10 @@ pub struct VariantTupleElem {
     syntax: crate::SyntaxNode,
 }
 impl VariantTupleElem {
+    #[inline]
+    pub fn attributes(&self) -> crate::ast::support::AstChildren<'_, crate::ast::nodes::Attribute> {
+        crate::ast::support::children(&self.syntax)
+    }
     #[inline]
     pub fn ty(&self) -> ::core::option::Option<::std::borrow::Cow<'_, crate::ast::nodes::Type>> {
         crate::ast::support::child(&self.syntax)

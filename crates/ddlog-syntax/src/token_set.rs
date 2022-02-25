@@ -8,6 +8,7 @@ use std::{
 const TOKENS_FIT_IN_SET: () =
     assert!(size_of::<u128>() * 8 * 2 > SyntaxKind::MAXIMUM_DISCRIMINANT as usize);
 
+/// A set of [`SyntaxKind`]s
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 #[repr(transparent)]
 pub struct TokenSet([u128; 2]);

@@ -24,12 +24,12 @@ TupleStructField = Attribute* Modifier* ty:Type ','*
 
 EnumDef = Attribute* Modifier* keyword:'enum' name:'ident' variants:EnumVariants
 EnumVariants = '{' variants:EnumVariant* '}'
-EnumVariant = variant:'ident' EnumVariantBody
+EnumVariant = Attribute* variant:'ident' EnumVariantBody
 EnumVariantBody = VariantTuple | VariantStruct
 VariantTuple = '(' VariantTupleElem* ')'
-VariantTupleElem = ty:Type ','*
+VariantTupleElem = Attribute* ty:Type ','*
 VariantStruct = '{' fields:VariantStructField* '}'
-VariantStructField = name:'ident' ':' ty:Type ','*
+VariantStructField = Attribute* name:'ident' ':' ty:Type ','*
 
 // TODO: Could be a pattern instead of an ident
 ConstDef = Attribute* Modifier* keyword:'const' name:'ident' '=' value:Expr ';'

@@ -11,15 +11,25 @@ type SyntaxElementChildren<'parent> = cstree::SyntaxElementChildren<'parent, Dif
 #[derive(Debug, Clone)]
 #[repr(transparent)]
 pub struct AstChildren<'parent, N> {
-    inner: SyntaxNodeChildren<'parent>,
+    inner: Option<SyntaxNodeChildren<'parent>>,
     __type: PhantomData<N>,
 }
 
 impl<'parent, N> AstChildren<'parent, N> {
+    /// Create a new [`AstChildren`] from the children of the given [`SyntaxNode`]
     #[inline]
     fn new(parent: &'parent SyntaxNode) -> Self {
         Self {
-            inner: parent.children(),
+            inner: Some(parent.children()),
+            __type: PhantomData,
+        }
+    }
+
+    /// Create an empty [`AstChildren`]
+    #[inline]
+    pub const fn empty() -> Self {
+        Self {
+            inner: None,
             __type: PhantomData,
         }
     }
@@ -33,22 +43,43 @@ where
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        self.inner.find_map(N::cast)
+        self.inner
+            .as_mut()
+            .and_then(|children| children.find_map(N::cast))
+    }
+}
+
+impl<N> Default for AstChildren<'_, N> {
+    /// Create an empty [`AstChildren`]
+    ///
+    /// See [`AstChildren::empty()`]
+    fn default() -> Self {
+        Self::empty()
     }
 }
 
 /// An iterator over a [`SyntaxNode`]'s children, returning those of a particular token type
 #[derive(Debug, Clone)]
 pub struct TokenChildren<'parent, T> {
-    inner: SyntaxElementChildren<'parent>,
+    inner: Option<SyntaxElementChildren<'parent>>,
     __type: PhantomData<T>,
 }
 
 impl<'parent, T> TokenChildren<'parent, T> {
+    /// Create a new [`TokenChildren`] from the children of the given [`SyntaxNode`]
     #[inline]
     fn new(parent: &'parent SyntaxNode) -> Self {
         Self {
-            inner: parent.children_with_tokens(),
+            inner: Some(parent.children_with_tokens()),
+            __type: PhantomData,
+        }
+    }
+
+    /// Create an empty [`TokenChildren`]
+    #[inline]
+    pub const fn empty() -> Self {
+        Self {
+            inner: None,
             __type: PhantomData,
         }
     }
@@ -62,8 +93,18 @@ where
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        self.inner
-            .find_map(|child| child.as_token().copied().and_then(T::cast))
+        self.inner.as_mut().and_then(|children| {
+            children.find_map(|child| child.as_token().copied().and_then(T::cast))
+        })
+    }
+}
+
+impl<T> Default for TokenChildren<'_, T> {
+    /// Create an empty [`TokenChildren`]
+    ///
+    /// See [`TokenChildren::empty()`]
+    fn default() -> Self {
+        Self::empty()
     }
 }
 

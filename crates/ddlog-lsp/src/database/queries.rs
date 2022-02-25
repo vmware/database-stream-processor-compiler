@@ -1,7 +1,10 @@
 use crate::providers::document_symbols;
 use ddlog_diagnostics::{Diagnostic, FileId, Rope};
 use ddlog_syntax::{
-    ast::nodes::{BracketedStructField, FunctionArg, FunctionDef, StructDef},
+    ast::nodes::{
+        BracketedStructField, EnumDef, EnumVariant, FunctionArg, FunctionDef, StructDef,
+        VariantStructField,
+    },
     validation, RuleCtx, SyntaxNode,
 };
 use ddlog_utils::{Arc, ArcSlice};
@@ -96,7 +99,20 @@ pub trait DocumentSymbols: Source {
         &self,
         file: FileId,
         field: BracketedStructField,
-    ) -> Option<ArcSlice<DocumentSymbol>>;
+    ) -> Option<DocumentSymbol>;
+
+    #[salsa::invoke(document_symbols::document_enum)]
+    fn document_enum(&self, file: FileId, enumeration: EnumDef) -> DocumentSymbol;
+
+    #[salsa::invoke(document_symbols::document_enum_variant)]
+    fn document_enum_variant(&self, file: FileId, variant: EnumVariant) -> Option<DocumentSymbol>;
+
+    #[salsa::invoke(document_symbols::document_variant_field)]
+    fn document_variant_field(
+        &self,
+        file: FileId,
+        field: VariantStructField,
+    ) -> Option<DocumentSymbol>;
 }
 
 #[salsa::query_group(DiagnosticsDatabase)]
