@@ -1,20 +1,21 @@
 mod queries;
 
-pub use queries::{Diagnostics, DocumentSymbols, Session, Source, Validation};
+pub use queries::{Diagnostics, DocumentSymbols, Session, Source, Symbols, Validation};
 
 use queries::{
-    DiagnosticsDatabase, DocumentSymbolsDatabase, SessionDatabase, SourceDatabase,
+    DiagnosticsDatabase, DocumentSymbolsDatabase, SessionDatabase, SourceDatabase, SymbolsDatabase,
     ValidationDatabase,
 };
 use salsa::{Database, ParallelDatabase, Snapshot, Storage};
 use std::fmt::{self, Debug};
 
 #[salsa::database(
-    SessionDatabase,
     SourceDatabase,
+    SessionDatabase,
+    SymbolsDatabase,
     ValidationDatabase,
-    DocumentSymbolsDatabase,
-    DiagnosticsDatabase
+    DiagnosticsDatabase,
+    DocumentSymbolsDatabase
 )]
 #[derive(Default)]
 pub struct DDlogDatabase {

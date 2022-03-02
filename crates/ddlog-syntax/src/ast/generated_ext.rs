@@ -1,11 +1,16 @@
 use crate::ast::{
-    nodes::{Attribute, EnumDef, EnumVariant, FunctionDef},
+    nodes::{Attribute, ConstDef, EnumDef, EnumVariant, FunctionDef, StructDef},
     AstNode, AstToken,
 };
 use cstree::TextRange;
-use ddlog_diagnostics::Interner;
+use ddlog_diagnostics::{IStr, Interner};
 
 impl FunctionDef {
+    pub fn ident(&self) -> Option<IStr> {
+        self.name()
+            .map(|ident| IStr::new(ident.syntax().green().text_key()))
+    }
+
     /// Get the span of a function's signature
     ///
     /// If `include_keyword` is set then the `function` keyword will be
@@ -44,6 +49,11 @@ impl FunctionDef {
 }
 
 impl EnumDef {
+    pub fn ident(&self) -> Option<IStr> {
+        self.name()
+            .map(|ident| IStr::new(ident.syntax().green().text_key()))
+    }
+
     /// Returns `true` if the enum has a `#[deprecated]` attribute
     pub fn is_deprecated(&self, interner: &Interner) -> bool {
         self.attributes().any(|attr| attr.is_deprecated(interner))
@@ -54,6 +64,20 @@ impl EnumVariant {
     /// Returns `true` if the variant has a `#[deprecated]` attribute
     pub fn is_deprecated(&self, interner: &Interner) -> bool {
         self.attributes().any(|attr| attr.is_deprecated(interner))
+    }
+}
+
+impl StructDef {
+    pub fn ident(&self) -> Option<IStr> {
+        self.name()
+            .map(|ident| IStr::new(ident.syntax().green().text_key()))
+    }
+}
+
+impl ConstDef {
+    pub fn ident(&self) -> Option<IStr> {
+        self.name()
+            .map(|ident| IStr::new(ident.syntax().green().text_key()))
     }
 }
 

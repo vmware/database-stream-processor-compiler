@@ -1,4 +1,4 @@
-use crate::providers::document_symbols;
+use crate::providers::{document_symbols, symbols};
 use ddlog_diagnostics::{Diagnostic, FileId, Rope};
 use ddlog_syntax::{
     ast::nodes::{
@@ -73,13 +73,16 @@ fn validation_diagnostics(validation: &dyn Validation, file: FileId) -> ArcSlice
     ArcSlice::new(ctx.diagnostics)
 }
 
+#[salsa::query_group(SymbolsDatabase)]
+pub trait Symbols: Source {
+    #[salsa::invoke(symbols::declarations)]
+    fn declarations(&self, file: FileId) -> ArcSlice<SyntaxNode>;
+}
+
 #[salsa::query_group(DocumentSymbolsDatabase)]
-pub trait DocumentSymbols: Source {
+pub trait DocumentSymbols: Symbols {
     #[salsa::invoke(document_symbols::document_symbols)]
     fn document_symbols(&self, file: FileId) -> ArcSlice<DocumentSymbol>;
-
-    #[salsa::invoke(document_symbols::declarations)]
-    fn declarations(&self, file: FileId) -> ArcSlice<SyntaxNode>;
 
     #[salsa::invoke(document_symbols::document_function)]
     fn document_function(&self, file: FileId, function: FunctionDef) -> DocumentSymbol;

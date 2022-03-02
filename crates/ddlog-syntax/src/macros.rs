@@ -54,7 +54,7 @@ macro_rules! match_ast_binding {
             $node
             [
                 $($acc)*
-                if <$crate::SyntaxNode as $crate::SyntaxNodeExt>::is::<$ast>(&$node) {
+                if <$crate::SyntaxNode as $crate::SyntaxNodeExt>::is::<$crate::ast::nodes::$ast>(&$node) {
                     $res
                 } else
             ]
@@ -66,7 +66,7 @@ macro_rules! match_ast_binding {
             $node
             [
                 $($acc)*
-                if <$crate::SyntaxNode as $crate::SyntaxNodeExt>::is::<$ast>(&$node) {
+                if <$crate::SyntaxNode as $crate::SyntaxNodeExt>::is::<$crate::ast::nodes::$ast>(&$node) {
                     $res
                 } else
             ]

@@ -1,7 +1,7 @@
 mod database;
 
 pub(crate) use database::{
-    declarations, document_enum, document_enum_variant, document_function, document_function_arg,
+    document_enum, document_enum_variant, document_function, document_function_arg,
     document_struct, document_struct_field, document_symbols, document_variant_field,
 };
 

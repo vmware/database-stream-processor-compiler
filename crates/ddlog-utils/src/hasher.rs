@@ -6,6 +6,7 @@ use std::{
 use xxhash_rust::{const_xxh3::const_custom_default_secret, xxh3::Xxh3};
 
 /// A consistent and fast hasher
+#[repr(transparent)]
 pub struct ConsistentHasher(());
 
 impl ConsistentHasher {

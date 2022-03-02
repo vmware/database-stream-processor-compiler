@@ -167,7 +167,7 @@ impl lasso::Resolver<Spur> for Interner {
 pub struct IStr(Spur);
 
 impl IStr {
-    pub(crate) const fn new(spur: Spur) -> Self {
+    pub const fn new(spur: Spur) -> Self {
         Self(spur)
     }
 

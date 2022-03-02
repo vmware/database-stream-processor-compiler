@@ -34,8 +34,8 @@ pub fn apply_visitor<V>(node: &SyntaxNode, visitor: &mut V, ctx: &mut RuleCtx)
 where
     V: AstVisitor,
 {
-    if node.is::<Root>() {
-        visitor.check_root(node, ctx);
+    if let Some(root) = node.try_to::<Root>() {
+        visitor.check_root(root.as_ref(), ctx);
     }
 
     node.descendants_with_tokens_with(|elem| {
@@ -63,8 +63,8 @@ pub fn apply_visitor_short_circuiting<V>(node: &SyntaxNode, visitor: &mut V, ctx
 where
     V: AstVisitor,
 {
-    if node.is::<Root>() {
-        visitor.check_root(node, ctx);
+    if let Some(root) = node.try_to::<Root>() {
+        visitor.check_root(root.as_ref(), ctx);
     }
 
     node.descendants_with_tokens_with(|elem| match elem {
@@ -109,7 +109,7 @@ pub trait AstVisitor {
     /// The root's kind will be [`ROOT`][`crate::SyntaxKind::ROOT`].
     /// Defaults to doing nothing.
     #[inline]
-    fn check_root(&mut self, _root: &SyntaxNode, _ctx: &mut RuleCtx) -> Option<()> {
+    fn check_root(&mut self, _root: &Root, _ctx: &mut RuleCtx) -> Option<()> {
         None
     }
 }
@@ -126,7 +126,7 @@ impl AstVisitor for Box<dyn AstVisitor> {
     }
 
     #[inline]
-    fn check_root(&mut self, root: &SyntaxNode, ctx: &mut RuleCtx) -> Option<()> {
+    fn check_root(&mut self, root: &Root, ctx: &mut RuleCtx) -> Option<()> {
         self.deref_mut().check_root(root, ctx)
     }
 }

@@ -8,7 +8,7 @@ use ddlog_syntax::{
         },
         AstNode, AstToken,
     },
-    match_ast, visitor, AstVisitor, RuleCtx, SyntaxNode, SyntaxNodeExt,
+    match_ast, SyntaxNode, SyntaxNodeExt,
 };
 use ddlog_utils::ArcSlice;
 use lspower::lsp::{DocumentSymbol, Position, Range, SymbolKind, SymbolTag};
@@ -22,100 +22,33 @@ pub(crate) fn document_symbols(
     let uri = file.to_str(interner);
 
     let declarations = symbols.declarations(file);
-    let document_symbols = declarations.iter().map(|node| {
+    let document_symbols = declarations.iter().filter_map(|node| {
         tracing::debug!(
             file = uri,
             "visiting declaration: {}",
-            node.debug(symbols.session().interner(), true),
+            node.debug(symbols.session().interner(), false),
         );
 
-        match_ast! {
+        Some(match_ast! {
             match node {
-                FunctionDef(function) => {
-                    tracing::debug!("collecting symbols for function");
-                    symbols.document_function(file, function.into_owned())
-                }
-                StructDef(def) => {
-                    tracing::debug!("collecting symbols for struct");
-                    symbols.document_struct(file, def.into_owned())
-                }
-                EnumDef(def) => {
-                    tracing::debug!("collecting symbols for enum");
-                    symbols.document_enum(file, def.into_owned())
-                }
+                EnumDef(def) => symbols.document_enum(file, def.into_owned()),
+                StructDef(def) => symbols.document_struct(file, def.into_owned()),
+                FunctionDef(function) => symbols.document_function(file, function.into_owned()),
+                // TODO: Constant definitions
                 // TODO: Type definitions
 
-                _ => unreachable!(),
+                _ => {
+                    tracing::warn!("didn't document declaration: {}", node.debug(interner, false));
+                    return None;
+                },
             }
-        }
+        })
     });
 
-    let symbols = ArcSlice::new(document_symbols);
+    let symbols = ArcSlice::from_dynamic(document_symbols);
     tracing::trace!(file = uri, "produced {} document symbols", symbols.len());
 
     symbols
-}
-
-#[derive(Debug, Default)]
-struct DeclarationCollector(Vec<SyntaxNode>);
-
-impl DeclarationCollector {
-    pub const fn new() -> Self {
-        Self(Vec::new())
-    }
-
-    pub fn push(&mut self, value: SyntaxNode) {
-        self.0.push(value);
-    }
-}
-
-impl AstVisitor for DeclarationCollector {
-    fn check_node(&mut self, node: &SyntaxNode, _ctx: &mut RuleCtx) -> Option<()> {
-        match_ast! {
-            match node {
-                FunctionDef(_) => {
-                    tracing::trace!("collected function declaration");
-                    self.push(node.clone());
-                },
-                StructDef(_) => {
-                    tracing::trace!("collected struct declaration");
-                    self.push(node.clone());
-                },
-                EnumDef(_) => {
-                    tracing::trace!("collected enum declaration");
-                    self.push(node.clone());
-                },
-                // TODO: Type definitions
-
-                _ => {},
-            }
-        }
-
-        None
-    }
-}
-
-pub(crate) fn declarations(symbols: &dyn DocumentSymbols, file: FileId) -> ArcSlice<SyntaxNode> {
-    let session = symbols.session();
-    let interner = session.interner();
-    let uri = file.to_str(interner);
-
-    tracing::debug!(file = uri, "collecting declarations for a file");
-
-    let root = symbols.syntax(file);
-    let mut ctx = RuleCtx::new(file, symbols.file_source(file), interner.clone());
-
-    let mut collector = DeclarationCollector::new();
-    visitor::apply_visitor(&root, &mut collector, &mut ctx);
-
-    let declarations = collector.0;
-    tracing::debug!(
-        file = uri,
-        "collected {} total declarations for",
-        declarations.len(),
-    );
-
-    ArcSlice::new(declarations)
 }
 
 pub(crate) fn document_function(
