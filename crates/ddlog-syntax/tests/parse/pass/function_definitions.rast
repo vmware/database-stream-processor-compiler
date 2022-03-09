@@ -24,8 +24,8 @@ ROOT@0..173
           IDENT@127..130 "bar"
         COLON@130..131 ":"
         WHITESPACE@131..132 " "
-        TYPE@132..135
-          GENERIC_TYPE@132..135
+        GENERIC_TYPE@132..135
+          PATH@132..135
             IDENT@132..135 "Baz"
       R_PAREN@135..136 ")"
     WHITESPACE@136..137 " "
@@ -44,8 +44,8 @@ ROOT@0..173
           IDENT@148..151 "bar"
         COLON@151..152 ":"
         WHITESPACE@152..153 " "
-        TYPE@153..156
-          GENERIC_TYPE@153..156
+        GENERIC_TYPE@153..156
+          PATH@153..156
             IDENT@153..156 "Baz"
         COMMA@156..157 ","
       WHITESPACE@157..158 " "
@@ -54,8 +54,8 @@ ROOT@0..173
           IDENT@158..162 "bing"
         COLON@162..163 ":"
         WHITESPACE@163..164 " "
-        TYPE@164..168
-          GENERIC_TYPE@164..168
+        GENERIC_TYPE@164..168
+          PATH@164..168
             IDENT@164..168 "Bang"
       R_PAREN@168..169 ")"
     WHITESPACE@169..170 " "

@@ -4793,6 +4793,30 @@ impl EnumVariantBody {
             ::core::result::Result::Err(self)
         }
     }
+    #[track_caller]
+    pub fn to_variant_struct(self) -> crate::ast::nodes::VariantStruct {
+        if let Self::VariantStruct(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "EnumVariantBody",
+                "VariantStruct",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_variant_tuple(self) -> crate::ast::nodes::VariantTuple {
+        if let Self::VariantTuple(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "EnumVariantBody",
+                "VariantTuple",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
 }
 impl crate::ast::AstNode for EnumVariantBody {
     #[inline]
@@ -5358,6 +5382,306 @@ impl Expr {
             ::core::result::Result::Ok(syntax)
         } else {
             ::core::result::Result::Err(self)
+        }
+    }
+    #[track_caller]
+    pub fn to_array_access(self) -> crate::ast::nodes::ArrayAccess {
+        if let Self::ArrayAccess(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "ArrayAccess",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_array_init_expr(self) -> crate::ast::nodes::ArrayInitExpr {
+        if let Self::ArrayInitExpr(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "ArrayInitExpr",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_assign(self) -> crate::ast::nodes::Assign {
+        if let Self::Assign(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "Assign",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_bin_expr(self) -> crate::ast::nodes::BinExpr {
+        if let Self::BinExpr(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "BinExpr",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_block(self) -> crate::ast::nodes::Block {
+        if let Self::Block(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "Block",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_break_expr(self) -> crate::ast::nodes::BreakExpr {
+        if let Self::BreakExpr(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "BreakExpr",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_closure_expr(self) -> crate::ast::nodes::ClosureExpr {
+        if let Self::ClosureExpr(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "ClosureExpr",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_continue_expr(self) -> crate::ast::nodes::ContinueExpr {
+        if let Self::ContinueExpr(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "ContinueExpr",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_field_access(self) -> crate::ast::nodes::FieldAccess {
+        if let Self::FieldAccess(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "FieldAccess",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_for_expr(self) -> crate::ast::nodes::ForExpr {
+        if let Self::ForExpr(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "ForExpr",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_function_call(self) -> crate::ast::nodes::FunctionCall {
+        if let Self::FunctionCall(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "FunctionCall",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_if_expr(self) -> crate::ast::nodes::IfExpr {
+        if let Self::IfExpr(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "IfExpr",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_literal(self) -> crate::ast::nodes::Literal {
+        if let Self::Literal(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "Literal",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_loop_expr(self) -> crate::ast::nodes::LoopExpr {
+        if let Self::LoopExpr(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "LoopExpr",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_match_expr(self) -> crate::ast::nodes::MatchExpr {
+        if let Self::MatchExpr(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "MatchExpr",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_method_call(self) -> crate::ast::nodes::MethodCall {
+        if let Self::MethodCall(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "MethodCall",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_paren_expr(self) -> crate::ast::nodes::ParenExpr {
+        if let Self::ParenExpr(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "ParenExpr",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_qualified_ref(self) -> crate::ast::nodes::QualifiedRef {
+        if let Self::QualifiedRef(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "QualifiedRef",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_range_expr(self) -> crate::ast::nodes::RangeExpr {
+        if let Self::RangeExpr(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "RangeExpr",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_ret_expr(self) -> crate::ast::nodes::RetExpr {
+        if let Self::RetExpr(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "RetExpr",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_struct_init_expr(self) -> crate::ast::nodes::StructInitExpr {
+        if let Self::StructInitExpr(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "StructInitExpr",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_tuple_init_expr(self) -> crate::ast::nodes::TupleInitExpr {
+        if let Self::TupleInitExpr(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "TupleInitExpr",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_unary_expr(self) -> crate::ast::nodes::UnaryExpr {
+        if let Self::UnaryExpr(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "UnaryExpr",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_var_ref(self) -> crate::ast::nodes::VarRef {
+        if let Self::VarRef(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "VarRef",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_while_expr(self) -> crate::ast::nodes::WhileExpr {
+        if let Self::WhileExpr(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Expr",
+                "WhileExpr",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
         }
     }
 }
@@ -6322,6 +6646,30 @@ impl FieldAccessor {
             ::core::result::Result::Err(self)
         }
     }
+    #[track_caller]
+    pub fn to_field_accessor_name(self) -> crate::ast::nodes::FieldAccessorName {
+        if let Self::FieldAccessorName(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "FieldAccessor",
+                "FieldAccessorName",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_number(self) -> crate::ast::nodes::Number {
+        if let Self::Number(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "FieldAccessor",
+                "Number",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
 }
 impl crate::ast::AstNode for FieldAccessor {
     #[inline]
@@ -6549,6 +6897,90 @@ impl Item {
             ::core::result::Result::Ok(syntax)
         } else {
             ::core::result::Result::Err(self)
+        }
+    }
+    #[track_caller]
+    pub fn to_const_def(self) -> crate::ast::nodes::ConstDef {
+        if let Self::ConstDef(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Item",
+                "ConstDef",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_enum_def(self) -> crate::ast::nodes::EnumDef {
+        if let Self::EnumDef(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Item",
+                "EnumDef",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_function_def(self) -> crate::ast::nodes::FunctionDef {
+        if let Self::FunctionDef(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Item",
+                "FunctionDef",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_impl_block(self) -> crate::ast::nodes::ImplBlock {
+        if let Self::ImplBlock(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Item",
+                "ImplBlock",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_struct_def(self) -> crate::ast::nodes::StructDef {
+        if let Self::StructDef(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Item",
+                "StructDef",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_type_alias(self) -> crate::ast::nodes::TypeAlias {
+        if let Self::TypeAlias(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Item",
+                "TypeAlias",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_use_def(self) -> crate::ast::nodes::UseDef {
+        if let Self::UseDef(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Item",
+                "UseDef",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
         }
     }
 }
@@ -6896,6 +7328,54 @@ impl Literal {
             ::core::result::Result::Err(self)
         }
     }
+    #[track_caller]
+    pub fn to_bool(self) -> crate::ast::nodes::Bool {
+        if let Self::Bool(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Literal",
+                "Bool",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_char(self) -> crate::ast::nodes::Char {
+        if let Self::Char(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Literal",
+                "Char",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_number(self) -> crate::ast::nodes::Number {
+        if let Self::Number(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Literal",
+                "Number",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_string(self) -> crate::ast::nodes::String {
+        if let Self::String(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Literal",
+                "String",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
 }
 impl crate::ast::AstNode for Literal {
     #[inline]
@@ -7113,6 +7593,42 @@ impl Pattern {
             ::core::result::Result::Err(self)
         }
     }
+    #[track_caller]
+    pub fn to_struct_pattern(self) -> crate::ast::nodes::StructPattern {
+        if let Self::StructPattern(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Pattern",
+                "StructPattern",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_tuple_pattern(self) -> crate::ast::nodes::TuplePattern {
+        if let Self::TuplePattern(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Pattern",
+                "TuplePattern",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_var_ref(self) -> crate::ast::nodes::VarRef {
+        if let Self::VarRef(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Pattern",
+                "VarRef",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
 }
 impl crate::ast::AstNode for Pattern {
     #[inline]
@@ -7316,6 +7832,30 @@ impl Stmt {
             ::core::result::Result::Err(self)
         }
     }
+    #[track_caller]
+    pub fn to_expr_stmt(self) -> crate::ast::nodes::ExprStmt {
+        if let Self::ExprStmt(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Stmt",
+                "ExprStmt",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_var_decl(self) -> crate::ast::nodes::VarDecl {
+        if let Self::VarDecl(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Stmt",
+                "VarDecl",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
 }
 impl crate::ast::AstNode for Stmt {
     #[inline]
@@ -7456,6 +7996,30 @@ impl StructFields {
             ::core::result::Result::Err(self)
         }
     }
+    #[track_caller]
+    pub fn to_bracketed_struct_fields(self) -> crate::ast::nodes::BracketedStructFields {
+        if let Self::BracketedStructFields(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "StructFields",
+                "BracketedStructFields",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_tuple_struct_fields(self) -> crate::ast::nodes::TupleStructFields {
+        if let Self::TupleStructFields(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "StructFields",
+                "TupleStructFields",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
 }
 impl crate::ast::AstNode for StructFields {
     #[inline]
@@ -7577,6 +8141,42 @@ impl Type {
             ::core::result::Result::Ok(syntax)
         } else {
             ::core::result::Result::Err(self)
+        }
+    }
+    #[track_caller]
+    pub fn to_function_type(self) -> crate::ast::nodes::FunctionType {
+        if let Self::FunctionType(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Type",
+                "FunctionType",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_generic_type(self) -> crate::ast::nodes::GenericType {
+        if let Self::GenericType(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Type",
+                "GenericType",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_tuple_type(self) -> crate::ast::nodes::TupleType {
+        if let Self::TupleType(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "Type",
+                "TupleType",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
         }
     }
 }
@@ -7781,6 +8381,30 @@ impl UseBranchOrAlias {
             ::core::result::Result::Ok(syntax)
         } else {
             ::core::result::Result::Err(self)
+        }
+    }
+    #[track_caller]
+    pub fn to_use_alias(self) -> crate::ast::nodes::UseAlias {
+        if let Self::UseAlias(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "UseBranchOrAlias",
+                "UseAlias",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
+        }
+    }
+    #[track_caller]
+    pub fn to_use_branch(self) -> crate::ast::nodes::UseBranch {
+        if let Self::UseBranch(syntax) = self {
+            syntax
+        } else {
+            crate::ast::support::failed_enum_to_node_cast(
+                "UseBranchOrAlias",
+                "UseBranch",
+                crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+            )
         }
     }
 }

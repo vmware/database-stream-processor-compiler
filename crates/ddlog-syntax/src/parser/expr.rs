@@ -2,10 +2,10 @@ use crate::{
     parser::{precedence::ExprPrecedence, CompletedMarker, Marker, Parser},
     SyntaxKind::{
         self, ASSIGN, ASSIGN_OP, BIN_EXPR, BIN_OP, BLOCK, BOOL, BREAK_EXPR, CHAR, CHAR_LITERAL,
-        CLOSURE_ARG, CLOSURE_EXPR, CONTINUE_EXPR, ELSE_BLOCK, FIELD_ACCESS, FIELD_ACCESSOR,
-        FIELD_ACCESSOR_NAME, FUNCTION_CALL, FUNCTION_CALL_ARG, IDENT, IF_BLOCK, IF_EXPR,
-        METHOD_CALL, METHOD_CALL_ARG, NUMBER, NUMBER_LITERAL, PAREN_EXPR, RET_EXPR, STRING,
-        STRING_LITERAL, TUPLE_EXPR_ELEM, TUPLE_INIT_EXPR, UNARY_EXPR, UNARY_OP, VAR_REF,
+        CLOSURE_ARG, CLOSURE_EXPR, CONTINUE_EXPR, ELSE_BLOCK, FIELD_ACCESS, FIELD_ACCESSOR_NAME,
+        FUNCTION_CALL, FUNCTION_CALL_ARG, IDENT, IF_BLOCK, IF_EXPR, METHOD_CALL, METHOD_CALL_ARG,
+        NUMBER, NUMBER_LITERAL, PAREN_EXPR, RET_EXPR, STRING, STRING_LITERAL, TUPLE_EXPR_ELEM,
+        TUPLE_INIT_EXPR, UNARY_EXPR, UNARY_OP, VAR_REF,
     },
     TokenSet,
 };
@@ -467,21 +467,18 @@ impl Parser<'_, '_> {
 
         // Tuple access
         Some(if self.at(NUMBER_LITERAL) {
-            let accessor = self.start();
-            accessor.complete(self, NUMBER);
-
-            marker.complete(self, FIELD_ACCESSOR)
+            let number = self.start();
+            self.expect(NUMBER_LITERAL);
+            number.complete(self, NUMBER)
 
         // Field access or method calls
         } else {
             let accessor = self.start();
-            let accessor_inner = self.start();
             self.var_ref();
 
             // Method call
             if self.try_expect(T!['(']) {
                 accessor.abandon(self);
-                accessor_inner.abandon(self);
 
                 while !self.at(T![')']) {
                     let arg = self.start();
@@ -498,8 +495,7 @@ impl Parser<'_, '_> {
 
             // Field access
             } else {
-                accessor_inner.complete(self, FIELD_ACCESSOR_NAME);
-                accessor.complete(self, FIELD_ACCESSOR);
+                accessor.complete(self, FIELD_ACCESSOR_NAME);
                 marker.complete(self, FIELD_ACCESS)
             }
         })

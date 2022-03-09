@@ -1,3 +1,0 @@
-// kind:item validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/item.rs' line:45 column:3
-/// This is documentation
-struct Bar {}

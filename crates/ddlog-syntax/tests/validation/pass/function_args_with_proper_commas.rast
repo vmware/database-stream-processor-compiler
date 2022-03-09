@@ -12,8 +12,8 @@ ROOT@0..242
           IDENT@125..128 "bar"
         COLON@128..129 ":"
         WHITESPACE@129..130 " "
-        TYPE@130..133
-          GENERIC_TYPE@130..133
+        GENERIC_TYPE@130..133
+          PATH@130..133
             IDENT@130..133 "Baz"
       R_PAREN@133..134 ")"
     WHITESPACE@134..135 " "
@@ -32,8 +32,8 @@ ROOT@0..242
           IDENT@145..148 "bar"
         COLON@148..149 ":"
         WHITESPACE@149..150 " "
-        TYPE@150..153
-          GENERIC_TYPE@150..153
+        GENERIC_TYPE@150..153
+          PATH@150..153
             IDENT@150..153 "Baz"
         COMMA@153..154 ","
       R_PAREN@154..155 ")"
@@ -53,8 +53,8 @@ ROOT@0..242
           IDENT@166..169 "bar"
         COLON@169..170 ":"
         WHITESPACE@170..171 " "
-        TYPE@171..174
-          GENERIC_TYPE@171..174
+        GENERIC_TYPE@171..174
+          PATH@171..174
             IDENT@171..174 "Baz"
         COMMA@174..175 ","
       WHITESPACE@175..176 " "
@@ -63,8 +63,8 @@ ROOT@0..242
           IDENT@176..179 "foo"
         COLON@179..180 ":"
         WHITESPACE@180..181 " "
-        TYPE@181..184
-          GENERIC_TYPE@181..184
+        GENERIC_TYPE@181..184
+          PATH@181..184
             IDENT@181..184 "Bar"
         COMMA@184..185 ","
       WHITESPACE@185..186 " "
@@ -73,8 +73,8 @@ ROOT@0..242
           IDENT@186..190 "bing"
         COLON@190..191 ":"
         WHITESPACE@191..192 " "
-        TYPE@192..195
-          GENERIC_TYPE@192..195
+        GENERIC_TYPE@192..195
+          PATH@192..195
             IDENT@192..195 "Bop"
       R_PAREN@195..196 ")"
     WHITESPACE@196..197 " "
@@ -93,8 +93,8 @@ ROOT@0..242
           IDENT@207..210 "bar"
         COLON@210..211 ":"
         WHITESPACE@211..212 " "
-        TYPE@212..215
-          GENERIC_TYPE@212..215
+        GENERIC_TYPE@212..215
+          PATH@212..215
             IDENT@212..215 "Baz"
         COMMA@215..216 ","
       WHITESPACE@216..217 " "
@@ -103,8 +103,8 @@ ROOT@0..242
           IDENT@217..220 "foo"
         COLON@220..221 ":"
         WHITESPACE@221..222 " "
-        TYPE@222..225
-          GENERIC_TYPE@222..225
+        GENERIC_TYPE@222..225
+          PATH@222..225
             IDENT@222..225 "Bar"
         COMMA@225..226 ","
       WHITESPACE@226..227 " "
@@ -113,8 +113,8 @@ ROOT@0..242
           IDENT@227..231 "bing"
         COLON@231..232 ":"
         WHITESPACE@232..233 " "
-        TYPE@233..236
-          GENERIC_TYPE@233..236
+        GENERIC_TYPE@233..236
+          PATH@233..236
             IDENT@233..236 "Bop"
         COMMA@236..237 ","
       R_PAREN@237..238 ")"

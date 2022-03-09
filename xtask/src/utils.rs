@@ -128,7 +128,7 @@ pub fn format(code: &str) -> Result<String> {
     let mut child = Command::new("rustfmt")
         .args(&[
             "--edition",
-            "2018",
+            "2021",
             "--config",
             // TODO: Use `blank_lines_upper_bound=1` once it's stable
             "newline_style=Unix,normalize_doc_attributes=true",

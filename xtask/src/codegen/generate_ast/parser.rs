@@ -3,11 +3,8 @@ use anyhow::Result;
 use heck::{CamelCase, ShoutySnakeCase, SnakeCase};
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
-use std::{collections::HashMap, convert::TryInto, panic};
+use std::{collections::HashMap, panic};
 use ungrammar::{Grammar, Rule};
-
-/// The maximum number of allowed SyntaxKind variants
-const MAXIMUM_SYNTAX_KINDS: usize = u16::MAX as usize;
 
 const EXTRA_TOKENS: &[&str] = &["comment", "whitespace", "eof", "tombstone", "error"];
 
@@ -60,7 +57,7 @@ const NAMED_TOKENS: &[(&str, &str)] = &[
 
 const FUNKY_CHARS: &[&str] = &["(", ")", "{", "}", "[", "]", "#[", "/*", "*/"];
 
-type StructuredGrammar = (Vec<Struct>, Vec<Enum>, Vec<SyntaxKindEntry>, u16);
+type StructuredGrammar = (Vec<Struct>, Vec<Enum>, Vec<SyntaxKindEntry>);
 
 pub fn from_grammar(grammar: &Grammar) -> Result<StructuredGrammar> {
     assert_constants_are_unique();
@@ -279,12 +276,12 @@ pub fn from_grammar(grammar: &Grammar) -> Result<StructuredGrammar> {
     structs.sort_unstable_by_key(|s| s.camel_case_name.clone());
     enums.sort_unstable_by_key(|e| e.camel_case_name.clone());
 
-    let (syntax_kinds, maximum_syntax_discriminant) = collect_syntax_kinds(&structs, &enums)?;
+    let syntax_kinds = collect_syntax_kinds(&structs, &enums)?;
 
-    Ok((structs, enums, syntax_kinds, maximum_syntax_discriminant))
+    Ok((structs, enums, syntax_kinds))
 }
 
-fn collect_syntax_kinds(structs: &[Struct], enums: &[Enum]) -> Result<(Vec<SyntaxKindEntry>, u16)> {
+fn collect_syntax_kinds(structs: &[Struct], enums: &[Enum]) -> Result<Vec<SyntaxKindEntry>> {
     let mut syntax_kinds: Vec<_> = structs
         .iter()
         .map(|s| {
@@ -350,15 +347,6 @@ fn collect_syntax_kinds(structs: &[Struct], enums: &[Enum]) -> Result<(Vec<Synta
         })
         .collect();
 
-    // Make sure we have less than MAXIMUM_SYNTAX_KINDS variants
-    if syntax_kinds.len() > MAXIMUM_SYNTAX_KINDS as usize {
-        anyhow::bail!(
-            "tried to create more than {} SyntaxKind variants (total variants: {})",
-            MAXIMUM_SYNTAX_KINDS,
-            syntax_kinds.len(),
-        );
-    }
-
     // Sort the syntax kinds lexicographically
     syntax_kinds.sort_unstable_by_key(|kind| kind.screaming_snake_case.clone());
 
@@ -373,16 +361,7 @@ fn collect_syntax_kinds(structs: &[Struct], enums: &[Enum]) -> Result<(Vec<Synta
         );
     }
 
-    // Give all the syntax kinds explicit discriminants
-    for (idx, kind) in syntax_kinds.iter_mut().enumerate() {
-        // We've already made sure that there's less than or equal to `MAXIMUM_SYNTAX_KINDS`
-        // variants, so this should fit fine
-        kind.discriminant = idx.try_into().unwrap();
-    }
-
-    let maximum_syntax_discriminant = (syntax_kinds.len() - 1).try_into().unwrap();
-
-    Ok((syntax_kinds, maximum_syntax_discriminant))
+    Ok(syntax_kinds)
 }
 
 fn rule_is_syntax_node(rule: &Rule, top_level: bool) -> bool {

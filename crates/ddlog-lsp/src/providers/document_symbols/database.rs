@@ -3,12 +3,12 @@ use ddlog_diagnostics::{FileId, Interner, Rope};
 use ddlog_syntax::{
     ast::{
         nodes::{
-            BracketedStructField, EnumDef, EnumVariant, FunctionArg, FunctionDef, Pattern, Stmt,
-            StructDef, Type, VariantStructField,
+            BracketedStructField, EnumDef, EnumVariant, FunctionArg, FunctionDef, Item, Pattern,
+            Root, Stmt, StructDef, Type, VariantStructField,
         },
         AstNode, AstToken,
     },
-    match_ast, SyntaxNode, SyntaxNodeExt,
+    SyntaxNode, SyntaxNodeExt,
 };
 use ddlog_utils::ArcSlice;
 use lspower::lsp::{DocumentSymbol, Position, Range, SymbolKind, SymbolTag};
@@ -21,26 +21,24 @@ pub(crate) fn document_symbols(
     let interner = session.interner();
     let uri = file.to_str(interner);
 
-    let declarations = symbols.declarations(file);
-    let document_symbols = declarations.iter().filter_map(|node| {
+    symbols.items(file);
+
+    let syntax = symbols.syntax(file);
+    let root = syntax.to::<Root>();
+    let document_symbols = root.items().filter_map(|node| {
         tracing::debug!(
             file = uri,
             "visiting declaration: {}",
-            node.debug(symbols.session().interner(), false),
+            node.syntax().debug(symbols.session().interner(), false),
         );
 
-        Some(match_ast! {
-            match node {
-                EnumDef(def) => symbols.document_enum(file, def.into_owned()),
-                StructDef(def) => symbols.document_struct(file, def.into_owned()),
-                FunctionDef(function) => symbols.document_function(file, function.into_owned()),
-                // TODO: Constant definitions
-                // TODO: Type definitions
+        Some(match node.into_owned() {
+            Item::EnumDef(def) => symbols.document_enum(file, def),
+            Item::FunctionDef(def) => symbols.document_function(file, def),
+            Item::StructDef(def) => symbols.document_struct(file, def),
 
-                _ => {
-                    tracing::warn!("didn't document declaration: {}", node.debug(interner, false));
-                    return None;
-                },
+            Item::ConstDef(_) | Item::ImplBlock(_) | Item::TypeAlias(_) | Item::UseDef(_) => {
+                return None
             }
         })
     });

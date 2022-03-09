@@ -1,6 +1,6 @@
 use crate::{
     ast::{AstNode, AstToken},
-    DifferentialDatalog, SyntaxNode,
+    DifferentialDatalog, SyntaxKind, SyntaxNode,
 };
 use std::{borrow::Cow, marker::PhantomData};
 
@@ -47,12 +47,35 @@ where
             .as_mut()
             .and_then(|children| children.find_map(N::cast))
     }
+
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.inner
+            .as_ref()
+            .map_or((0, Some(0)), Iterator::size_hint)
+    }
+
+    #[inline]
+    fn count(self) -> usize {
+        self.inner.map_or(0, Iterator::count)
+    }
+}
+
+impl<'parent, N> ExactSizeIterator for AstChildren<'parent, N>
+where
+    N: AstNode + Clone + 'parent,
+{
+    #[inline]
+    fn len(&self) -> usize {
+        self.inner.as_ref().map_or(0, ExactSizeIterator::len)
+    }
 }
 
 impl<N> Default for AstChildren<'_, N> {
     /// Create an empty [`AstChildren`]
     ///
     /// See [`AstChildren::empty()`]
+    #[inline]
     fn default() -> Self {
         Self::empty()
     }
@@ -97,12 +120,35 @@ where
             children.find_map(|child| child.as_token().copied().and_then(T::cast))
         })
     }
+
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.inner
+            .as_ref()
+            .map_or((0, Some(0)), Iterator::size_hint)
+    }
+
+    #[inline]
+    fn count(self) -> usize {
+        self.inner.map_or(0, Iterator::count)
+    }
+}
+
+impl<'parent, N> ExactSizeIterator for TokenChildren<'parent, N>
+where
+    N: AstToken + Clone + 'parent,
+{
+    #[inline]
+    fn len(&self) -> usize {
+        self.inner.as_ref().map_or(0, ExactSizeIterator::len)
+    }
 }
 
 impl<T> Default for TokenChildren<'_, T> {
     /// Create an empty [`TokenChildren`]
     ///
     /// See [`TokenChildren::empty()`]
+    #[inline]
     fn default() -> Self {
         Self::empty()
     }
@@ -159,4 +205,15 @@ where
     T: AstToken,
 {
     TokenChildren::new(parent)
+}
+
+#[cold]
+#[track_caller]
+#[inline(never)]
+pub(super) fn failed_enum_to_node_cast(
+    parent: &'static str,
+    expected: &'static str,
+    actual: SyntaxKind,
+) -> ! {
+    panic!("attempted to cast {parent} to a {expected}, but got {actual}")
 }

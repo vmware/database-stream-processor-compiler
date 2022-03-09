@@ -1,4 +1,7 @@
-use crate::providers::{document_symbols, symbols};
+use crate::providers::{
+    document_symbols,
+    hir::{self, HirItem},
+};
 use ddlog_diagnostics::{Diagnostic, FileId, Rope};
 use ddlog_syntax::{
     ast::nodes::{
@@ -74,13 +77,13 @@ fn validation_diagnostics(validation: &dyn Validation, file: FileId) -> ArcSlice
 }
 
 #[salsa::query_group(SymbolsDatabase)]
-pub trait Symbols: Source {
-    #[salsa::invoke(symbols::declarations)]
-    fn declarations(&self, file: FileId) -> ArcSlice<SyntaxNode>;
+pub trait HirStore: Source {
+    #[salsa::invoke(hir::hir_items)]
+    fn items(&self, file: FileId) -> ArcSlice<HirItem>;
 }
 
 #[salsa::query_group(DocumentSymbolsDatabase)]
-pub trait DocumentSymbols: Symbols {
+pub trait DocumentSymbols: HirStore {
     #[salsa::invoke(document_symbols::document_symbols)]
     fn document_symbols(&self, file: FileId) -> ArcSlice<DocumentSymbol>;
 

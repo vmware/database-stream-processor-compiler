@@ -19,8 +19,8 @@ ROOT@0..149
           IDENT@134..137 "bar"
         COLON@137..138 ":"
         WHITESPACE@138..139 " "
-        TYPE@139..142
-          GENERIC_TYPE@139..142
+        GENERIC_TYPE@139..142
+          PATH@139..142
             IDENT@139..142 "Baz"
         COMMA@142..143 ","
       WHITESPACE@143..144 "\n"

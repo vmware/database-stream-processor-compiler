@@ -42,7 +42,8 @@ ROOT@0..303
           VAR_REF@166..171
             IDENT@166..171 "edges"
           DOT@171..172 "."
-          IDENT@172..181 "iterative"
+          VAR_REF@172..181
+            IDENT@172..181 "iterative"
           L_PAREN@181..182 "("
           METHOD_CALL_ARG@182..270
             CLOSURE_EXPR@182..270
@@ -62,20 +63,23 @@ ROOT@0..303
                         IDENT@200..205 "edges"
                       WHITESPACE@205..218 "\n            "
                       DOT@218..219 "."
-                      IDENT@219..223 "join"
+                      VAR_REF@219..223
+                        IDENT@219..223 "join"
                       L_PAREN@223..224 "("
                       METHOD_CALL_ARG@224..239
                         METHOD_CALL@224..239
                           VAR_REF@224..229
                             IDENT@224..229 "edges"
                           DOT@229..230 "."
-                          IDENT@230..237 "reverse"
+                          VAR_REF@230..237
+                            IDENT@230..237 "reverse"
                           L_PAREN@237..238 "("
                           R_PAREN@238..239 ")"
                       R_PAREN@239..240 ")"
                     WHITESPACE@240..253 "\n            "
                     DOT@253..254 "."
-                    IDENT@254..262 "distinct"
+                    VAR_REF@254..262
+                      IDENT@254..262 "distinct"
                     L_PAREN@262..263 "("
                     R_PAREN@263..264 ")"
                   WHITESPACE@264..269 "\n    "

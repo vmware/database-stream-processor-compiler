@@ -4,8 +4,8 @@ use crate::{
         self, ATTRIBUTE, ATTR_PAIR, BRACKETED_STRUCT_FIELD, BRACKETED_STRUCT_FIELDS, FUNCTION_ARG,
         FUNCTION_ARGS, FUNCTION_DEF, FUNCTION_RETURN, FUNCTION_RETURN_TYPE, FUNCTION_TYPE,
         FUNCTION_TYPE_ARG, FUNCTION_TYPE_ARGS, GENERICS, GENERIC_ARG, GENERIC_TYPE, IDENT,
-        MODIFIER, STRUCT_DEF, STRUCT_FIELDS, TUPLE_STRUCT_FIELD, TUPLE_STRUCT_FIELDS, TUPLE_TYPE,
-        TUPLE_TYPE_ELEM, TYPE, VAR_REF,
+        MODIFIER, PATH, STRUCT_DEF, TUPLE_STRUCT_FIELD, TUPLE_STRUCT_FIELDS, TUPLE_TYPE,
+        TUPLE_TYPE_ELEM, VAR_REF,
     },
     TokenSet,
 };
@@ -176,7 +176,6 @@ impl Parser<'_, '_> {
         self.expect(T![struct]);
         self.ident();
 
-        let fields = self.start();
         if self.at(T!['{']) {
             self.bracketed_struct_fields();
         } else if self.at(T!['(']) {
@@ -184,7 +183,6 @@ impl Parser<'_, '_> {
         } else {
             // TODO: Error handling
         }
-        fields.complete(self, STRUCT_FIELDS);
 
         Some(struct_def.complete(self, STRUCT_DEF))
     }
@@ -242,7 +240,6 @@ impl Parser<'_, '_> {
     // TODO: Extend to full types
     pub(super) fn ty(&mut self) -> Option<CompletedMarker> {
         let _frame = self.stack_frame();
-        let ty = self.start();
 
         match self.current() {
             IDENT => self.type_name(),
@@ -250,13 +247,8 @@ impl Parser<'_, '_> {
             T![fn] => self.function_type(),
 
             // FIXME: Error
-            _ => {
-                ty.abandon(self);
-                return None;
-            }
-        };
-
-        Some(ty.complete(self, TYPE))
+            _ => None,
+        }
     }
 
     // test generic_types
@@ -264,21 +256,27 @@ impl Parser<'_, '_> {
     fn type_name(&mut self) -> Option<CompletedMarker> {
         let generic = self.start();
 
-        if self.expect(IDENT) && self.at(T![<]) {
-            let generics = self.start();
+        if self.at(IDENT) {
+            let path = self.start();
+            self.expect(IDENT);
+            path.complete(self, PATH);
 
-            self.expect(T![<]);
-            while !self.at(T![>]) {
-                let generic_arg = self.start();
+            if self.at(T![<]) {
+                let generics = self.start();
 
-                self.ty();
-                self.eat_commas();
+                self.expect(T![<]);
+                while !self.at(T![>]) {
+                    let generic_arg = self.start();
 
-                generic_arg.complete(self, GENERIC_ARG);
+                    self.ty();
+                    self.eat_commas();
+
+                    generic_arg.complete(self, GENERIC_ARG);
+                }
+
+                self.expect(T![>]);
+                generics.complete(self, GENERICS);
             }
-
-            self.expect(T![>]);
-            generics.complete(self, GENERICS);
         }
 
         Some(generic.complete(self, GENERIC_TYPE))

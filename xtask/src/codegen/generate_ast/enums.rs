@@ -6,7 +6,7 @@ pub fn ast_node_of_nodes(camel_case_name: &Ident, variants: &[EnumVariant]) -> T
     let can_cast_from = generate_can_cast_from(variants);
     let cast_arms = generate_cast_arms(variants);
     let syntax_arms = generate_syntax_arms(NodeKind::Syntax, variants);
-    let user_casts = generate_ast_user_casts(variants);
+    let user_casts = generate_ast_user_casts(camel_case_name, variants);
     let from_impls = generate_enum_from_impls(camel_case_name, variants);
     let try_from_impls = generate_enum_try_from_impls(camel_case_name, variants);
 
@@ -43,7 +43,10 @@ pub fn ast_node_of_nodes(camel_case_name: &Ident, variants: &[EnumVariant]) -> T
 }
 
 /// Generate utility checking and casting methods for enums
-fn generate_ast_user_casts(variants: &[EnumVariant]) -> impl Iterator<Item = TokenStream> + '_ {
+fn generate_ast_user_casts<'a>(
+    parent_enum: &Ident,
+    variants: &'a [EnumVariant],
+) -> impl Iterator<Item = TokenStream> + 'a {
     // Generate `.is_variant() -> bool` methods
     let is_checks = variants.iter().map(|variant| {
         let method_name = format_ident!("is_{}", variant.snake_case);
@@ -72,7 +75,7 @@ fn generate_ast_user_casts(variants: &[EnumVariant]) -> impl Iterator<Item = Tok
         }
     });
 
-    // Generate `.into_variant() -> Result<&Variant, Parent>` methods
+    // Generate `.into_variant() -> Result<Variant, Parent>` methods
     let into_casts = variants.iter().map(|variant| {
         let method_name = format_ident!("into_{}", variant.snake_case);
         let (variant, variant_type) = (&variant.variant_name, &variant.variant_type);
@@ -88,7 +91,30 @@ fn generate_ast_user_casts(variants: &[EnumVariant]) -> impl Iterator<Item = Tok
         }
     });
 
-    is_checks.chain(as_casts).chain(into_casts)
+    // Generate `.to_variant() -> Variant` methods
+    let parent_enum = parent_enum.to_string();
+    let to_casts = variants.iter().map(move |variant| {
+        let method_name = format_ident!("to_{}", variant.snake_case);
+        let (variant, variant_type) = (&variant.variant_name, &variant.variant_type);
+        let variant_str = format!("{variant}");
+
+        quote! {
+            #[track_caller]
+            pub fn #method_name(self) -> #variant_type {
+                if let Self::#variant(syntax) = self {
+                    syntax
+                } else {
+                    crate::ast::support::failed_enum_to_node_cast(
+                        #parent_enum,
+                        #variant_str,
+                        crate::SyntaxNode::kind(<Self as crate::ast::AstNode>::syntax(&self)),
+                    )
+                }
+            }
+        }
+    });
+
+    is_checks.chain(as_casts).chain(into_casts).chain(to_casts)
 }
 
 /// Generate `From` implementations for each variant type to the parent enum (`From<Child> for Parent`)

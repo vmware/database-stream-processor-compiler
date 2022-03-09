@@ -12,8 +12,8 @@ ROOT@0..140
           IDENT@115..118 "bar"
         COLON@118..119 ":"
         WHITESPACE@119..120 " "
-        TYPE@120..123
-          GENERIC_TYPE@120..123
+        GENERIC_TYPE@120..123
+          PATH@120..123
             IDENT@120..123 "Baz"
         COMMA@123..124 ","
       WHITESPACE@124..125 " "
@@ -22,8 +22,8 @@ ROOT@0..140
           IDENT@125..129 "bing"
         COLON@129..130 ":"
         WHITESPACE@130..131 " "
-        TYPE@131..135
-          GENERIC_TYPE@131..135
+        GENERIC_TYPE@131..135
+          PATH@131..135
             IDENT@131..135 "Bang"
       R_PAREN@135..136 ")"
     WHITESPACE@136..137 " "

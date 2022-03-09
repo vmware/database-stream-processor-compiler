@@ -1,6 +1,6 @@
 mod queries;
 
-pub use queries::{Diagnostics, DocumentSymbols, Session, Source, Symbols, Validation};
+pub use queries::{Diagnostics, DocumentSymbols, HirStore, Session, Source, Validation};
 
 use queries::{
     DiagnosticsDatabase, DocumentSymbolsDatabase, SessionDatabase, SourceDatabase, SymbolsDatabase,

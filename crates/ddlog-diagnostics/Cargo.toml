@@ -1,12 +1,12 @@
 [package]
 name = "ddlog-diagnostics"
 version = "0.1.0"
-edition = "2018"
+edition = "2021"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
 ropey = "1.3.1"
-cstree = "0.8.1"
+cstree = "0.11.0"
 ariadne = "0.1.2"
 ddlog-utils = { path = "../ddlog-utils" }
 

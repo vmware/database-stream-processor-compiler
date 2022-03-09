@@ -12,16 +12,16 @@ ROOT@0..241
           IDENT@119..120 "n"
         COLON@120..121 ":"
         WHITESPACE@121..122 " "
-        TYPE@122..127
-          GENERIC_TYPE@122..127
+        GENERIC_TYPE@122..127
+          PATH@122..127
             IDENT@122..127 "usize"
       R_PAREN@127..128 ")"
     WHITESPACE@128..129 " "
     FUNCTION_RETURN@129..138
       RIGHT_ARROW@129..131 "->"
       WHITESPACE@131..132 " "
-      TYPE@132..138
-        GENERIC_TYPE@132..137
+      GENERIC_TYPE@132..138
+        PATH@132..137
           IDENT@132..137 "usize"
         WHITESPACE@137..138 " "
     BLOCK@138..240

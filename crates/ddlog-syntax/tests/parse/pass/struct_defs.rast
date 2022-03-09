@@ -6,83 +6,78 @@ ROOT@0..239
     WHITESPACE@114..115 " "
     IDENT@115..118 "Foo"
     WHITESPACE@118..119 " "
-    STRUCT_FIELDS@119..122
-      BRACKETED_STRUCT_FIELDS@119..121
-        L_CURLY@119..120 "{"
-        R_CURLY@120..121 "}"
-      WHITESPACE@121..122 "\n"
+    BRACKETED_STRUCT_FIELDS@119..121
+      L_CURLY@119..120 "{"
+      R_CURLY@120..121 "}"
+    WHITESPACE@121..122 "\n"
   STRUCT_DEF@122..154
     STRUCT_TOKEN@122..128 "struct"
     WHITESPACE@128..129 " "
     IDENT@129..133 "Foo1"
     WHITESPACE@133..134 " "
-    STRUCT_FIELDS@134..154
-      BRACKETED_STRUCT_FIELDS@134..153
-        L_CURLY@134..135 "{"
-        WHITESPACE@135..140 "\n    "
-        BRACKETED_STRUCT_FIELD@140..151
-          IDENT@140..143 "bar"
-          COLON@143..144 ":"
-          WHITESPACE@144..145 " "
-          TYPE@145..150
-            GENERIC_TYPE@145..150
-              IDENT@145..150 "usize"
-          COMMA@150..151 ","
-        WHITESPACE@151..152 "\n"
-        R_CURLY@152..153 "}"
-      WHITESPACE@153..154 "\n"
+    BRACKETED_STRUCT_FIELDS@134..153
+      L_CURLY@134..135 "{"
+      WHITESPACE@135..140 "\n    "
+      BRACKETED_STRUCT_FIELD@140..151
+        IDENT@140..143 "bar"
+        COLON@143..144 ":"
+        WHITESPACE@144..145 " "
+        GENERIC_TYPE@145..150
+          PATH@145..150
+            IDENT@145..150 "usize"
+        COMMA@150..151 ","
+      WHITESPACE@151..152 "\n"
+      R_CURLY@152..153 "}"
+    WHITESPACE@153..154 "\n"
   STRUCT_DEF@154..185
     STRUCT_TOKEN@154..160 "struct"
     WHITESPACE@160..161 " "
     IDENT@161..165 "Foo2"
     WHITESPACE@165..166 " "
-    STRUCT_FIELDS@166..185
-      BRACKETED_STRUCT_FIELDS@166..184
-        L_CURLY@166..167 "{"
-        WHITESPACE@167..172 "\n    "
-        BRACKETED_STRUCT_FIELD@172..183
-          IDENT@172..175 "bar"
-          COLON@175..176 ":"
-          WHITESPACE@176..177 " "
-          TYPE@177..183
-            GENERIC_TYPE@177..182
-              IDENT@177..182 "usize"
-            WHITESPACE@182..183 "\n"
-        R_CURLY@183..184 "}"
-      WHITESPACE@184..185 "\n"
+    BRACKETED_STRUCT_FIELDS@166..184
+      L_CURLY@166..167 "{"
+      WHITESPACE@167..172 "\n    "
+      BRACKETED_STRUCT_FIELD@172..183
+        IDENT@172..175 "bar"
+        COLON@175..176 ":"
+        WHITESPACE@176..177 " "
+        GENERIC_TYPE@177..183
+          PATH@177..182
+            IDENT@177..182 "usize"
+          WHITESPACE@182..183 "\n"
+      R_CURLY@183..184 "}"
+    WHITESPACE@184..185 "\n"
   STRUCT_DEF@185..207
     STRUCT_TOKEN@185..191 "struct"
     WHITESPACE@191..192 " "
     IDENT@192..203 "TupleStruct"
-    STRUCT_FIELDS@203..207
-      TUPLE_STRUCT_FIELDS@203..206
-        L_PAREN@203..204 "("
-        R_PAREN@204..205 ")"
-        SEMICOLON@205..206 ";"
-      WHITESPACE@206..207 "\n"
+    TUPLE_STRUCT_FIELDS@203..206
+      L_PAREN@203..204 "("
+      R_PAREN@204..205 ")"
+      SEMICOLON@205..206 ";"
+    WHITESPACE@206..207 "\n"
   STRUCT_DEF@207..239
     STRUCT_TOKEN@207..213 "struct"
     WHITESPACE@213..214 " "
     IDENT@214..225 "TupleStruct"
-    STRUCT_FIELDS@225..239
-      TUPLE_STRUCT_FIELDS@225..238
-        L_PAREN@225..226 "("
-        TUPLE_STRUCT_FIELD@226..229
-          TYPE@226..228
-            GENERIC_TYPE@226..228
-              IDENT@226..228 "u8"
-          COMMA@228..229 ","
-        WHITESPACE@229..230 " "
-        TUPLE_STRUCT_FIELD@230..233
-          TYPE@230..232
-            GENERIC_TYPE@230..232
-              IDENT@230..232 "u8"
-          COMMA@232..233 ","
-        WHITESPACE@233..234 " "
-        TUPLE_STRUCT_FIELD@234..236
-          TYPE@234..236
-            GENERIC_TYPE@234..236
-              IDENT@234..236 "u8"
-        R_PAREN@236..237 ")"
-        SEMICOLON@237..238 ";"
-      WHITESPACE@238..239 "\n"
+    TUPLE_STRUCT_FIELDS@225..238
+      L_PAREN@225..226 "("
+      TUPLE_STRUCT_FIELD@226..229
+        GENERIC_TYPE@226..228
+          PATH@226..228
+            IDENT@226..228 "u8"
+        COMMA@228..229 ","
+      WHITESPACE@229..230 " "
+      TUPLE_STRUCT_FIELD@230..233
+        GENERIC_TYPE@230..232
+          PATH@230..232
+            IDENT@230..232 "u8"
+        COMMA@232..233 ","
+      WHITESPACE@233..234 " "
+      TUPLE_STRUCT_FIELD@234..236
+        GENERIC_TYPE@234..236
+          PATH@234..236
+            IDENT@234..236 "u8"
+      R_PAREN@236..237 ")"
+      SEMICOLON@237..238 ";"
+    WHITESPACE@238..239 "\n"

@@ -3,6 +3,9 @@ use anyhow::Result;
 use proc_macro2::TokenStream;
 use quote::quote;
 
+/// The maximum number of allowed SyntaxKind variants
+const MAXIMUM_SYNTAX_KINDS: usize = u16::MAX as usize;
+
 macro_rules! special_logos {
     ($($name:literal => { $($attr:literal),+ $(,)? }),* $(,)?) => {
         const SPECIAL_LOGOS: &[(&str, &[&str])] = &[$(($name, &[$($attr,)+]),)*];
@@ -333,4 +336,24 @@ fn trait_implementations(maximum_discriminant: u16) -> TokenStream {
             }
         }
     }
+}
+
+pub(crate) fn enumerate_syntax_kinds(syntax_kinds: &mut [SyntaxKindEntry]) -> Result<u16> {
+    // Make sure we have less than MAXIMUM_SYNTAX_KINDS variants
+    if syntax_kinds.len() > MAXIMUM_SYNTAX_KINDS as usize {
+        anyhow::bail!(
+            "tried to create more than {} SyntaxKind variants (total variants: {})",
+            MAXIMUM_SYNTAX_KINDS,
+            syntax_kinds.len(),
+        );
+    }
+
+    // Give all the syntax kinds explicit discriminants
+    for (idx, kind) in syntax_kinds.iter_mut().enumerate() {
+        // We've already made sure that there's less than or equal to `MAXIMUM_SYNTAX_KINDS`
+        // variants, so this should fit fine
+        kind.discriminant = idx.try_into().unwrap();
+    }
+
+    Ok((syntax_kinds.len() - 1).try_into().unwrap())
 }

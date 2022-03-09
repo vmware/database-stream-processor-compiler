@@ -12,16 +12,16 @@ ROOT@0..133
           IDENT@115..118 "bar"
         COLON@118..119 ":"
         WHITESPACE@119..120 " "
-        TYPE@120..128
-          GENERIC_TYPE@120..128
+        GENERIC_TYPE@120..128
+          PATH@120..123
             IDENT@120..123 "Bar"
-            GENERICS@123..128
-              L_ANGLE@123..124 "<"
-              GENERIC_ARG@124..127
-                TYPE@124..127
-                  GENERIC_TYPE@124..127
-                    IDENT@124..127 "Baz"
-              R_ANGLE@127..128 ">"
+          GENERICS@123..128
+            L_ANGLE@123..124 "<"
+            GENERIC_ARG@124..127
+              GENERIC_TYPE@124..127
+                PATH@124..127
+                  IDENT@124..127 "Baz"
+            R_ANGLE@127..128 ">"
       R_PAREN@128..129 ")"
     WHITESPACE@129..130 " "
     BLOCK@130..132

@@ -23,7 +23,7 @@ pub fn generate_ast(mode: CodegenMode) -> Result<()> {
     }
 
     let grammar = grammar()?;
-    let (structs, enums, syntax_kinds, max_syntax_discriminant) = parser::from_grammar(&grammar)?;
+    let (structs, enums, mut syntax_kinds) = parser::from_grammar(&grammar)?;
     let derives = default_derives();
 
     let (mut token_ast, mut node_ast) = (TokenStream::new(), TokenStream::new());
@@ -74,6 +74,7 @@ pub fn generate_ast(mode: CodegenMode) -> Result<()> {
 
     // Create all cst enums
     for Enum {
+        raw_name,
         camel_case_name,
         screaming_snake_case_name,
         variants,
@@ -93,6 +94,14 @@ pub fn generate_ast(mode: CodegenMode) -> Result<()> {
 
         match kind {
             EnumKind::NodeOfNodes => {
+                // Remove the syntax kinds for enums of nodes since they don't actually exist
+                // within the CST
+                let idx = syntax_kinds
+                    .iter()
+                    .position(|entry| entry.raw_name == raw_name)
+                    .expect("every enum should have a corresponding syntax kind");
+                syntax_kinds.remove(idx);
+
                 node_ast.extend(quote! {
                     #derives
                     pub enum #camel_case_name {
@@ -104,6 +113,7 @@ pub fn generate_ast(mode: CodegenMode) -> Result<()> {
                 node_ast.extend(ast_node_impl);
             }
 
+            // Enums of tokens have a corresponding node generated for them, we need their syntax kinds
             EnumKind::NodeOfTokens => {
                 node_ast.extend(quote! {
                     #derives
@@ -120,6 +130,9 @@ pub fn generate_ast(mode: CodegenMode) -> Result<()> {
         }
     }
 
+    // Enumerate all the syntax kinds and give each of them a unique number to use as their
+    // discriminant. We do this after we've filtered out all of the enums
+    let max_syntax_discriminant = syntax_kind::enumerate_syntax_kinds(&mut syntax_kinds)?;
     let syntax_ast = syntax_kind::generate_syntax_kind(&syntax_kinds, max_syntax_discriminant)?;
 
     let root = project_root();

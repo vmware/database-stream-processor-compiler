@@ -1,4 +1,4 @@
-// kind:expr validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:641 column:3
+// kind:expr validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:637 column:3
 {
     a;
     abcd;

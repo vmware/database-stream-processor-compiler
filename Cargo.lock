@@ -216,22 +216,9 @@ dependencies = [
 
 [[package]]
 name = "cstree"
-version = "0.8.1"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2f598edebb5e0c3de35d0c6fd764cc763e1d971633c13cabde0b7096e5c0cb2e"
-dependencies = [
- "fxhash",
- "lasso",
- "parking_lot",
- "text-size",
- "triomphe",
-]
-
-[[package]]
-name = "cstree"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3398c9d078b9d4fc71fd2321427a640b1250cdd4660ec0b8d8d08e35cf5827dd"
+checksum = "7bf4a3976f4d42d42de79d204288642e11de87e9fe0c6c8821ebde0832f746e2"
 dependencies = [
  "fxhash",
  "lasso",
@@ -255,7 +242,7 @@ name = "ddlog-diagnostics"
 version = "0.1.0"
 dependencies = [
  "ariadne",
- "cstree 0.8.1",
+ "cstree",
  "ddlog-utils",
  "lasso",
  "ropey",
@@ -280,7 +267,7 @@ name = "ddlog-lsp"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "cstree 0.9.0",
+ "cstree",
  "dashmap",
  "ddlog-diagnostics",
  "ddlog-syntax",
@@ -298,7 +285,7 @@ dependencies = [
 name = "ddlog-syntax"
 version = "0.1.0"
 dependencies = [
- "cstree 0.9.0",
+ "cstree",
  "ddlog-diagnostics",
  "ddlog-utils",
  "expect-test",

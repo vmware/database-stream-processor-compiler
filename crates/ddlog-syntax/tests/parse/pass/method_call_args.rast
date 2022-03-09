@@ -5,7 +5,8 @@ ROOT@0..133
     VAR_REF@108..111
       IDENT@108..111 "foo"
     DOT@111..112 "."
-    IDENT@112..115 "bar"
+    VAR_REF@112..115
+      IDENT@112..115 "bar"
     L_PAREN@115..116 "("
     METHOD_CALL_ARG@116..120
       VAR_REF@116..119
