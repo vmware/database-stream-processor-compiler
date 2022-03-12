@@ -179,6 +179,19 @@ where
 }
 
 #[inline]
+pub(super) fn token_exists<T>(parent: &SyntaxNode) -> bool
+where
+    T: AstToken,
+{
+    parent.children_with_tokens().any(|child| {
+        child
+            .as_token()
+            .map(|token| T::can_cast_from(token.kind()))
+            .unwrap_or(false)
+    })
+}
+
+#[inline]
 pub(super) fn token<T>(parent: &SyntaxNode) -> Option<Cow<'_, T>>
 where
     T: AstToken + Clone,

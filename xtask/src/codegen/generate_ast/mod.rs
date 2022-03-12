@@ -123,8 +123,11 @@ pub fn generate_ast(mode: CodegenMode) -> Result<()> {
                     }
                 });
 
-                let ast_node_impl =
-                    enums::ast_node_of_tokens(&camel_case_name, &screaming_snake_case_name);
+                let ast_node_impl = enums::ast_node_of_tokens(
+                    &camel_case_name,
+                    &screaming_snake_case_name,
+                    &variants,
+                );
                 node_ast.extend(ast_node_impl);
             }
         }

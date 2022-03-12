@@ -1,4 +1,5 @@
 use crate::codegen::generate_ast::parser::{EnumVariant, NodeKind};
+use heck::ToSnakeCase;
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
 
@@ -161,8 +162,18 @@ fn generate_enum_from_impls<'a>(
     })
 }
 
-pub fn ast_node_of_tokens(camel_case_name: &Ident, syntax_kind_name: &Ident) -> TokenStream {
+pub fn ast_node_of_tokens(
+    camel_case_name: &Ident,
+    syntax_kind_name: &Ident,
+    variants: &[EnumVariant],
+) -> TokenStream {
+    let user_casts = generate_token_user_casts(variants);
+
     quote! {
+        impl #camel_case_name {
+            #(#user_casts)*
+        }
+
         impl crate::ast::AstNode for #camel_case_name {
             #[inline]
             fn can_cast_from(kind: crate::SyntaxKind) -> bool {
@@ -192,6 +203,30 @@ pub fn ast_node_of_tokens(camel_case_name: &Ident, syntax_kind_name: &Ident) -> 
             }
         }
     }
+}
+
+fn generate_token_user_casts(variants: &[EnumVariant]) -> impl Iterator<Item = TokenStream> + '_ {
+    // Generate `.is_variant() -> bool` and `.as_variant() -> Option<Cow<'_, Variant>>` methods
+    variants.iter().map(|variant| {
+        let snake_case_name = variant.raw_name.to_string().to_snake_case();
+        let is_method_name = format_ident!("is_{}", snake_case_name);
+        let as_method_name = format_ident!("as_{}", variant.raw_name.to_string().to_snake_case());
+        let variant_type = &variant.variant_type;
+
+        quote! {
+            pub fn #is_method_name(&self) -> bool {
+                crate::ast::support::token_exists::<#variant_type>(
+                    <Self as crate::ast::AstNode>::syntax(self),
+                )
+            }
+
+            pub fn #as_method_name(&self) -> ::core::option::Option<::std::borrow::Cow<'_, #variant_type>> {
+                crate::ast::support::token::<#variant_type>(
+                    <Self as crate::ast::AstNode>::syntax(self),
+                )
+            }
+        }
+    })
 }
 
 fn generate_can_cast_from(variants: &[EnumVariant]) -> impl Iterator<Item = TokenStream> + '_ {

@@ -1,6 +1,6 @@
 use crate::codegen::generate_ast::utils::KEYWORDS;
 use anyhow::Result;
-use heck::{CamelCase, ShoutySnakeCase, SnakeCase};
+use heck::{ToShoutySnakeCase, ToSnakeCase, ToUpperCamelCase};
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
 use std::{collections::HashMap, panic};
@@ -393,7 +393,7 @@ fn rule_is_enum(rule: &Rule) -> bool {
 }
 
 fn rule_to_enum_variant(grammar: &Grammar, rule: &Rule) -> EnumVariant {
-    let (variant_name, variant_type, syntax_kind, snake_case) = match rule {
+    let (raw_name, variant_name, variant_type, syntax_kind, snake_case) = match rule {
         &Rule::Node(node) => {
             let node = &grammar[node];
             let variant_name = camel_case_name(&node.name);
@@ -401,7 +401,13 @@ fn rule_to_enum_variant(grammar: &Grammar, rule: &Rule) -> EnumVariant {
             let syntax_kind = screaming_snake_case_name(&node.name);
             let snake_case = node.name.to_snake_case();
 
-            (variant_name, variant_type, syntax_kind, snake_case)
+            (
+                raw_name(&node.name),
+                variant_name,
+                variant_type,
+                syntax_kind,
+                snake_case,
+            )
         }
 
         &Rule::Token(token) => {
@@ -411,7 +417,13 @@ fn rule_to_enum_variant(grammar: &Grammar, rule: &Rule) -> EnumVariant {
             let syntax_kind = screaming_snake_case_name(&token.name);
             let snake_case = token.name.to_snake_case();
 
-            (variant_name, variant_type, syntax_kind, snake_case)
+            (
+                raw_name(&token.name),
+                variant_name,
+                variant_type,
+                syntax_kind,
+                snake_case,
+            )
         }
 
         Rule::Labeled { .. } | Rule::Seq(_) | Rule::Alt(_) | Rule::Opt(_) | Rule::Rep(_) => {
@@ -420,6 +432,7 @@ fn rule_to_enum_variant(grammar: &Grammar, rule: &Rule) -> EnumVariant {
     };
 
     EnumVariant {
+        raw_name,
         variant_name,
         variant_type,
         syntax_kind,
@@ -427,11 +440,29 @@ fn rule_to_enum_variant(grammar: &Grammar, rule: &Rule) -> EnumVariant {
     }
 }
 
+fn raw_name(token: &str) -> Ident {
+    if let Some(&(_, symbol)) = NAMED_TOKENS.iter().find(|&&(symbol, _)| symbol == token) {
+        format_ident!("{}", symbol)
+    } else if !token
+        .chars()
+        .all(|char| char.is_alphabetic() || char == '_')
+        || token.is_empty()
+    {
+        // TODO: Bail w/ error
+        panic!(
+            "non-ascii token {:?}, consider adding to the `NAMED_TOKENS` constant in xtask",
+            token,
+        );
+    } else {
+        format_ident!("{}", token)
+    }
+}
+
 fn camel_case_name(token: &str) -> Ident {
-    let camel_case = token.to_camel_case();
+    let camel_case = token.to_upper_camel_case();
 
     if let Some(&(_, symbol)) = NAMED_TOKENS.iter().find(|&&(symbol, _)| symbol == token) {
-        format_ident!("{}", symbol.to_camel_case())
+        format_ident!("{}", symbol.to_upper_camel_case())
     } else if KEYWORDS.contains(&token) {
         format_ident!("{}Token", camel_case)
     } else if !token
@@ -581,6 +612,7 @@ pub struct Enum {
 
 #[derive(Debug)]
 pub struct EnumVariant {
+    pub raw_name: Ident,
     pub variant_name: Ident,
     pub variant_type: TokenStream,
     pub syntax_kind: Ident,
