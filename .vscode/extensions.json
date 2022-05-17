@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        // Rust Analyzer
+        "matklad.rust-analyzer",
+        // The extension we use for debugging the server
+        "ms-vscode.cpptools",
+    ],
+    "unwantedRecommendations": [],
+}

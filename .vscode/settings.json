@@ -1,0 +1,9 @@
+{
+    "lldb.displayFormat": "auto",
+    "lldb.showDisassembly": "auto",
+    "lldb.dereferencePointers": true,
+    "cSpell.words": [
+        "Parselet",
+        "strct"
+    ],
+}

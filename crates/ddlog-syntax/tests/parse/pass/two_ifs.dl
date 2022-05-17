@@ -1,0 +1,11 @@
+// kind:expr validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:318 column:3
+if x {
+    x + y;
+}
+if y {
+    x + y;
+} else if z {
+    x + y;
+} else {
+    x + y;
+}

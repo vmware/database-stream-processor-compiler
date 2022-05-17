@@ -1,0 +1,13 @@
+ROOT@0..115
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  ASSIGN@108..115
+    VAR_REF@108..109
+      IDENT@108..109 "x"
+    WHITESPACE@109..110 " "
+    ASSIGN_OP@110..111
+      EQ@110..111 "="
+    WHITESPACE@111..112 " "
+    NUMBER@112..114
+      NUMBER_LITERAL@112..114 "10"
+    WHITESPACE@114..115 "\n"

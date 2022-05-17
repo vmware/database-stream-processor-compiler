@@ -1,0 +1,29 @@
+ROOT@0..118
+  COMMENT@0..108 "// kind:expr validate ..."
+  WHITESPACE@108..109 "\n"
+  TUPLE_INIT_EXPR@109..117
+    L_PAREN@109..110 "("
+    TUPLE_EXPR_ELEM@110..112
+      NUMBER@110..111
+        NUMBER_LITERAL@110..111 "1"
+      COMMA@111..112 ","
+    WHITESPACE@112..113 " "
+    TUPLE_EXPR_ELEM@113..116
+      NUMBER@113..114
+        NUMBER_LITERAL@113..114 "2"
+      WHITESPACE@114..115 " "
+      ERROR@115..116
+        NUMBER_LITERAL@115..116 "3"
+    R_PAREN@116..117 ")"
+  WHITESPACE@117..118 "\n"
+--
+Error: missing comma between tuple elements
+   ,-[parse/fail/missing_tuple_comma.dl:2:7]
+   |
+ 2 | (1, 2 3)
+   :       |  
+   :       `-- expected a comma
+---'
+--
+// kind:expr validate:false pass:false ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:521 column:3
+(1, 2 3)

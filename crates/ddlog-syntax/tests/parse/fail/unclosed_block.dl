@@ -1,0 +1,2 @@
+// kind:expr validate:false pass:false ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:374 column:3
+{{ 10 }

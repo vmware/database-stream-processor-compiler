@@ -1,0 +1,3 @@
+// kind:expr validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:416 column:3
+"foo"
+"bar\"\n"

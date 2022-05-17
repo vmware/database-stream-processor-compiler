@@ -1,0 +1,15 @@
+ROOT@0..144
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  CONTINUE_EXPR@108..144
+    CONTINUE_TOKEN@108..116 "continue"
+    WHITESPACE@116..117 " "
+    CONTINUE_EXPR@117..144
+      CONTINUE_TOKEN@117..125 "continue"
+      WHITESPACE@125..126 " "
+      CONTINUE_EXPR@126..144
+        CONTINUE_TOKEN@126..134 "continue"
+        WHITESPACE@134..135 " "
+        CONTINUE_EXPR@135..143
+          CONTINUE_TOKEN@135..143 "continue"
+        WHITESPACE@143..144 "\n"

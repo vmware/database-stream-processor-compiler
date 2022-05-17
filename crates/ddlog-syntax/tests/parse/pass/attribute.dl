@@ -1,0 +1,5 @@
+// kind:item validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/item.rs' line:402 column:3
+#[something = something_else] fn foo() {}
+#[something = 10,,,] fn foobar() {}
+#[by_val] fn foobar() {}
+#[by_val, from_val] fn foobar() {}

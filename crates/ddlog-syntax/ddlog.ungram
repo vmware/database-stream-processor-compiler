@@ -1,6 +1,3 @@
-# Syntax
-
-```ebnf
 Root = Item*
 
 Item =
@@ -13,51 +10,43 @@ Item =
     | TypeAlias
     // TODO: Relations & Clauses
 
-FunctionDef = Attribute* Modifier* keyword:'fn' name:FunctionName Generics args:FunctionArgs ret:FunctionReturn? body:Block
-FunctionName = 'ident'
+FunctionDef = Attribute* Modifier* keyword:'fn' name:'ident' Generics args:FunctionArgs ret:FunctionReturn? body:Block
 FunctionArgs = '(' args:FunctionArg* ')'
 FunctionArg = Attribute* binding:Pattern ':' ty:Type ','*
 FunctionReturn = '->' return_ty:Type
 
-StructDef = Attribute* Modifier* keyword:'struct' name:StructName fields:StructFields
-StructName = 'ident'
-StructFields = BrackedStructFields | TupleStructFields
-BrackedStructFields = '{' fields:BrackedStructField* '}'
-BrackedStructField = name:StructFieldName ':' ty:Type ','*
-StructFieldName = 'ident'
-TupleStructFields = '(' TupleStructField* ')'
-TupleStructField = Type ','*
+StructDef = Attribute* Modifier* keyword:'struct' name:'ident' fields:StructFields
+StructFields = BracketedStructFields | TupleStructFields
+BracketedStructFields = '{' fields:BracketedStructField* '}'
+BracketedStructField = Attribute* Modifier* name:'ident' ':' ty:Type ','*
+TupleStructFields = '(' TupleStructField* ')' ';'*
+TupleStructField = Attribute* Modifier* ty:Type ','*
 
-EnumDef = Attribute* Modifier* keyword:'enum' name:EnumName variants:EnumVariants
-EnumName = 'ident'
+EnumDef = Attribute* Modifier* keyword:'enum' name:'ident' variants:EnumVariants
 EnumVariants = '{' variants:EnumVariant* '}'
-EnumVariant = EnumVariantName (VariantTuple | VariantStruct)
-EnumVariantName = 'ident'
+EnumVariant = Attribute* variant:'ident' EnumVariantBody
+EnumVariantBody = VariantTuple | VariantStruct
 VariantTuple = '(' VariantTupleElem* ')'
-VariantTupleElem = Type ','*
+VariantTupleElem = Attribute* ty:Type ','*
 VariantStruct = '{' fields:VariantStructField* '}'
-VariantStructField = name:VariantStructFieldName ':' ty:Type ','*
-VariantStructFieldName = 'ident'
+VariantStructField = Attribute* name:'ident' ':' ty:Type ','*
 
-ConstDef = Attribute* Modifier* keyword:'const' name:ConstName '=' ConstValue ';'
-// TODO: Could be a pattern
-ConstName = 'ident'
-ConstValue = value:Expr
+// TODO: Could be a pattern instead of an ident
+ConstDef = Attribute* Modifier* keyword:'const' name:'ident' '=' value:Expr ';'
 
-UseDef = Attribute* Modifier* keyword:'use' UseTree ';'
-UseTree = Path (UseBranch | 'as' UseAlias)?
-UseAlias = 'ident'
-UseBranch = '{' (UseTree ','*)* '}'
+UseDef = Attribute* Modifier* keyword:'use' Path UseBranchOrAlias? ';'
+UseBranchOrAlias = UseBranch | UseAlias
+UseAlias = 'as' alias:'ident'
+UseBranch = '{' (Path UseBranchOrAlias? ','*)* '}'
 
 // TODO: `impl Trait for Type { ... }`
-ImplBlock = Attribute* Modifier* keyword:'impl' Type contents:ImplBlockContents
+ImplBlock = Attribute* Modifier* keyword:'impl' target:Type contents:ImplBlockContents
 ImplBlockContents = '{' Item* '}'
 
 TypeAlias =  Attribute* Modifier* keyword:'type' alias:Type '=' original:Type ';'*
 
 Attribute = '#[' AttrPair* ']'
-AttrPair = AttrName ('=' Expr ','*)?
-AttrName = 'ident'
+AttrPair = name:'ident' ('=' Expr ','*)?
 
 Modifier = 'pub' // 'input' | 'output'
 
@@ -65,32 +54,29 @@ Pattern = VarRef | TuplePattern | StructPattern
 TuplePattern = '(' elements:TuplePatternElem* ')'
 TuplePatternElem = Pattern ','*
 StructPattern = '{' fields:StructPatternField* '}'
-StructPatternField = name:StructPatternFieldName (':' alias:Pattern)? ','*
-StructPatternFieldName = 'ident'
+StructPatternField = name:'ident' (':' alias:Pattern)? ','*
 
 Type = GenericType | TupleType | FunctionType
-Path = '::'? PathSegment ('::' PathSegment)*
-PathSegment = 'ident'
+Path = '::'? head:'ident' tail:PathTail*
+PathTail = '::' tail:'ident'
 
 GenericType = Path Generics?
 Generics = '<' generics:GenericArg* '>'
-GenericArg = Type ','*
+GenericArg = ty:Type ','*
 
 TupleType = '(' elements:TupleTypeElem* ')'
-TupleTypeElem = Type ','*
+TupleTypeElem = ty:Type ','*
 
 FunctionType = 'fn' args:FunctionTypeArgs ret:FunctionReturnType?
 FunctionTypeArgs = '(' args:FunctionTypeArg* ')'
-FunctionTypeArg = Type ','*
-FunctionReturnType = '->' Type
+FunctionTypeArg = ty:Type ','*
+FunctionReturnType = '->' ty:Type
 
 Block = '{' statements:Stmt* '}'
-Stmt =
-    ExprStmt
-    | VarDecl
+Stmt = ExprStmt | VarDecl
 
 ExprStmt = Expr ';'*
-VarDecl = 'let' binding:Pattern (':' Type)? '=' value:Expr ';'*
+VarDecl = 'let' binding:Pattern (':' ty:Type)? '=' value:Expr ';'*
 
 Expr =
     Literal
@@ -113,9 +99,11 @@ Expr =
     | FieldAccess
     | ArrayAccess
     | FunctionCall
+    | MethodCall
     | StructInitExpr
     | TupleInitExpr
     | ArrayInitExpr
+    | RangeExpr
     // TODO: `if let` and `while let` expressions
 
 VarRef = 'ident'
@@ -148,15 +136,22 @@ AssignOp =
 
 ParenExpr = '(' inner:Expr ')'
 
-ClosureExpr = '|' args:ClosureArg* '|' body:Expr
-ClosureArg = binding:Pattern (':' Type)? ','*
+ClosureExpr = start_pipe:'|' args:ClosureArg* end_pipe:'|' body:Expr
+ClosureArg = binding:Pattern (':' ty:Type)? ','*
 
-FieldAccess = Expr '.' ('ident' | Number)
+FieldAccess = Expr '.' FieldAccessor
+FieldAccessor = FieldAccessorName | Number
+FieldAccessorName = 'ident'
+
 ArrayAccess = Expr '[' index:Expr ']'
 
 FunctionCall = func:Expr '(' args:FunctionCallArg* ')'
 // Future Possibility: Named arguments
 FunctionCallArg = arg:Expr ','*
+
+MethodCall = func:Expr '.' method:'ident' '(' args:MethodCallArg* ')'
+// Future Possibility: Named arguments
+MethodCallArg = arg:Expr ','*
 
 StructInitExpr = ty:Path '{' fields:StructInitField* '}'
 StructInitField = field:'ident' (':' value:Expr)? ','*
@@ -167,11 +162,15 @@ TupleExprElem = Expr ','*
 ArrayInitExpr = '[' ArrayExprElem ']'
 ArrayExprElem = Expr ','*
 
+RangeExpr = start:Expr? RangeOp end:Expr?
+RangeOp = '..' | '..='
+
 // TODO: Floats
-Literal = Bool | Number | String
+Literal = Bool | Number | String | Char
 Bool = 'true' | 'false'
-Number = 'number'
-String = 'string'
+Number = 'number_literal'
+String = 'string_literal'
+Char = 'char_literal'
 
 RetExpr = 'return' expr:Expr
 BreakExpr = 'break' expr:Expr
@@ -200,4 +199,3 @@ BinOp =
     | '>='
     | '<'
     | '<='
-```

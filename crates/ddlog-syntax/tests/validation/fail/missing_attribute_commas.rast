@@ -1,0 +1,74 @@
+ROOT@0..124
+  COMMENT@0..50 "// kind:item validate ..."
+  WHITESPACE@50..51 "\n"
+  FUNCTION_DEF@51..86
+    ATTRIBUTE@51..73
+      HASH_BRACK@51..53 "#["
+      ATTR_PAIR@53..63
+        IDENT@53..56 "foo"
+        WHITESPACE@56..57 " "
+        EQ@57..58 "="
+        WHITESPACE@58..59 " "
+        VAR_REF@59..62
+          IDENT@59..62 "bar"
+        WHITESPACE@62..63 " "
+      ATTR_PAIR@63..72
+        IDENT@63..66 "bar"
+        WHITESPACE@66..67 " "
+        EQ@67..68 "="
+        WHITESPACE@68..69 " "
+        VAR_REF@69..72
+          IDENT@69..72 "baz"
+      R_BRACK@72..73 "]"
+    WHITESPACE@73..74 "\n"
+    FN_TOKEN@74..76 "fn"
+    WHITESPACE@76..77 " "
+    IDENT@77..80 "foo"
+    FUNCTION_ARGS@80..82
+      L_PAREN@80..81 "("
+      R_PAREN@81..82 ")"
+    WHITESPACE@82..83 " "
+    BLOCK@83..85
+      L_CURLY@83..84 "{"
+      R_CURLY@84..85 "}"
+    WHITESPACE@85..86 "\n"
+  ATTRIBUTE@86..108
+    HASH_BRACK@86..88 "#["
+    ATTR_PAIR@88..98
+      IDENT@88..91 "foo"
+      WHITESPACE@91..92 " "
+      EQ@92..93 "="
+      WHITESPACE@93..94 " "
+      VAR_REF@94..97
+        IDENT@94..97 "bar"
+      WHITESPACE@97..98 " "
+    ATTR_PAIR@98..107
+      IDENT@98..101 "bar"
+      WHITESPACE@101..102 " "
+      EQ@102..103 "="
+      WHITESPACE@103..104 " "
+      VAR_REF@104..107
+        IDENT@104..107 "baz"
+    R_BRACK@107..108 "]"
+  WHITESPACE@108..109 "\n"
+  ERROR@109..123
+    IDENT@109..117 "relation"
+    WHITESPACE@117..118 " "
+    IDENT@118..121 "Foo"
+    L_PAREN@121..122 "("
+    R_PAREN@122..123 ")"
+  WHITESPACE@123..124 "\n"
+--
+Error: expected a top-level item
+   ,-[validation/fail/missing_attribute_commas.dl:5:1]
+   |
+ 5 | relation Foo()
+   : ^^^^^^^|^^^^^^  
+   :        `-------- expected a top-level item
+---'
+--
+// kind:item validate:true pass:false ignore:false
+#[foo = bar bar = baz]
+fn foo() {}
+#[foo = bar bar = baz]
+relation Foo()

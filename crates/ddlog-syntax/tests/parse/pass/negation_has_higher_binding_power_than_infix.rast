@@ -1,0 +1,16 @@
+ROOT@0..116
+  COMMENT@0..106 "// kind:expr validate ..."
+  WHITESPACE@106..107 "\n"
+  UNARY_EXPR@107..116
+    UNARY_OP@107..108
+      MINUS@107..108 "-"
+    BIN_EXPR@108..116
+      NUMBER@108..110
+        NUMBER_LITERAL@108..110 "20"
+      WHITESPACE@110..111 " "
+      BIN_OP@111..112
+        PLUS@111..112 "+"
+      WHITESPACE@112..113 " "
+      NUMBER@113..115
+        NUMBER_LITERAL@113..115 "20"
+      WHITESPACE@115..116 "\n"

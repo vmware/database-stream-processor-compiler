@@ -1,0 +1,45 @@
+ROOT@0..82
+  COMMENT@0..50 "// kind:item validate ..."
+  WHITESPACE@50..51 "\n"
+  FUNCTION_DEF@51..82
+    FN_TOKEN@51..53 "fn"
+    WHITESPACE@53..54 " "
+    IDENT@54..57 "foo"
+    FUNCTION_ARGS@57..78
+      L_PAREN@57..58 "("
+      FUNCTION_ARG@58..68
+        VAR_REF@58..61
+          IDENT@58..61 "foo"
+        COLON@61..62 ":"
+        WHITESPACE@62..63 " "
+        TYPE@63..66
+          GENERIC_TYPE@63..66
+            IDENT@63..66 "Bar"
+        COMMA@66..67 ","
+        COMMA@67..68 ","
+      WHITESPACE@68..69 " "
+      FUNCTION_ARG@69..77
+        VAR_REF@69..72
+          IDENT@69..72 "bar"
+        COLON@72..73 ":"
+        WHITESPACE@73..74 " "
+        TYPE@74..77
+          GENERIC_TYPE@74..77
+            IDENT@74..77 "Baz"
+      R_PAREN@77..78 ")"
+    WHITESPACE@78..79 " "
+    BLOCK@79..81
+      L_CURLY@79..80 "{"
+      R_CURLY@80..81 "}"
+    WHITESPACE@81..82 "\n"
+--
+Error: expected an identifier
+   ,-[validation/fail/too_many_function_arg_commas.dl:2:7]
+   |
+ 2 | fn foo(foo: Bar,, bar: Baz) {}
+   :       |  
+   :       `-- expected an identifier
+---'
+--
+// kind:item validate:true pass:false ignore:false
+fn foo(foo: Bar,, bar: Baz) {}
