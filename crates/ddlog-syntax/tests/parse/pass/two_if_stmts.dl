@@ -1,0 +1,11 @@
+// kind:stmt validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/stmt.rs' line:31 column:3
+if x {
+    x + y;
+}
+if y {
+    x + y;
+} else if z {
+    x + y;
+} else {
+    x + y;
+}

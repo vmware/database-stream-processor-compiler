@@ -1,0 +1,5 @@
+* text=auto eol=lf
+
+# Ignore generated code in diffs
+crates/ddlog_syntax/src/syntax_kind/generated.rs linguist-generated
+crates/ddlog_syntax/src/ast/generated/ linguist-generated

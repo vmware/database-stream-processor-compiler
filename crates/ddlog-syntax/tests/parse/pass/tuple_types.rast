@@ -1,0 +1,33 @@
+ROOT@0..135
+  COMMENT@0..107 "// kind:item validate ..."
+  WHITESPACE@107..108 "\n"
+  FUNCTION_DEF@108..135
+    FN_TOKEN@108..110 "fn"
+    WHITESPACE@110..111 " "
+    IDENT@111..114 "foo"
+    FUNCTION_ARGS@114..131
+      L_PAREN@114..115 "("
+      FUNCTION_ARG@115..130
+        VAR_REF@115..118
+          IDENT@115..118 "bar"
+        COLON@118..119 ":"
+        WHITESPACE@119..120 " "
+        TUPLE_TYPE@120..130
+          L_PAREN@120..121 "("
+          TUPLE_TYPE_ELEM@121..125
+            GENERIC_TYPE@121..124
+              PATH@121..124
+                IDENT@121..124 "Bar"
+            COMMA@124..125 ","
+          WHITESPACE@125..126 " "
+          TUPLE_TYPE_ELEM@126..129
+            GENERIC_TYPE@126..129
+              PATH@126..129
+                IDENT@126..129 "Baz"
+          R_PAREN@129..130 ")"
+      R_PAREN@130..131 ")"
+    WHITESPACE@131..132 " "
+    BLOCK@132..134
+      L_CURLY@132..133 "{"
+      R_CURLY@133..134 "}"
+    WHITESPACE@134..135 "\n"

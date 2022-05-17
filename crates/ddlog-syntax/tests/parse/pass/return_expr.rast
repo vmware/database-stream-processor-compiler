@@ -1,0 +1,23 @@
+ROOT@0..129
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  RET_EXPR@108..129
+    RETURN_TOKEN@108..114 "return"
+    WHITESPACE@114..115 " "
+    BIN_EXPR@115..129
+      VAR_REF@115..118
+        IDENT@115..118 "foo"
+      WHITESPACE@118..119 " "
+      BIN_OP@119..120
+        PLUS@119..120 "+"
+      WHITESPACE@120..121 " "
+      BIN_EXPR@121..129
+        VAR_REF@121..124
+          IDENT@121..124 "bar"
+        WHITESPACE@124..125 " "
+        BIN_OP@125..126
+          PLUS@125..126 "+"
+        WHITESPACE@126..127 " "
+        NUMBER@127..128
+          NUMBER_LITERAL@127..128 "1"
+        WHITESPACE@128..129 "\n"

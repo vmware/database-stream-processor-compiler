@@ -1,0 +1,16 @@
+ROOT@0..127
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  CONTINUE_EXPR@108..127
+    CONTINUE_TOKEN@108..116 "continue"
+    WHITESPACE@116..117 " "
+    BIN_EXPR@117..127
+      VAR_REF@117..120
+        IDENT@117..120 "foo"
+      WHITESPACE@120..121 " "
+      BIN_OP@121..122
+        PLUS@121..122 "+"
+      WHITESPACE@122..123 " "
+      VAR_REF@123..126
+        IDENT@123..126 "bar"
+      WHITESPACE@126..127 "\n"

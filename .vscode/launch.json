@@ -1,0 +1,57 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug LSP Server",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/ddlog-driver.exe",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    // We want backtraces while we're debugging
+                    "name": "RUST_BACKTRACE",
+                    "value": "full",
+                },
+                {
+                    "name": "DDLOG_LOG",
+                    // Set the log level to trace for everything, but then filter
+                    // out some of the extraneous stuff from libraries we use
+                    "value": "trace,salsa=info,mio=info,tokio_util=info,lspower=info",
+                },
+            ],
+            // TODO: Probably want to do the same for unix, just not sure what the path is
+            "windows": {
+                "sourceFileMap": {
+                    "/rustc/cb75ad5db02783e8b0222fee363c5f63f7e2cf5b": "${env:USERPROFILE}\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\lib\\rustlib\\src\\rust",
+                },
+            },
+            "preLaunchTask": "build ddlog-driver",
+        },
+        {
+            "name": "Launch Client",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": [
+                "--disable-extensions",
+                "--extensionDevelopmentPath=${workspaceFolder}/editors/vscode",
+            ],
+            "sourceMaps": true,
+            "outFiles": [
+                "${workspaceRoot}/editors/vscode/out/src/**/*.js",
+            ],
+            "preLaunchTask": "build vsix",
+        },
+    ],
+    "compounds": [
+        {
+            "name": "Client + Server",
+            "configurations": [
+                "Launch Client",
+                "Debug LSP Server",
+            ],
+        },
+    ],
+}

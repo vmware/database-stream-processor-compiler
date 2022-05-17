@@ -1,0 +1,15 @@
+ROOT@0..132
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  BREAK_EXPR@108..132
+    BREAK_TOKEN@108..113 "break"
+    WHITESPACE@113..114 " "
+    BREAK_EXPR@114..132
+      BREAK_TOKEN@114..119 "break"
+      WHITESPACE@119..120 " "
+      BREAK_EXPR@120..132
+        BREAK_TOKEN@120..125 "break"
+        WHITESPACE@125..126 " "
+        BREAK_EXPR@126..131
+          BREAK_TOKEN@126..131 "break"
+        WHITESPACE@131..132 "\n"

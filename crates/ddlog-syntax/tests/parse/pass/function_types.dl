@@ -1,0 +1,5 @@
+// kind:item validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/types.rs' line:55 column:3
+fn foo(bar: fn(Bar, Baz) -> Bing) {}
+fn Foo(bar: fn(Bar, Baz,) -> Bing,) {}
+fn foo(bar: fn(Bar)) {}
+fn Foo(bar: fn(Bar,)) -> fn(Bong, Bang) {}

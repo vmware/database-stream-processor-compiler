@@ -1,0 +1,2 @@
+// kind:item validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/item/mod.rs' line:102 column:3
+pub pub pub pub pub fn foo() {}

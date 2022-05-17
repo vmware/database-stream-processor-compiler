@@ -1,0 +1,2 @@
+// kind:item validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/item/clause.rs' line:22 column:3
+Foo(bar, baz, bing);

@@ -1,0 +1,2 @@
+// kind:item validate:true pass:false ignore:false file:'ddlog-syntax/src/validation/extra_commas.rs' line:83 column:3
+fn foo(foo: Bar bar: Baz) {}

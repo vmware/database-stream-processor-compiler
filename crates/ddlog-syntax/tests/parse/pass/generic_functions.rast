@@ -1,0 +1,124 @@
+ROOT@0..194
+  COMMENT@0..106 "// kind:item validate ..."
+  WHITESPACE@106..107 "\n"
+  FUNCTION_DEF@107..121
+    FN_TOKEN@107..109 "fn"
+    WHITESPACE@109..110 " "
+    IDENT@110..113 "foo"
+    L_ANGLE@113..114 "<"
+    GENERICS@114..115
+      R_ANGLE@114..115 ">"
+    FUNCTION_ARGS@115..117
+      L_PAREN@115..116 "("
+      R_PAREN@116..117 ")"
+    WHITESPACE@117..118 " "
+    BLOCK@118..120
+      L_CURLY@118..119 "{"
+      R_CURLY@119..120 "}"
+    WHITESPACE@120..121 "\n"
+  FUNCTION_DEF@121..137
+    FN_TOKEN@121..123 "fn"
+    WHITESPACE@123..124 " "
+    IDENT@124..128 "foo1"
+    L_ANGLE@128..129 "<"
+    GENERICS@129..131
+      GENERIC_ARG@129..130
+        GENERIC_TYPE@129..130
+          PATH@129..130
+            IDENT@129..130 "A"
+      R_ANGLE@130..131 ">"
+    FUNCTION_ARGS@131..133
+      L_PAREN@131..132 "("
+      R_PAREN@132..133 ")"
+    WHITESPACE@133..134 " "
+    BLOCK@134..136
+      L_CURLY@134..135 "{"
+      R_CURLY@135..136 "}"
+    WHITESPACE@136..137 "\n"
+  FUNCTION_DEF@137..165
+    FN_TOKEN@137..139 "fn"
+    WHITESPACE@139..140 " "
+    IDENT@140..144 "foo2"
+    L_ANGLE@144..145 "<"
+    GENERICS@145..159
+      GENERIC_ARG@145..147
+        GENERIC_TYPE@145..146
+          PATH@145..146
+            IDENT@145..146 "A"
+        COMMA@146..147 ","
+      WHITESPACE@147..148 " "
+      GENERIC_ARG@148..150
+        GENERIC_TYPE@148..149
+          PATH@148..149
+            IDENT@148..149 "B"
+        COMMA@149..150 ","
+      WHITESPACE@150..151 " "
+      GENERIC_ARG@151..153
+        GENERIC_TYPE@151..152
+          PATH@151..152
+            IDENT@151..152 "C"
+        COMMA@152..153 ","
+      WHITESPACE@153..154 " "
+      GENERIC_ARG@154..156
+        GENERIC_TYPE@154..155
+          PATH@154..155
+            IDENT@154..155 "D"
+        COMMA@155..156 ","
+      WHITESPACE@156..157 " "
+      GENERIC_ARG@157..158
+        GENERIC_TYPE@157..158
+          PATH@157..158
+            IDENT@157..158 "E"
+      R_ANGLE@158..159 ">"
+    FUNCTION_ARGS@159..161
+      L_PAREN@159..160 "("
+      R_PAREN@160..161 ")"
+    WHITESPACE@161..162 " "
+    BLOCK@162..164
+      L_CURLY@162..163 "{"
+      R_CURLY@163..164 "}"
+    WHITESPACE@164..165 "\n"
+  FUNCTION_DEF@165..194
+    FN_TOKEN@165..167 "fn"
+    WHITESPACE@167..168 " "
+    IDENT@168..172 "foo3"
+    L_ANGLE@172..173 "<"
+    GENERICS@173..188
+      GENERIC_ARG@173..175
+        GENERIC_TYPE@173..174
+          PATH@173..174
+            IDENT@173..174 "A"
+        COMMA@174..175 ","
+      WHITESPACE@175..176 " "
+      GENERIC_ARG@176..178
+        GENERIC_TYPE@176..177
+          PATH@176..177
+            IDENT@176..177 "B"
+        COMMA@177..178 ","
+      WHITESPACE@178..179 " "
+      GENERIC_ARG@179..181
+        GENERIC_TYPE@179..180
+          PATH@179..180
+            IDENT@179..180 "C"
+        COMMA@180..181 ","
+      WHITESPACE@181..182 " "
+      GENERIC_ARG@182..184
+        GENERIC_TYPE@182..183
+          PATH@182..183
+            IDENT@182..183 "D"
+        COMMA@183..184 ","
+      WHITESPACE@184..185 " "
+      GENERIC_ARG@185..187
+        GENERIC_TYPE@185..186
+          PATH@185..186
+            IDENT@185..186 "E"
+        COMMA@186..187 ","
+      R_ANGLE@187..188 ">"
+    FUNCTION_ARGS@188..190
+      L_PAREN@188..189 "("
+      R_PAREN@189..190 ")"
+    WHITESPACE@190..191 " "
+    BLOCK@191..193
+      L_CURLY@191..192 "{"
+      R_CURLY@192..193 "}"
+    WHITESPACE@193..194 "\n"

@@ -1,0 +1,6 @@
+ROOT@0..112
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  CHAR@108..111
+    CHAR_LITERAL@108..111 "'c'"
+  WHITESPACE@111..112 "\n"

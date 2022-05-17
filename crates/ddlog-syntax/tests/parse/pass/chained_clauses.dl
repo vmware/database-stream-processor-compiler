@@ -1,0 +1,8 @@
+// kind:item validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/item/clause.rs' line:14 column:3
+Bar(x, y, z) :-
+    A(b, c, d, e),
+    B(x, y, z),
+    X(y + z, f(x)),
+    x == b,
+    b == c,
+    e(c, x, y);

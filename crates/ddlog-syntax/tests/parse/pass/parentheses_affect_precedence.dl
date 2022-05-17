@@ -1,0 +1,2 @@
+// kind:expr validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:33 column:3
+5 * (2 + 1)

@@ -1,0 +1,11 @@
+ROOT@0..113
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  TUPLE_INIT_EXPR@108..112
+    L_PAREN@108..109 "("
+    TUPLE_EXPR_ELEM@109..111
+      NUMBER@109..110
+        NUMBER_LITERAL@109..110 "1"
+      COMMA@110..111 ","
+    R_PAREN@111..112 ")"
+  WHITESPACE@112..113 "\n"

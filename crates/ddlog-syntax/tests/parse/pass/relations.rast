@@ -1,0 +1,85 @@
+ROOT@0..204
+  COMMENT@0..114 "// kind:item validate ..."
+  WHITESPACE@114..115 "\n"
+  RELATION_DEF@115..125
+    REL_TOKEN@115..118 "rel"
+    WHITESPACE@118..119 " "
+    IDENT@119..122 "Foo"
+    RELATION_ARGS@122..124
+      L_PAREN@122..123 "("
+      R_PAREN@123..124 ")"
+    WHITESPACE@124..125 "\n"
+  RELATION_DEF@125..143
+    REL_TOKEN@125..128 "rel"
+    WHITESPACE@128..129 " "
+    IDENT@129..132 "Bar"
+    RELATION_ARGS@132..142
+      L_PAREN@132..133 "("
+      RELATION_ARG@133..141
+        IDENT@133..134 "x"
+        COLON@134..135 ":"
+        WHITESPACE@135..136 " "
+        GENERIC_TYPE@136..141
+          PATH@136..141
+            IDENT@136..141 "usize"
+      R_PAREN@141..142 ")"
+    WHITESPACE@142..143 "\n"
+  RELATION_DEF@143..204
+    REL_TOKEN@143..146 "rel"
+    WHITESPACE@146..147 " "
+    IDENT@147..150 "Baz"
+    RELATION_ARGS@150..203
+      L_PAREN@150..151 "("
+      RELATION_ARG@151..160
+        IDENT@151..152 "x"
+        COLON@152..153 ":"
+        WHITESPACE@153..154 " "
+        GENERIC_TYPE@154..159
+          PATH@154..159
+            IDENT@154..159 "usize"
+        COMMA@159..160 ","
+      WHITESPACE@160..161 " "
+      RELATION_ARG@161..169
+        IDENT@161..162 "y"
+        COLON@162..163 ":"
+        WHITESPACE@163..164 " "
+        GENERIC_TYPE@164..168
+          PATH@164..168
+            IDENT@164..168 "Whee"
+        COMMA@168..169 ","
+      WHITESPACE@169..170 " "
+      RELATION_ARG@170..202
+        IDENT@170..171 "z"
+        COLON@171..172 ":"
+        WHITESPACE@172..173 " "
+        GENERIC_TYPE@173..202
+          PATH@173..177
+            IDENT@173..177 "Whoo"
+          L_ANGLE@177..178 "<"
+          GENERICS@178..202
+            GENERIC_ARG@178..183
+              GENERIC_TYPE@178..182
+                PATH@178..182
+                  IDENT@178..182 "Bing"
+              COMMA@182..183 ","
+            WHITESPACE@183..184 " "
+            GENERIC_ARG@184..201
+              FUNCTION_TYPE@184..201
+                FN_TOKEN@184..186 "fn"
+                FUNCTION_TYPE_ARGS@186..193
+                  L_PAREN@186..187 "("
+                  FUNCTION_TYPE_ARG@187..192
+                    GENERIC_TYPE@187..192
+                      PATH@187..192
+                        IDENT@187..192 "usize"
+                  R_PAREN@192..193 ")"
+                WHITESPACE@193..194 " "
+                FUNCTION_RETURN_TYPE@194..201
+                  RIGHT_ARROW@194..196 "->"
+                  WHITESPACE@196..197 " "
+                  GENERIC_TYPE@197..201
+                    PATH@197..201
+                      IDENT@197..201 "bool"
+            R_ANGLE@201..202 ">"
+      R_PAREN@202..203 ")"
+    WHITESPACE@203..204 "\n"

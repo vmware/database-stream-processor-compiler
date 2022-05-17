@@ -1,0 +1,15 @@
+ROOT@0..117
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  FIELD_ACCESS@108..117
+    TUPLE_INIT_EXPR@108..114
+      L_PAREN@108..109 "("
+      TUPLE_EXPR_ELEM@109..113
+        VAR_REF@109..112
+          IDENT@109..112 "foo"
+        COMMA@112..113 ","
+      R_PAREN@113..114 ")"
+    DOT@114..115 "."
+    NUMBER@115..116
+      NUMBER_LITERAL@115..116 "0"
+    WHITESPACE@116..117 "\n"

@@ -1,0 +1,143 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build ddlog-driver",
+            "type": "shell",
+            "command": "cargo",
+            "args": [
+                "build",
+                "--bin",
+                "ddlog-driver"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "dependsOn": [
+                "xtask: run codegen"
+            ]
+        },
+        {
+            "label": "build extension",
+            "type": "shell",
+            "command": "npm",
+            "args": [
+                "run",
+                "build",
+            ],
+            "group": "build",
+            "problemMatcher": [
+                "$tsc",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/editors/vscode"
+            },
+        },
+        {
+            "label": "build vsix",
+            "type": "shell",
+            "command": "npm",
+            "args": [
+                "run",
+                "package",
+            ],
+            "group": "build",
+            "problemMatcher": [
+                "$tsc",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/editors/vscode",
+            },
+            "dependsOn": [
+                "build extension",
+            ],
+        },
+        {
+            "label": "Build Client + Server",
+            "dependsOn": [
+                "build vsix",
+                "build ddlog-driver"
+            ]
+        },
+        {
+            "label": "xtask: run codegen",
+            "type": "process",
+            "command": "cargo",
+            "args": [
+                "xtask",
+                "codegen"
+            ],
+            "problemMatcher": [
+                "$rustc"
+            ]
+        },
+        {
+            "label": "xtask: check codegen",
+            "type": "process",
+            "command": "cargo",
+            "args": [
+                "xtask",
+                "codegen",
+                "check"
+            ],
+            "problemMatcher": [
+                "$rustc"
+            ]
+        },
+        {
+            "label": "xtask: check line endings",
+            "type": "process",
+            "command": "cargo",
+            "args": [
+                "xtask",
+                "line-endings",
+                "--mode",
+                "check"
+            ],
+            "problemMatcher": [
+                "$rustc"
+            ]
+        },
+        {
+            "label": "xtask: normalize line endings",
+            "type": "process",
+            "command": "cargo",
+            "args": [
+                "xtask",
+                "line-endings",
+                "--mode",
+                "run",
+            ],
+            "problemMatcher": [
+                "$rustc",
+            ],
+        },
+        {
+            "label": "xtask: setup",
+            "type": "process",
+            "command": "cargo",
+            "args": [
+                "xtask",
+                "setup",
+            ],
+            "problemMatcher": [
+                "$rustc",
+            ],
+        },
+        {
+            "label": "xtask: run checks",
+            "type": "process",
+            "command": "cargo",
+            "dependsOn": [
+                "xtask: check line endings",
+                "xtask: check codegen",
+            ],
+            "problemMatcher": [
+                "$rustc",
+            ],
+        },
+    ]
+}

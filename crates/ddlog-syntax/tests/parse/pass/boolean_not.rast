@@ -1,0 +1,18 @@
+ROOT@0..118
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  UNARY_EXPR@108..118
+    UNARY_OP@108..109
+      BANG@108..109 "!"
+    UNARY_EXPR@109..118
+      UNARY_OP@109..110
+        BANG@109..110 "!"
+      PAREN_EXPR@110..117
+        L_PAREN@110..111 "("
+        UNARY_EXPR@111..116
+          UNARY_OP@111..112
+            BANG@111..112 "!"
+          BOOL@112..116
+            TRUE_TOKEN@112..116 "true"
+        R_PAREN@116..117 ")"
+      WHITESPACE@117..118 "\n"
