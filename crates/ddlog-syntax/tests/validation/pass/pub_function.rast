@@ -1,0 +1,18 @@
+ROOT@0..131
+  COMMENT@0..114 "// kind:item validate ..."
+  WHITESPACE@114..115 "\n"
+  FUNCTION_DEF@115..131
+    MODIFIER@115..118
+      PUB_TOKEN@115..118 "pub"
+    WHITESPACE@118..119 " "
+    FN_TOKEN@119..121 "fn"
+    WHITESPACE@121..122 " "
+    IDENT@122..125 "foo"
+    FUNCTION_ARGS@125..127
+      L_PAREN@125..126 "("
+      R_PAREN@126..127 ")"
+    WHITESPACE@127..128 " "
+    BLOCK@128..130
+      L_CURLY@128..129 "{"
+      R_CURLY@129..130 "}"
+    WHITESPACE@130..131 "\n"

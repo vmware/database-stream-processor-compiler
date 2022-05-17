@@ -1,0 +1,24 @@
+ROOT@0..135
+  COMMENT@0..113 "// kind:item validate ..."
+  WHITESPACE@113..114 "\n"
+  CLAUSE_DEF@114..134
+    CLAUSE_FACT@114..133
+      CLAUSE_FACT@114..133
+        IDENT@114..117 "Foo"
+        L_PAREN@117..118 "("
+        CLAUSE_FACT_ARG@118..122
+          VAR_REF@118..121
+            IDENT@118..121 "bar"
+          COMMA@121..122 ","
+        WHITESPACE@122..123 " "
+        CLAUSE_FACT_ARG@123..127
+          VAR_REF@123..126
+            IDENT@123..126 "baz"
+          COMMA@126..127 ","
+        WHITESPACE@127..128 " "
+        CLAUSE_FACT_ARG@128..132
+          VAR_REF@128..132
+            IDENT@128..132 "bing"
+        R_PAREN@132..133 ")"
+    SEMICOLON@133..134 ";"
+  WHITESPACE@134..135 "\n"

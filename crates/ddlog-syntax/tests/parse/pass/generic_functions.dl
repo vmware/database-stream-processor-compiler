@@ -1,0 +1,5 @@
+// kind:item validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/utils.rs' line:6 column:3
+fn foo<>() {}
+fn foo1<A>() {}
+fn foo2<A, B, C, D, E>() {}
+fn foo3<A, B, C, D, E,>() {}

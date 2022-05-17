@@ -1,0 +1,26 @@
+ROOT@0..117
+  COMMENT@0..108 "// kind:expr validate ..."
+  WHITESPACE@108..109 "\n"
+  BLOCK@109..117
+    L_CURLY@109..110 "{"
+    EXPR_STMT@110..117
+      BLOCK@110..116
+        L_CURLY@110..111 "{"
+        WHITESPACE@111..112 " "
+        EXPR_STMT@112..115
+          NUMBER@112..114
+            NUMBER_LITERAL@112..114 "10"
+          WHITESPACE@114..115 " "
+        R_CURLY@115..116 "}"
+      WHITESPACE@116..117 "\n"
+--
+Error: expected '}' but instead the file ends
+   ,-[parse/fail/unclosed_block.dl:2:9]
+   |
+ 2 | {{ 10 }
+   *         | 
+   *         `- the file ends here
+---'
+--
+// kind:expr validate:false pass:false ignore:false file:'ddlog-syntax/src/parser/expr.rs' line:378 column:3
+{{ 10 }

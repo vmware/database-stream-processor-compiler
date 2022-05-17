@@ -1,0 +1,4 @@
+// kind:item validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/item/relation.rs' line:6 column:3
+rel Foo()
+rel Bar(x: usize)
+rel Baz(x: usize, y: Whee, z: Whoo<Bing, fn(usize) -> bool>)

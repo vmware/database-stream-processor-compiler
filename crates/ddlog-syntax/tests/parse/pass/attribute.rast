@@ -1,0 +1,92 @@
+ROOT@0..250
+  COMMENT@0..111 "// kind:item validate ..."
+  WHITESPACE@111..112 "\n"
+  FUNCTION_DEF@112..154
+    ATTRIBUTE@112..141
+      HASH_BRACK@112..114 "#["
+      ATTR_PAIR@114..140
+        IDENT@114..123 "something"
+        WHITESPACE@123..124 " "
+        EQ@124..125 "="
+        WHITESPACE@125..126 " "
+        VAR_REF@126..140
+          IDENT@126..140 "something_else"
+      R_BRACK@140..141 "]"
+    WHITESPACE@141..142 " "
+    FN_TOKEN@142..144 "fn"
+    WHITESPACE@144..145 " "
+    IDENT@145..148 "foo"
+    FUNCTION_ARGS@148..150
+      L_PAREN@148..149 "("
+      R_PAREN@149..150 ")"
+    WHITESPACE@150..151 " "
+    BLOCK@151..153
+      L_CURLY@151..152 "{"
+      R_CURLY@152..153 "}"
+    WHITESPACE@153..154 "\n"
+  FUNCTION_DEF@154..190
+    ATTRIBUTE@154..174
+      HASH_BRACK@154..156 "#["
+      ATTR_PAIR@156..173
+        IDENT@156..165 "something"
+        WHITESPACE@165..166 " "
+        EQ@166..167 "="
+        WHITESPACE@167..168 " "
+        NUMBER@168..170
+          NUMBER_LITERAL@168..170 "10"
+        COMMA@170..171 ","
+        COMMA@171..172 ","
+        COMMA@172..173 ","
+      R_BRACK@173..174 "]"
+    WHITESPACE@174..175 " "
+    FN_TOKEN@175..177 "fn"
+    WHITESPACE@177..178 " "
+    IDENT@178..184 "foobar"
+    FUNCTION_ARGS@184..186
+      L_PAREN@184..185 "("
+      R_PAREN@185..186 ")"
+    WHITESPACE@186..187 " "
+    BLOCK@187..189
+      L_CURLY@187..188 "{"
+      R_CURLY@188..189 "}"
+    WHITESPACE@189..190 "\n"
+  FUNCTION_DEF@190..215
+    ATTRIBUTE@190..199
+      HASH_BRACK@190..192 "#["
+      ATTR_PAIR@192..198
+        IDENT@192..198 "by_val"
+      R_BRACK@198..199 "]"
+    WHITESPACE@199..200 " "
+    FN_TOKEN@200..202 "fn"
+    WHITESPACE@202..203 " "
+    IDENT@203..209 "foobar"
+    FUNCTION_ARGS@209..211
+      L_PAREN@209..210 "("
+      R_PAREN@210..211 ")"
+    WHITESPACE@211..212 " "
+    BLOCK@212..214
+      L_CURLY@212..213 "{"
+      R_CURLY@213..214 "}"
+    WHITESPACE@214..215 "\n"
+  FUNCTION_DEF@215..250
+    ATTRIBUTE@215..234
+      HASH_BRACK@215..217 "#["
+      ATTR_PAIR@217..224
+        IDENT@217..223 "by_val"
+        COMMA@223..224 ","
+      WHITESPACE@224..225 " "
+      ATTR_PAIR@225..233
+        IDENT@225..233 "from_val"
+      R_BRACK@233..234 "]"
+    WHITESPACE@234..235 " "
+    FN_TOKEN@235..237 "fn"
+    WHITESPACE@237..238 " "
+    IDENT@238..244 "foobar"
+    FUNCTION_ARGS@244..246
+      L_PAREN@244..245 "("
+      R_PAREN@245..246 ")"
+    WHITESPACE@246..247 " "
+    BLOCK@247..249
+      L_CURLY@247..248 "{"
+      R_CURLY@248..249 "}"
+    WHITESPACE@249..250 "\n"

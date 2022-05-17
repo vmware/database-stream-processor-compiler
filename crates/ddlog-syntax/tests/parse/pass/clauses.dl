@@ -1,0 +1,5 @@
+// kind:item validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/item/clause.rs' line:9 column:3
+Foo() :- ();
+Baz(10, x * y) :- Foo(x, y);
+Bar(x, y, z) :- Bar(z, y, x);
+Baz(a, b), Bar(a, c, b) :- Bar(a, b, c);

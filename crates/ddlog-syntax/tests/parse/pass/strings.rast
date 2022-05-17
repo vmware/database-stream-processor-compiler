@@ -1,0 +1,9 @@
+ROOT@0..124
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  STRING@108..113
+    STRING_LITERAL@108..113 "\"foo\""
+  WHITESPACE@113..114 "\n"
+  STRING@114..123
+    STRING_LITERAL@114..123 "\"bar\\\"\\n\""
+  WHITESPACE@123..124 "\n"

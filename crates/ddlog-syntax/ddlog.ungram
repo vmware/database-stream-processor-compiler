@@ -1,0 +1,218 @@
+Root = Item*
+
+Item =
+    RelationDef
+    | ClauseDef
+    | FunctionDef
+    | StructDef
+    | EnumDef
+    | ConstDef
+    | UseDef
+    | ImplBlock
+    | TypeAlias
+    // TODO: Modules and Module Declarations (or do we want automatic module discovery?)
+
+RelationDef = Attribute* Modifier* keyword:'rel' name:'ident' args:RelationArgs
+RelationArgs = '(' args:RelationArg* ')'
+RelationArg = Attribute* name:'ident' ':' ty:Type ','*
+
+ClauseDef = Attribute* facts:ClauseFact* rules:ClauseRules? ';'
+ClauseFact = relation:'ident' '(' args:ClauseFactArg* ')' ','*
+ClauseFactArg = expr:Expr ','*
+ClauseRules = ':-' rules:ClauseRule*
+// Note that rules are just expressions, there's no syntatic difference
+// between calling a function and referencing a relation
+ClauseRule = rule:Expr ','*
+
+FunctionDef = Attribute* Modifier* keyword:'fn' name:'ident' Generics args:FunctionArgs ret:FunctionReturn? body:Block
+FunctionArgs = '(' args:FunctionArg* ')'
+FunctionArg = Attribute* binding:Pattern ':' ty:Type ','*
+FunctionReturn = '->' return_ty:Type
+
+// TODO: Generics
+StructDef = Attribute* Modifier* keyword:'struct' name:'ident' Generics fields:StructFields
+StructFields = BracketedStructFields | TupleStructFields
+BracketedStructFields = '{' fields:BracketedStructField* '}'
+BracketedStructField = Attribute* Modifier* name:'ident' ':' ty:Type ','*
+TupleStructFields = '(' fields:TupleStructField* ')' ';'*
+TupleStructField = Attribute* Modifier* ty:Type ','*
+
+// TODO: Generics
+EnumDef = Attribute* Modifier* keyword:'enum' name:'ident' Generics variants:EnumVariants
+EnumVariants = '{' variants:EnumVariant* '}'
+EnumVariant = Attribute* variant:'ident' EnumVariantBody
+EnumVariantBody = VariantTuple | VariantStruct
+VariantTuple = '(' VariantTupleElem* ')'
+VariantTupleElem = Attribute* ty:Type ','*
+VariantStruct = '{' fields:VariantStructField* '}'
+VariantStructField = Attribute* name:'ident' ':' ty:Type ','*
+
+// TODO: Could be a pattern instead of an ident
+ConstDef = Attribute* Modifier* keyword:'const' name:'ident' '=' value:Expr ';'
+
+UseDef = Attribute* Modifier* keyword:'use' Path UseBranchOrAlias? ';'
+UseBranchOrAlias = UseBranch | UseAlias
+UseAlias = 'as' alias:'ident'
+UseBranch = '{' (Path UseBranchOrAlias? ','*)* '}'
+
+// TODO: `impl Trait for Type { ... }`
+// TODO: Generics
+ImplBlock = Attribute* Modifier* keyword:'impl' target:Type contents:ImplBlockContents
+ImplBlockContents = '{' Item* '}'
+
+TypeAlias =  Attribute* Modifier* keyword:'type' alias:Type '=' original:Type ';'*
+
+Attribute = '#[' AttrPair* ']'
+AttrPair = name:'ident' ('=' Expr ','*)?
+
+Modifier = 'pub' // 'input' | 'output'
+
+Pattern = VarRef | TuplePattern | StructPattern
+TuplePattern = '(' elements:TuplePatternElem* ')'
+TuplePatternElem = Pattern ','*
+StructPattern = strct:VarRef '{' fields:StructPatternField* '}'
+StructPatternField = name:'ident' (':' alias:Pattern)? ','*
+
+Type = GenericType | TupleType | FunctionType
+Path = '::'? head:'ident' tail:PathTail*
+PathTail = '::' tail:'ident'
+
+GenericType = Path Generics?
+Generics = '<' generics:GenericArg* '>'
+GenericArg = ty:Type ','*
+
+TupleType = '(' elements:TupleTypeElem* ')'
+TupleTypeElem = ty:Type ','*
+
+FunctionType = 'fn' args:FunctionTypeArgs ret:FunctionReturnType?
+FunctionTypeArgs = '(' args:FunctionTypeArg* ')'
+FunctionTypeArg = ty:Type ','*
+FunctionReturnType = '->' ty:Type
+
+Block = '{' statements:Stmt* '}'
+Stmt = ExprStmt | VarDecl
+
+ExprStmt = Expr ';'*
+VarDecl = 'let' binding:Pattern (':' ty:Type)? '=' value:Expr ';'*
+
+Expr =
+    Literal
+    | VarRef
+    | QualifiedRef
+    | Assign
+    | ParenExpr
+    | BinExpr
+    | IfExpr
+    | RetExpr
+    | BreakExpr
+    | ContinueExpr
+    | UnaryExpr
+    | Block
+    | WhileExpr
+    | ForExpr
+    | LoopExpr
+    | MatchExpr
+    | ClosureExpr
+    | FieldAccess
+    | ArrayAccess
+    | FunctionCall
+    | MethodCall
+    | StructInitExpr
+    | TupleInitExpr
+    | ArrayInitExpr
+    | RangeExpr
+    // TODO: `if let` and `while let` expressions
+
+VarRef = 'ident'
+QualifiedRef = Path
+
+WhileExpr = 'while' cond:Expr Block
+ForExpr = 'for' binding:Pattern 'in' iter:Expr Block
+LoopExpr = 'loop' Block
+
+IfExpr = IfBlock* ElseBlock?
+IfBlock = leading_else:'else'? 'if' cond:Expr Block
+ElseBlock = 'else' Block
+
+MatchExpr = 'match' scrutinee:Expr '{' MatchArm* '}'
+MatchArm = binding:Pattern '=>' body:Expr ','* 
+
+Assign = binding:Pattern AssignOp value:Expr
+AssignOp =
+    '='
+    | '+='
+    | '-='
+    | '/='
+    | '*='
+    | '%='
+    | '&='
+    | '|='
+    | '^='
+    | '<<='
+    | '>>='
+
+ParenExpr = '(' inner:Expr ')'
+
+ClosureExpr = start_pipe:'|' args:ClosureArg* end_pipe:'|' body:Expr
+ClosureArg = binding:Pattern (':' ty:Type)? ','*
+
+FieldAccess = Expr '.' FieldAccessor
+FieldAccessor = FieldAccessorName | Number
+FieldAccessorName = 'ident'
+
+ArrayAccess = Expr '[' index:Expr ']'
+
+FunctionCall = func:Expr '(' args:FunctionCallArg* ')'
+// Future Possibility: Named arguments
+FunctionCallArg = arg:Expr ','*
+
+MethodCall = func:Expr '.' method:'ident' '(' args:MethodCallArg* ')'
+// Future Possibility: Named arguments
+MethodCallArg = arg:Expr ','*
+
+StructInitExpr = ty:Path '{' fields:StructInitField* '}'
+StructInitField = field:'ident' (':' value:Expr)? ','*
+
+TupleInitExpr = '(' elems:TupleExprElem* ')'
+TupleExprElem = Expr ','*
+
+ArrayInitExpr = '[' ArrayExprElem ']'
+ArrayExprElem = Expr ','*
+
+RangeExpr = start:Expr? RangeOp end:Expr?
+RangeOp = '..' | '..='
+
+// TODO: Floats
+Literal = Bool | Number | String | Char
+Bool = 'true' | 'false'
+Number = 'number_literal'
+String = 'string_literal'
+Char = 'char_literal'
+
+RetExpr = 'return' expr:Expr
+BreakExpr = 'break' expr:Expr
+ContinueExpr = 'continue'
+
+UnaryExpr = op:UnaryOp expr:Expr
+UnaryOp = '!' | '-'
+
+BinExpr = lhs:Expr op:BinOp rhs:Expr
+BinOp =
+    '+'
+    | '-'
+    | '*'
+    | '/' 
+    | '%'
+    | '|'
+    | '^'
+    | '&'
+    | '<<'
+    | '>>'
+    | 'and'
+    | 'or'
+    | '=='
+    | '!='
+    | '>'
+    | '>='
+    | '<'
+    | '<='

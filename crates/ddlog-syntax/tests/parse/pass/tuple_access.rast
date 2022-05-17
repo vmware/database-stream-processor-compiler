@@ -1,0 +1,10 @@
+ROOT@0..114
+  COMMENT@0..107 "// kind:expr validate ..."
+  WHITESPACE@107..108 "\n"
+  FIELD_ACCESS@108..114
+    VAR_REF@108..111
+      IDENT@108..111 "foo"
+    DOT@111..112 "."
+    NUMBER@112..113
+      NUMBER_LITERAL@112..113 "1"
+    WHITESPACE@113..114 "\n"

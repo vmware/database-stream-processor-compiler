@@ -1,0 +1,163 @@
+ROOT@0..226
+  COMMENT@0..112 "// kind:item validate ..."
+  WHITESPACE@112..113 "\n"
+  CLAUSE_DEF@113..125
+    CLAUSE_FACT@113..119
+      CLAUSE_FACT@113..118
+        IDENT@113..116 "Foo"
+        L_PAREN@116..117 "("
+        R_PAREN@117..118 ")"
+      WHITESPACE@118..119 " "
+    CLAUSE_RULES@119..124
+      HORN_IMPLICATION@119..121 ":-"
+      WHITESPACE@121..122 " "
+      CLAUSE_RULE@122..124
+        TUPLE_INIT_EXPR@122..124
+          L_PAREN@122..123 "("
+          R_PAREN@123..124 ")"
+    SEMICOLON@124..125 ";"
+  WHITESPACE@125..126 "\n"
+  CLAUSE_DEF@126..154
+    CLAUSE_FACT@126..141
+      CLAUSE_FACT@126..140
+        IDENT@126..129 "Baz"
+        L_PAREN@129..130 "("
+        CLAUSE_FACT_ARG@130..133
+          NUMBER@130..132
+            NUMBER_LITERAL@130..132 "10"
+          COMMA@132..133 ","
+        WHITESPACE@133..134 " "
+        CLAUSE_FACT_ARG@134..139
+          BIN_EXPR@134..139
+            VAR_REF@134..135
+              IDENT@134..135 "x"
+            WHITESPACE@135..136 " "
+            BIN_OP@136..137
+              STAR@136..137 "*"
+            WHITESPACE@137..138 " "
+            VAR_REF@138..139
+              IDENT@138..139 "y"
+        R_PAREN@139..140 ")"
+      WHITESPACE@140..141 " "
+    CLAUSE_RULES@141..153
+      HORN_IMPLICATION@141..143 ":-"
+      WHITESPACE@143..144 " "
+      CLAUSE_RULE@144..153
+        FUNCTION_CALL@144..153
+          VAR_REF@144..147
+            IDENT@144..147 "Foo"
+          L_PAREN@147..148 "("
+          FUNCTION_CALL_ARG@148..150
+            VAR_REF@148..149
+              IDENT@148..149 "x"
+            COMMA@149..150 ","
+          WHITESPACE@150..151 " "
+          FUNCTION_CALL_ARG@151..152
+            VAR_REF@151..152
+              IDENT@151..152 "y"
+          R_PAREN@152..153 ")"
+    SEMICOLON@153..154 ";"
+  WHITESPACE@154..155 "\n"
+  CLAUSE_DEF@155..184
+    CLAUSE_FACT@155..168
+      CLAUSE_FACT@155..167
+        IDENT@155..158 "Bar"
+        L_PAREN@158..159 "("
+        CLAUSE_FACT_ARG@159..161
+          VAR_REF@159..160
+            IDENT@159..160 "x"
+          COMMA@160..161 ","
+        WHITESPACE@161..162 " "
+        CLAUSE_FACT_ARG@162..164
+          VAR_REF@162..163
+            IDENT@162..163 "y"
+          COMMA@163..164 ","
+        WHITESPACE@164..165 " "
+        CLAUSE_FACT_ARG@165..166
+          VAR_REF@165..166
+            IDENT@165..166 "z"
+        R_PAREN@166..167 ")"
+      WHITESPACE@167..168 " "
+    CLAUSE_RULES@168..183
+      HORN_IMPLICATION@168..170 ":-"
+      WHITESPACE@170..171 " "
+      CLAUSE_RULE@171..183
+        FUNCTION_CALL@171..183
+          VAR_REF@171..174
+            IDENT@171..174 "Bar"
+          L_PAREN@174..175 "("
+          FUNCTION_CALL_ARG@175..177
+            VAR_REF@175..176
+              IDENT@175..176 "z"
+            COMMA@176..177 ","
+          WHITESPACE@177..178 " "
+          FUNCTION_CALL_ARG@178..180
+            VAR_REF@178..179
+              IDENT@178..179 "y"
+            COMMA@179..180 ","
+          WHITESPACE@180..181 " "
+          FUNCTION_CALL_ARG@181..182
+            VAR_REF@181..182
+              IDENT@181..182 "x"
+          R_PAREN@182..183 ")"
+    SEMICOLON@183..184 ";"
+  WHITESPACE@184..185 "\n"
+  CLAUSE_DEF@185..225
+    CLAUSE_FACT@185..195
+      CLAUSE_FACT@185..194
+        IDENT@185..188 "Baz"
+        L_PAREN@188..189 "("
+        CLAUSE_FACT_ARG@189..191
+          VAR_REF@189..190
+            IDENT@189..190 "a"
+          COMMA@190..191 ","
+        WHITESPACE@191..192 " "
+        CLAUSE_FACT_ARG@192..193
+          VAR_REF@192..193
+            IDENT@192..193 "b"
+        R_PAREN@193..194 ")"
+      COMMA@194..195 ","
+    WHITESPACE@195..196 " "
+    CLAUSE_FACT@196..209
+      CLAUSE_FACT@196..208
+        IDENT@196..199 "Bar"
+        L_PAREN@199..200 "("
+        CLAUSE_FACT_ARG@200..202
+          VAR_REF@200..201
+            IDENT@200..201 "a"
+          COMMA@201..202 ","
+        WHITESPACE@202..203 " "
+        CLAUSE_FACT_ARG@203..205
+          VAR_REF@203..204
+            IDENT@203..204 "c"
+          COMMA@204..205 ","
+        WHITESPACE@205..206 " "
+        CLAUSE_FACT_ARG@206..207
+          VAR_REF@206..207
+            IDENT@206..207 "b"
+        R_PAREN@207..208 ")"
+      WHITESPACE@208..209 " "
+    CLAUSE_RULES@209..224
+      HORN_IMPLICATION@209..211 ":-"
+      WHITESPACE@211..212 " "
+      CLAUSE_RULE@212..224
+        FUNCTION_CALL@212..224
+          VAR_REF@212..215
+            IDENT@212..215 "Bar"
+          L_PAREN@215..216 "("
+          FUNCTION_CALL_ARG@216..218
+            VAR_REF@216..217
+              IDENT@216..217 "a"
+            COMMA@217..218 ","
+          WHITESPACE@218..219 " "
+          FUNCTION_CALL_ARG@219..221
+            VAR_REF@219..220
+              IDENT@219..220 "b"
+            COMMA@220..221 ","
+          WHITESPACE@221..222 " "
+          FUNCTION_CALL_ARG@222..223
+            VAR_REF@222..223
+              IDENT@222..223 "c"
+          R_PAREN@223..224 ")"
+    SEMICOLON@224..225 ";"
+  WHITESPACE@225..226 "\n"

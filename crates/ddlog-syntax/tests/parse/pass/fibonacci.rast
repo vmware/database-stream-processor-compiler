@@ -1,0 +1,114 @@
+ROOT@0..241
+  COMMENT@0..105 "// kind:item validate ..."
+  WHITESPACE@105..106 "\n"
+  FUNCTION_DEF@106..241
+    FN_TOKEN@106..108 "fn"
+    WHITESPACE@108..109 " "
+    IDENT@109..118 "fibonacci"
+    FUNCTION_ARGS@118..128
+      L_PAREN@118..119 "("
+      FUNCTION_ARG@119..127
+        VAR_REF@119..120
+          IDENT@119..120 "n"
+        COLON@120..121 ":"
+        WHITESPACE@121..122 " "
+        GENERIC_TYPE@122..127
+          PATH@122..127
+            IDENT@122..127 "usize"
+      R_PAREN@127..128 ")"
+    WHITESPACE@128..129 " "
+    FUNCTION_RETURN@129..138
+      RIGHT_ARROW@129..131 "->"
+      WHITESPACE@131..132 " "
+      GENERIC_TYPE@132..138
+        PATH@132..137
+          IDENT@132..137 "usize"
+        WHITESPACE@137..138 " "
+    BLOCK@138..240
+      L_CURLY@138..139 "{"
+      WHITESPACE@139..144 "\n    "
+      EXPR_STMT@144..239
+        IF_EXPR@144..239
+          IF_BLOCK@144..182
+            IF_TOKEN@144..146 "if"
+            WHITESPACE@146..147 " "
+            BIN_EXPR@147..164
+              VAR_REF@147..148
+                IDENT@147..148 "n"
+              WHITESPACE@148..149 " "
+              BIN_OP@149..151
+                EQEQ@149..151 "=="
+              WHITESPACE@151..152 " "
+              BIN_EXPR@152..164
+                NUMBER@152..153
+                  NUMBER_LITERAL@152..153 "0"
+                WHITESPACE@153..154 " "
+                BIN_OP@154..156
+                  OR_TOKEN@154..156 "or"
+                WHITESPACE@156..157 " "
+                BIN_EXPR@157..164
+                  VAR_REF@157..158
+                    IDENT@157..158 "n"
+                  WHITESPACE@158..159 " "
+                  BIN_OP@159..161
+                    EQEQ@159..161 "=="
+                  WHITESPACE@161..162 " "
+                  NUMBER@162..163
+                    NUMBER_LITERAL@162..163 "1"
+                  WHITESPACE@163..164 " "
+            BLOCK@164..181
+              L_CURLY@164..165 "{"
+              WHITESPACE@165..174 "\n        "
+              EXPR_STMT@174..180
+                VAR_REF@174..175
+                  IDENT@174..175 "n"
+                WHITESPACE@175..180 "\n    "
+              R_CURLY@180..181 "}"
+            WHITESPACE@181..182 " "
+          ELSE_BLOCK@182..239
+            ELSE_TOKEN@182..186 "else"
+            WHITESPACE@186..187 " "
+            BLOCK@187..238
+              L_CURLY@187..188 "{"
+              WHITESPACE@188..197 "\n        "
+              EXPR_STMT@197..237
+                BIN_EXPR@197..237
+                  FUNCTION_CALL@197..213
+                    VAR_REF@197..206
+                      IDENT@197..206 "fibonacci"
+                    L_PAREN@206..207 "("
+                    FUNCTION_CALL_ARG@207..212
+                      BIN_EXPR@207..212
+                        VAR_REF@207..208
+                          IDENT@207..208 "n"
+                        WHITESPACE@208..209 " "
+                        BIN_OP@209..210
+                          MINUS@209..210 "-"
+                        WHITESPACE@210..211 " "
+                        NUMBER@211..212
+                          NUMBER_LITERAL@211..212 "1"
+                    R_PAREN@212..213 ")"
+                  WHITESPACE@213..214 " "
+                  BIN_OP@214..215
+                    PLUS@214..215 "+"
+                  WHITESPACE@215..216 " "
+                  FUNCTION_CALL@216..232
+                    VAR_REF@216..225
+                      IDENT@216..225 "fibonacci"
+                    L_PAREN@225..226 "("
+                    FUNCTION_CALL_ARG@226..231
+                      BIN_EXPR@226..231
+                        VAR_REF@226..227
+                          IDENT@226..227 "n"
+                        WHITESPACE@227..228 " "
+                        BIN_OP@228..229
+                          MINUS@228..229 "-"
+                        WHITESPACE@229..230 " "
+                        NUMBER@230..231
+                          NUMBER_LITERAL@230..231 "2"
+                    R_PAREN@231..232 ")"
+                  WHITESPACE@232..237 "\n    "
+              R_CURLY@237..238 "}"
+            WHITESPACE@238..239 "\n"
+      R_CURLY@239..240 "}"
+    WHITESPACE@240..241 "\n"

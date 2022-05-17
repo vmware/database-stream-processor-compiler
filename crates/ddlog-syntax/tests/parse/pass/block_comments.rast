@@ -1,0 +1,17 @@
+ROOT@0..157
+  COMMENT@0..110 "// kind:item validate ..."
+  WHITESPACE@110..111 "\n"
+  COMMENT@111..144 "/*\n    /*\n        Hel ..."
+  WHITESPACE@144..145 "\n"
+  FUNCTION_DEF@145..157
+    FN_TOKEN@145..147 "fn"
+    WHITESPACE@147..148 " "
+    IDENT@148..151 "bar"
+    FUNCTION_ARGS@151..153
+      L_PAREN@151..152 "("
+      R_PAREN@152..153 ")"
+    WHITESPACE@153..154 " "
+    BLOCK@154..156
+      L_CURLY@154..155 "{"
+      R_CURLY@155..156 "}"
+    WHITESPACE@156..157 "\n"

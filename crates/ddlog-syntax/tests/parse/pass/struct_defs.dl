@@ -1,0 +1,11 @@
+// kind:item validate:false pass:true ignore:false file:'ddlog-syntax/src/parser/item/structs.rs' line:9 column:3
+struct Foo {}
+struct Foo1 {
+    bar: usize,
+}
+struct Foo2 {
+    bar: usize
+}
+struct TupleStruct();
+struct TupleStruct(u8, u8, u8);
+struct Foo<T>(T);
