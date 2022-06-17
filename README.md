@@ -1,6 +1,18 @@
-# Differential Datalog v2
+# Frontend Compiler for DBSP
 
-The Language Server and Compiler architecture for Differential Datalog v2
+[Database Stream Processor (DBSP)](https://github.com/vmware/database-stream-processor) is a high-performance runtime for streaming computations.
+DBSP provides a low-level Rust API to transform, filter, join, aggregate, etc., streams of data in real time.  This repository contains an infrastructure to run programs written in high-level languages on top of DBSP.  We aim to support several such languages:
+
+- SQL (lives in a separate repository, will be open sourced soon)
+- [Differential Datalog v2 (DDlog-2)](crates/ddlog-syntax) - an evolution of [DDlog](https://github.com/vmware/differential-datalog), a Datalog-inspired declarative language
+- Functional languages like Scala (part of a future plan)
+
+In particular, this repository will define:
+
+- An intermediate representation (IR) of a DBSP program
+- A frontend compiler from DDlog-2 syntax to the IR
+- A language server infrastructure to enable DDlog-2 support in modern IDEs like Visual Studio Code
+- A query optimizer and compiler backend to execute IR on top of the DBSP runtime in either compiled or interpreted mode.
 
 ## Developing
 
